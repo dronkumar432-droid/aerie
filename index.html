@@ -675,7 +675,7 @@ function getApiKey(){return localStorage.getItem('aeris_api_key')||''}
 async function callGemini(systemPrompt, userPrompt, maxTokens=800){
   const key=getApiKey();
   if(!key)throw new Error('No API key — add in Settings');
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
   const body={
     contents:[{parts:[{text:systemPrompt+"\n\n"+userPrompt}]}],
     generationConfig:{maxOutputTokens:maxTokens,temperature:0.7,candidateCount:1}
@@ -997,10 +997,20 @@ async function mStep2(){
     ).catch(()=>'');
     if(!txt)throw new Error('empty');
     document.getElementById('ms2-out').style.display='';
-    document.getElementById('ms2-out').innerHTML=txt.replace(/\n/g,'<br>');
+    // Try to parse as JSON for beautiful card rendering
+    let boostHTML = '';
+    try {
+      let cleanTxt = txt.trim();
+      // Strip markdown code blocks if present
+      cleanTxt = cleanTxt.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+      boostHTML = renderBoostHTML(cleanTxt);
+    } catch(e) {
+      boostHTML = '<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)">' + txt.replace(/\n/g,'<br>') + '</div>';
+    }
+    document.getElementById('ms2-out').innerHTML = boostHTML;
     const entry=S.dailyEntries[today()]||{};
     entry.intellectualBoost=txt; S.dailyEntries[today()]=entry;
-  }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.'}
+  }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.';btn.textContent='⚡ Activate Intellectual Boost';btn.disabled=false;}
   const e2=S.dailyEntries[today()]||{};
   if(!e2.xpStep2){S.xp+=30;mfXP+=30;e2.xpStep2=true;S.dailyEntries[today()]=e2;}
   markStepDone('ms2','ms3');
@@ -1009,6 +1019,22 @@ async function mStep2(){
 }
 async function mStep3(){
   const btn=document.querySelector('#ms3 .bt');
+  // Already done today - just show saved result
+  const existingEntry=S.dailyEntries[today()]||{};
+  if(existingEntry.dailyQuest){
+    document.getElementById('ms3-out').style.display='';
+    document.getElementById('ms3-out').textContent=existingEntry.dailyQuest;
+    const e3check=S.dailyEntries[today()]||{};
+    if(!e3check.xpStep3){S.xp+=25;mfXP+=25;e3check.xpStep3=true;S.streak++;S.dailyEntries[today()]=e3check;}
+    markStepDone('ms3',null);
+    const ms4=document.getElementById('ms4');
+    if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
+    document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+    S.morningDone[today()]=true;
+    earn('dawn');updateDash();save();
+    toast('Quest ready ✅');
+    return;
+  }
   btn.textContent='⏳ Generating...';btn.disabled=true;
   const wk=Object.entries(S.dims).sort((a,b)=>a[1]-b[1])[0];
   try{
@@ -1021,7 +1047,7 @@ async function mStep3(){
     document.getElementById('ms3-out').textContent=txt;
     const entry=S.dailyEntries[today()]||{};
     entry.dailyQuest=txt; S.dailyEntries[today()]=entry;
-  }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.'}
+  }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.';btn.textContent='🎯 Generate Daily Quest';btn.disabled=false;}
   const e3=S.dailyEntries[today()]||{};
   if(!e3.xpStep3){S.xp+=25;mfXP+=25;e3.xpStep3=true;S.streak++;S.dailyEntries[today()]=e3;}
   markStepDone('ms3',null);
