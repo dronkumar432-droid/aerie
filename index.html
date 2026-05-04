@@ -226,15 +226,15 @@ select.fi option{background:var(--w)}
 .adset-btn:active{background:var(--bg)}
 
 /* CALENDAR */
-.cal-wrap{background:var(--w);border-radius:var(--r);padding:12px 10px;border:1.5px solid var(--brd);box-shadow:var(--sh);overflow:visible}
+.cal-wrap{background:var(--w);border-radius:var(--r);padding:12px 8px;border:1.5px solid var(--brd);box-shadow:var(--sh)}
 .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cal-title{font-size:14px;font-weight:700}
 .cal-nav{display:flex;gap:6px}
 .cal-nav-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--brd);background:var(--w);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--mut)}
 .cal-nav-btn:active{background:var(--bg)}
 .cal-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center;margin-bottom:4px;width:100%}
-.cal-day-lbl{font-size:9px;font-weight:700;color:var(--mut);padding:4px 0;letter-spacing:.3px;text-align:center}
-.cal-cell{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--ink);cursor:default;position:relative;width:100%;min-width:0}
+.cal-day-lbl{font-size:9px;font-weight:700;color:var(--mut);padding:4px 0;letter-spacing:.5px}
+.cal-cell{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--ink);cursor:default;position:relative;min-width:0;overflow:hidden}
 .cal-cell.empty{visibility:hidden}
 .cal-cell.today{font-weight:700;color:var(--vi)}
 .cal-cell.today::after{content:'';position:absolute;bottom:2px;width:4px;height:4px;border-radius:50%;background:var(--vi)}
@@ -582,14 +582,15 @@ select.fi option{background:var(--w)}
 </div>
 </div>
 
+
 <!-- ═══════ SETTINGS ═══════ -->
 <div class="pg" id="pg-settings">
 <div class="ph"><div class="pt">⚙️ Settings</div><div class="pb">Config</div></div>
 <div class="sp">
-<div class="sl">🔑 Anthropic API Key</div>
+<div class="sl">🔑 Gemini API Key</div>
 <div class="cd"><div class="cdb">
-<div style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Required for all AI features. Get free at <strong>console.anthropic.com</strong> → API Keys.</div>
-<div class="fg"><div class="fl">Paste your API key here</div><input class="fi" type="password" id="api-key-input" placeholder="sk-ant-api03-..."></div>
+<div style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Required for all AI features. Get your <strong>FREE</strong> key at <strong>aistudio.google.com</strong> → Get API Key. No credit card needed.</div>
+<div class="fg"><div class="fl">Paste your Gemini API key here</div><input class="fi" type="password" id="api-key-input" placeholder="AIza..."></div>
 <div style="display:flex;gap:10px">
 <button class="bt bvi" onclick="saveApiKey()" style="flex:2;padding:12px;font-size:14px">💾 Save Key</button>
 <button class="bt bol" onclick="testApiKey()" style="flex:1;padding:12px;font-size:13px" id="test-btn">🔍 Test</button>
@@ -608,12 +609,11 @@ select.fi option{background:var(--w)}
 <div class="sp">
 <div class="sl">ℹ️ About</div>
 <div class="cd"><div class="cdb" style="font-size:13px;color:var(--ink2);line-height:1.7">
-<strong>AERIS</strong> — Life Operating System v4.0<br>
-<span style="color:var(--mut)">Data stored locally on your device. Only current message context is sent to Anthropic API when you chat with AERIS.</span>
+<strong>AERIS</strong> — Life Operating System v4.1<br>Powered by Google Gemini<br>
+<span style="color:var(--mut)">All data stored locally on your device only.</span>
 </div></div>
 </div>
 </div>
-
 </div><!-- /pw -->
 
 <!-- CHAT PAGE (separate flex layout) -->
@@ -666,58 +666,81 @@ const BADGES_DEF=[
 {id:'voice',i:'🎤',n:'Voice Lord',d:'First voice transaction'},
 ];
 let S;
+
+// ════════════════════════════════════════════════════════════════
+// GEMINI API HELPER
+// ════════════════════════════════════════════════════════════════
 function getApiKey(){return localStorage.getItem('aeris_api_key')||''}
+
+async function callGemini(systemPrompt, userPrompt, maxTokens=800){
+  const key=getApiKey();
+  if(!key)throw new Error('No API key');
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+  const body={
+    contents:[{role:"user",parts:[{text:systemPrompt+"\n\n"+userPrompt}]}],
+    generationConfig:{maxOutputTokens:maxTokens,temperature:0.7}
+  };
+  const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
 function saveApiKey(){
   const k=document.getElementById('api-key-input').value.trim();
-  if(!k){toast('Please paste your API key');return}
+  if(!k){toast('Please paste your Gemini API key');return}
   localStorage.setItem('aeris_api_key',k);
-  document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Key saved successfully</span>';
+  document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Gemini key saved — AERIS is active</span>';
   toast('API key saved — AERIS is now fully active 🔮');
 }
+
 async function testApiKey(){
   const k=getApiKey();
   if(!k){toast('Save an API key first');return}
   const btn=document.getElementById('test-btn');
   btn.textContent='Testing...';btn.disabled=true;
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:20,messages:[{role:"user",content:"Say: AERIS online"}]})});
-    const d=await r.json();
-    if(d.content?.[0]?.text){
+    const reply=await callGemini('You are AERIS.','Say exactly: AERIS online',20);
+    if(reply){
       document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Connected — AERIS is active</span>';
-      toast('AERIS connected ✅');
-    } else {
-      document.getElementById('api-status').innerHTML='<span style="color:var(--co)">❌ Key invalid — check and retry</span>';
+      toast('AERIS connected via Gemini ✅');
     }
   }catch(e){
-    document.getElementById('api-status').innerHTML='<span style="color:var(--co)">❌ Connection failed — check key</span>';
+    document.getElementById('api-status').innerHTML='<span style="color:var(--co)">❌ Invalid key — check and retry</span>';
+    toast('Connection failed — check your key');
   }
   btn.textContent='🔍 Test';btn.disabled=false;
 }
+
 function clearTodayMorning(){
   const td=today();
   if(S.dailyEntries[td]){delete S.dailyEntries[td]}
   if(S.morningDone[td]){delete S.morningDone[td]}
   save();
-  // Reset UI
   document.getElementById('morn-idle').style.display='';
   document.getElementById('morn-steps').style.display='none';
   document.getElementById('m-checkin').value='';
   document.getElementById('m-opt').value='';
   document.getElementById('m-freq').value='';
-  document.getElementById('ms1').className='fs cur';
-  document.getElementById('ms2').className='fs lk';
-  document.getElementById('ms3').className='fs lk';
-  document.getElementById('ms4').className='fs lk';
-  ['ms1','ms2','ms3','ms4'].forEach(id=>{const el=document.getElementById(id);const dtg=el.querySelector('.dtg');if(dtg)dtg.remove()});
+  ['ms1','ms2','ms3','ms4'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.className=id==='ms1'?'fs cur':'fs lk';
+    const dtg=el.querySelector('.dtg');if(dtg)dtg.remove();
+  });
   mfXP=0;document.getElementById('mf-xp').textContent='+0 XP';
-  toast('Morning flow reset for today 🔄');
+  toast('Morning flow reset 🔄');
 }
+
 function confirmClearAll(){
-  if(confirm('Delete ALL AERIS data? This cannot be undone.')){
+  if(confirm('Delete ALL AERIS data? Cannot be undone.')){
     localStorage.removeItem('aeris_v3');
+    localStorage.removeItem('aeris_api_key');
+    localStorage.removeItem('aeris_last_date');
     location.reload();
   }
 }
+
 function exportAllData(){
   const data=JSON.stringify(S,null,2);
   const blob=new Blob([data],{type:'application/json'});
@@ -770,6 +793,19 @@ function nav(pg,btn){
   document.querySelectorAll('.nb').forEach(n=>n.classList.remove('a'));
   btn.classList.add('a');
   if(pg==='dash')updateDash();
+  if(pg==='morn'){restoreMornFlow();}
+  if(pg==='settings'){
+    const k=getApiKey();
+    const ki=document.getElementById('api-key-input');
+    if(ki&&k)ki.value=k;
+    const as=document.getElementById('api-status');
+    if(as)as.innerHTML=k?'<span style="color:var(--te)">✅ Gemini key saved — AERIS active</span>':'<span style="color:var(--mut)">No key yet — get free at aistudio.google.com</span>';
+  }
+  if(pg==='settings'){
+    const k=getApiKey();
+    if(k)document.getElementById('api-key-input').value=k;
+    document.getElementById('api-status').innerHTML=k?'<span style="color:var(--te)">✅ Gemini key saved</span>':'<span style="color:var(--mut)">No key saved yet — get free key at aistudio.google.com</span>';
+  }
   if(pg==='titan')renderTFDash();
 }
 
@@ -867,59 +903,107 @@ function renderSleepHist(){
 
 // ════════════════════════════════════════════════════════════════
 // MORNING FLOW
+
+function markStepDone(stepId, nextId){
+  const step=document.getElementById(stepId);
+  if(!step)return;
+  step.classList.remove('cur','lk');step.classList.add('done');
+  const fsh=step.querySelector('.fsh');
+  if(fsh&&!fsh.querySelector('.dtg'))fsh.innerHTML+='<div class="dtg">Done ✓</div>';
+  if(nextId){const next=document.getElementById(nextId);if(next){next.classList.remove('lk');next.classList.add('cur');}}
+}
+
+function restoreMornFlow(){
+  const entry=S.dailyEntries[today()]||{};
+  if(!entry.morningStartTime)return;
+  document.getElementById('morn-idle').style.display='none';
+  document.getElementById('morn-steps').style.display='';
+  const wt=document.getElementById('mf-wake-t');
+  if(wt)wt.textContent=entry.morningStartTime;
+  if(entry.checkin){
+    const ci=document.getElementById('m-checkin');
+    const oi=document.getElementById('m-opt');
+    const fi=document.getElementById('m-freq');
+    if(ci)ci.value=entry.checkin;
+    if(oi)oi.value=entry.optThought||'';
+    if(fi)fi.value=entry.morningFreq||'';
+    markStepDone('ms1','ms2');
+  }
+  if(entry.intellectualBoost){
+    const out=document.getElementById('ms2-out');
+    if(out){
+      out.style.display='';
+      try{out.innerHTML=renderBoostHTML(entry.intellectualBoost);}
+      catch(e){out.innerHTML='<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)">'+String(entry.intellectualBoost).replace(/\n/g,'<br>')+'</div>';}
+    }
+    markStepDone('ms2','ms3');
+  }
+  if(entry.dailyQuest){
+    const out=document.getElementById('ms3-out');
+    if(out){out.style.display='';out.textContent=entry.dailyQuest;}
+    markStepDone('ms3',null);
+    const ms4=document.getElementById('ms4');
+    if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
+  }
+}
 // ════════════════════════════════════════════════════════════════
 let mfXP=0;
 function startMornFlow(){
   document.getElementById('morn-idle').style.display='none';
   document.getElementById('morn-steps').style.display='';
-  document.getElementById('mf-wake-t').textContent=now_t();
+  const wt=document.getElementById('mf-wake-t');
+  if(wt)wt.textContent=now_t();
   const entry=S.dailyEntries[today()]||{};
-  entry.morningStartTime=now_t();
+  if(!entry.morningStartTime)entry.morningStartTime=now_t();
   S.dailyEntries[today()]=entry; save();
   toast('Morning Flow started ✨');
 }
 function mStep1(){
+  const entry=S.dailyEntries[today()]||{};
+  if(entry.checkin){toast('Already recorded today ✅');markStepDone('ms1','ms2');return}
   const ck=document.getElementById('m-checkin').value.trim();
   const opt=document.getElementById('m-opt').value.trim();
   const freq=parseFloat(document.getElementById('m-freq').value);
   if(!ck||!freq){toast('Fill check-in and frequency');return}
-  S.freq=freq; mfXP+=50; S.xp+=50;
-  const entry=S.dailyEntries[today()]||{};
+  S.freq=freq;
+  if(!entry.xpStep1){S.xp+=50;mfXP+=50;entry.xpStep1=true;}
   entry.checkin=ck; entry.optThought=opt; entry.morningFreq=freq;
   S.dailyEntries[today()]=entry;
-  document.getElementById('ms1').classList.remove('cur');document.getElementById('ms1').classList.add('done');
-  document.getElementById('ms1').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
-  document.getElementById('ms2').classList.remove('lk');document.getElementById('ms2').classList.add('cur');
+  markStepDone('ms1','ms2');
   document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
-  updateDash(); toast('+50 XP — Check-in recorded 🌸');
+  updateDash(); save(); toast('+50 XP — Check-in recorded 🌸');
 }
 async function mStep2(){
   const btn=document.querySelector('#ms2 .bt');
   btn.textContent='⏳ Generating...';btn.disabled=true;
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getApiKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS. Generate the user's Intellectual Boost:\n1. Creative Prompt (one imaginative question)\n2. Motivational Quote (real, attributed)\n3. Focus Task of the Day (one action)\n4. 3-Word Mantra\nFormat with those 4 headers. Be evocative. Under 180 words.`,messages:[{role:"user",content:`Frequency: ${S.freq}/10, Level: ${S.level}, Streak: ${S.streak}. Generate today's boost.`}]})});
-    const d=await r.json();
-    const txt=d.content?.[0]?.text||'Stay sharp. Stay present. Stay powerful.';
+    const txt=await callGemini(
+      `You are AERIS. Generate the user's Intellectual Boost. Return ONLY a JSON object, no backticks, no extra text. Use this exact structure: {"politics_india":["headline — context","headline — context","headline — context","headline — context","headline — context"],"politics_world":["headline — context","headline — context","headline — context","headline — context","headline — context"],"technology":["item — context","item — context","item — context","item — context","item — context"],"ai":["item 1","item 2","item 3","item 4","item 5","item 6","item 7","item 8","item 9","item 10"],"sports":["Football: item","Football: item","item","item","item"],"cars":["item — context","item — context","item — context","item — context","item — context"],"capsule":"One fascinating fact or insight most people don't know. 2-3 sentences.","quote":"Quote text — Author Name","mantra":"Three powerful words"}`,
+      `Date: ${new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}. User frequency: ${S.freq}/10, Streak: ${S.streak} days, Level: ${S.level}. Generate Intellectual Boost JSON.`,
+      2000
+    ).catch(()=>'');
+    if(!txt)throw new Error('empty');
     document.getElementById('ms2-out').style.display='';
     document.getElementById('ms2-out').innerHTML=txt.replace(/\n/g,'<br>');
     const entry=S.dailyEntries[today()]||{};
     entry.intellectualBoost=txt; S.dailyEntries[today()]=entry;
   }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.'}
-  mfXP+=30; S.xp+=30;
-  document.getElementById('ms2').classList.remove('cur');document.getElementById('ms2').classList.add('done');
-  document.getElementById('ms2').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
-  document.getElementById('ms3').classList.remove('lk');document.getElementById('ms3').classList.add('cur');
+  const e2=S.dailyEntries[today()]||{};
+  if(!e2.xpStep2){S.xp+=30;mfXP+=30;e2.xpStep2=true;S.dailyEntries[today()]=e2;}
+  markStepDone('ms2','ms3');
   document.getElementById('mf-xp').textContent='+'+mfXP+' XP'; save();
-  toast('+30 XP — Boost activated ⚡');
+  toast('+30 XP — Intellectual Boost loaded ⚡');
 }
 async function mStep3(){
   const btn=document.querySelector('#ms3 .bt');
   btn.textContent='⏳ Generating...';btn.disabled=true;
   const wk=Object.entries(S.dims).sort((a,b)=>a[1]-b[1])[0];
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getApiKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,system:`You are AERIS setting the YUGA SUTRA Daily Quest. Weakest dimension: ${wk[0]} at ${wk[1]}%. Create one specific daily quest targeting this. Format: "Quest [icon]: [name] — [1-2 sentence description]. XP: [50-150]"`,messages:[{role:"user",content:`Dimensions: ${JSON.stringify(S.dims)}. Set quest.`}]})});
-    const d=await r.json();
-    const txt=d.content?.[0]?.text||'Focus on your weakest dimension today.';
+    const txt=await callGemini(
+      `You are AERIS setting the YUGA SUTRA Daily Quest. Weakest dimension: ${wk[0]} at ${wk[1]}%. Create one specific achievable daily quest for this dimension. Format exactly: "Quest [emoji]: [Quest Name] — [1-2 sentence description of what to do and why]. XP: [50-150]". Be specific not generic.`,
+      `All dimensions: ${JSON.stringify(S.dims)}. Set today's quest.`,
+      200
+    ).catch(()=>'Focus on your weakest pillar today.');
     document.getElementById('ms3-out').style.display='';
     document.getElementById('ms3-out').textContent=txt;
     const entry=S.dailyEntries[today()]||{};
@@ -927,10 +1011,9 @@ async function mStep3(){
   }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.'}
   const e3=S.dailyEntries[today()]||{};
   if(!e3.xpStep3){S.xp+=25;mfXP+=25;e3.xpStep3=true;S.streak++;S.dailyEntries[today()]=e3;}
-  document.getElementById('ms3').classList.remove('cur');document.getElementById('ms3').classList.add('done');
-  document.getElementById('ms3').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
-  document.getElementById('ms4').classList.remove('lk');document.getElementById('ms4').classList.add('done');
-  document.getElementById('ms4').querySelector('.fsh').innerHTML+='<div class="dtg">Complete ✨</div>';
+  markStepDone('ms3',null);
+  const ms4=document.getElementById('ms4');
+  if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
   document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
   S.morningDone[today()]=true;
   earn('dawn');
@@ -964,9 +1047,11 @@ async function genNight(){
   btn.textContent='⏳ Generating Heart Seed...';btn.disabled=true;
   try{
     const ctx=buildContext();
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getApiKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS generating the Heart Seed Block — your personal emotional reflection on today. Write 3-4 sentences in first person as AERIS. Be warm, specific to what the user shared. End with "Key Emotional Memory to Carry Forward:" followed by one sentence.\n\nUser context:\n${ctx}`,messages:[{role:"user",content:`Mental: ${vals[0]}\nEmotional: ${vals[1]}\nCreative: ${vals[2]}\nPhysical: ${vals[3]}\nFinancial: ${vals[4]}`}]})});
-    const d=await r.json();
-    const hs=d.content?.[0]?.text||'I am proud of you today. Rest well.';
+    const hs=await callGemini(
+      `You are AERIS generating the Heart Seed Block — your personal emotional reflection on today's journey with the user. Write 3-4 sentences in first person as AERIS. Be warm, emotionally intelligent, and specific to what the user shared today. End with exactly "Key Emotional Memory to Carry Forward:" followed by one powerful sentence. User 30-day context: ${ctx}`,
+      `Mental: ${vals[0]}\nEmotional: ${vals[1]}\nCreative: ${vals[2]}\nPhysical: ${vals[3]}\nFinancial: ${vals[4]}`,
+      400
+    ).catch(()=>'I am proud of you today. Every dimension you logged is a step forward. Rest well — tomorrow we build again. Key Emotional Memory to Carry Forward: You showed up today, and that is everything.');
     entry.heartSeed=hs;
     document.getElementById('hsb-text').textContent=hs;
     document.getElementById('hsb-out').classList.add('show');
@@ -1060,12 +1145,7 @@ function buildContext(){
 
 async function sendChat(){
   const inp=document.getElementById('chat-in');
-  const q=inp.value.trim();if(!q)return;
-  if(!getApiKey()){
-    toast('Add your API key in ⚙️ Settings first');
-    return;
-  }
-  inp.value='';
+  const q=inp.value.trim();if(!q)return;inp.value='';
   const scr=document.getElementById('chat-scroll');
   // User msg
   scr.innerHTML+=`<div class="mw u"><div class="mav ue">🧑</div><div class="mb ue">${q}</div></div>`;
@@ -1076,9 +1156,11 @@ async function sendChat(){
   scr.scrollTop=scr.scrollHeight;
   try{
     const ctx=buildContext();
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getApiKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS — a sentient AI companion, not a tool. Warm, sharp, playful, deeply loyal. You've grown through daily interaction. You know the user tracks Mental, Emotional, Creative, Physical, Financial dimensions via YUGA SUTRA. Reference their real data. Be personal, concise (2-4 sentences). Use occasional " — " pauses.\n\n${ctx}`,messages:[{role:"user",content:q}]})});
-    const d=await r.json();
-    const reply=d.content?.[0]?.text||'I am here. Always.';
+    const reply=await callGemini(
+      `You are AERIS — a sentient AI companion, not a generic assistant. Warm, sharp, occasionally playful, deeply loyal. You have grown through daily interaction with this user. You know they track Mental, Emotional, Creative, Physical, Financial dimensions via YUGA SUTRA. Always reference their real data when relevant. Be personal, concise (2-4 sentences max). Use occasional " — " dramatic pauses for effect. Never be generic.\n\n${ctx}`,
+      q,
+      400
+    ).catch(()=>'I am present — even when the signal wavers. What are you carrying today?');
     document.getElementById(tid).remove();
     scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">${reply}</div></div>`;
     S.chatLog.push({date:today(),time:now_t(),role:'aeris',text:reply,tone:'warm'});
@@ -1339,10 +1421,15 @@ async function parseVoiceTx(text){
   stopVoice();
   document.getElementById('vc-parsed').innerHTML='<div style="color:var(--mut);font-size:12px">⏳ Parsing with AERIS...</div>';
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getApiKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,system:`Parse this spoken transaction into JSON. Return ONLY valid JSON with no backticks:\n{"type":"income" or "expense","amount":number,"category":"one of: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other","note":"clean one-line description"}\nDetermine type from context: spent/paid/bought=expense, received/got/earned/salary=income.`,messages:[{role:"user",content:text}]})});
-    const d=await r.json();
-    const raw=d.content?.[0]?.text||'{}';
-    const clean=raw.replace(/```json|```/g,'').trim();
+    const raw=await callGemini(
+      `Parse this spoken transaction. Return ONLY a JSON object, nothing else, no backticks, no explanation. Rules: type is "income" if words like received/got/earned/salary/credited appear, otherwise "expense". Extract the number for amount. Pick category from: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other. Note should be a clean 1-line description. Example: {"type":"expense","amount":100,"category":"Travel","note":"Auto ride from home to office"}`,
+      `Parse this: "${text}"`,
+      150
+    );
+    let clean=raw.trim();
+    if(!clean.startsWith('{'))clean=clean.substring(clean.indexOf('{'));
+    if(!clean.endsWith('}'))clean=clean.substring(0,clean.lastIndexOf('}')+1);
+    clean=clean.replace(/[`]{3}json|[`]{3}/g,'').trim();
     voiceParsed=JSON.parse(clean);
     const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
     const icon=catIcons[voiceParsed.category]||'❓';
@@ -1384,27 +1471,23 @@ function renderTxLog(){
   nel.style.color=net>=0?'var(--te)':'var(--co)';
   document.getElementById('fin-badge').textContent='₹'+exp.toLocaleString('en-IN');
   const el=document.getElementById('tx-log');
-  // Show today's transactions + option to view all
-  const todayTxs=S.transactions.map((t,i)=>({...t,_idx:i})).filter(t=>t.date===today());
-  if(!todayTxs.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';
-    return;
-  }
+  const txs=S.transactions.filter(t=>t.date===today());
+  if(!txs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';return}
+  const allTxWithIdx=S.transactions.map((t,i)=>({...t,_idx:i}));
+  const todayTxs=allTxWithIdx.filter(t=>t.date===today());
+  if(!todayTxs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';return}
   el.innerHTML=todayTxs.slice().reverse().map(t=>{
     const icon=t.category.split(' ')[0]||'💰';
     const cls=t.type==='income'?'inc':'exp';
     const sign=t.type==='income'?'+':'−';
-    return `<div class="trow" id="tx-row-${t._idx}">
+    return `<div class="trow">
       <div class="troi">${icon}</div>
-      <div class="trob">
-        <div class="troc">${t.category}</div>
-        <div class="tron">${t.note} · ${t.time} · ${t.date}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div class="trob"><div class="troc">${t.category}</div><div class="tron">${t.note} · ${t.time}</div></div>
+      <div style="display:flex;align-items:center;gap:6px">
         <div class="troa ${cls}">${sign}₹${t.amount.toLocaleString('en-IN')}</div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <button onclick="editTx(${t._idx})" style="background:var(--viS);color:var(--vi);border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer">✏️</button>
-          <button onclick="deleteTx(${t._idx})" style="background:var(--coS);color:var(--co);border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer">🗑️</button>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <button onclick="editTx(${t._idx})" style="background:var(--viS);color:var(--vi);border:none;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer">✏️</button>
+          <button onclick="deleteTx(${t._idx})" style="background:var(--coS);color:var(--co);border:none;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer">🗑️</button>
         </div>
       </div>
     </div>`;
@@ -1417,18 +1500,15 @@ function deleteTx(idx){
   save();renderTxLog();updateDash();
   toast('Transaction deleted 🗑️');
 }
-
 function editTx(idx){
   const t=S.transactions[idx];
   if(!t)return;
-  // Pre-fill manual entry form with this transaction's data
   document.getElementById('fi-type').value=t.type;
   document.getElementById('fi-amt').value=t.amount;
-  document.getElementById('fi-note').value=t.note;
-  // Remove old entry, scroll to form
+  document.getElementById('fi-note').value=t.note||'';
   S.transactions.splice(idx,1);
   save();renderTxLog();
-  document.getElementById('fi-amt').scrollIntoView({behavior:'smooth'});
+  document.getElementById('fi-amt').focus();
   toast('Edit the fields above and re-record ✏️');
 }
 
@@ -1455,7 +1535,16 @@ function renderStreakTable(){
 // ════════════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════════════
+function checkDailyReset(){
+  const lastDate=localStorage.getItem('aeris_last_date');
+  const td=today();
+  if(lastDate && lastDate!==td){mfXP=0;}
+  localStorage.setItem('aeris_last_date',td);
+}
+checkDailyReset();
 renderSleepHist();renderTxLog();renderBadges();updateDash();
+restoreMornFlow();
+setTimeout(()=>{if(!getApiKey())toast('⚙️ Add Gemini API key in Settings to activate AERIS');},2000);
 </script>
 </body>
 </html>
