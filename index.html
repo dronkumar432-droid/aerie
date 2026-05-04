@@ -959,6 +959,47 @@ function restoreMornFlow(){
     if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
   }
 }
+
+function renderBoostHTML(txt){
+  try{
+    var clean=txt.trim();
+    clean=clean.replace(/```json/g,'').replace(/```/g,'').trim();
+    var start=clean.indexOf('{');
+    var end=clean.lastIndexOf('}');
+    if(start===-1||end===-1)throw new Error('No JSON');
+    clean=clean.substring(start,end+1);
+    var data=JSON.parse(clean);
+    var sections=[
+      {key:'politics_india',label:'\ud83c\uddee\ud83c\uddf3 Indian Politics',bg:'#fff7ed',bc:'#fed7aa',tc:'#9a3412'},
+      {key:'politics_world',label:'\ud83c\udf0d World Politics',bg:'#fefce8',bc:'#fde68a',tc:'#92400e'},
+      {key:'technology',label:'\ud83d\udcbb Technology',bg:'#f0f9ff',bc:'#bae6fd',tc:'#0369a1'},
+      {key:'ai',label:'\ud83e\udd16 AI & Future',bg:'#faf5ff',bc:'#e9d5ff',tc:'#6d28d9'},
+      {key:'sports',label:'\u26bd Sports',bg:'#f0fdf4',bc:'#bbf7d0',tc:'#15803d'},
+      {key:'cars',label:'\ud83d\ude97 Cars',bg:'#fff1f2',bc:'#fecdd3',tc:'#be123c'},
+      {key:'capsule',label:'\ud83e\udde0 Knowledge Capsule',bg:'#f8fafc',bc:'#cbd5e1',tc:'#334155'},
+      {key:'quote',label:'\ud83d\udcac Quote of the Day',bg:'#ede9fe',bc:'#c4b5fd',tc:'#6d28d9'},
+      {key:'mantra',label:'\ud83d\udd2e Mantra',bg:'#fffbeb',bc:'#fcd34d',tc:'#b45309'}
+    ];
+    var html='';
+    sections.forEach(function(s){
+      if(!data[s.key])return;
+      var items=Array.isArray(data[s.key])?data[s.key]:[data[s.key]];
+      html+='<div style="background:'+s.bg+';border:1.5px solid '+s.bc+';border-radius:12px;padding:12px 14px;margin-bottom:10px">';
+      html+='<div style="font-size:11px;font-weight:700;color:'+s.tc+';letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">'+s.label+'</div>';
+      items.forEach(function(item,i){
+        var c=String(item).replace(/\*\*/g,'').replace(/\*/g,'').trim();
+        var border=i<items.length-1?';border-bottom:1px solid '+s.bc:'';
+        html+='<div style="font-size:13px;color:#3b3630;line-height:1.55;padding:5px 0'+border+'">'+String.fromCharCode(8226)+' '+c+'</div>';
+      });
+      html+='</div>';
+    });
+    return html||('<div style="padding:14px;font-size:13px;color:#3b3630">'+txt+'</div>');
+  }catch(ex){
+    var fb=txt.replace(/[{}"[\]]/g,' ').replace(/,"/g,'\n').replace(/\*\*/g,'').replace(/\*/g,'').trim();
+    return '<div style="background:#ede9fe;border-radius:12px;padding:14px;font-size:13px;line-height:1.7;color:#3b3630">'+fb+'</div>';
+  }
+}
+
 // ════════════════════════════════════════════════════════════════
 let mfXP=0;
 function startMornFlow(){
@@ -997,17 +1038,7 @@ async function mStep2(){
     ).catch(()=>'');
     if(!txt)throw new Error('empty');
     document.getElementById('ms2-out').style.display='';
-    // Try to parse as JSON for beautiful card rendering
-    let boostHTML = '';
-    try {
-      let cleanTxt = txt.trim();
-      // Strip markdown code blocks if present
-      cleanTxt = cleanTxt.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-      boostHTML = renderBoostHTML(cleanTxt);
-    } catch(e) {
-      boostHTML = '<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)">' + txt.replace(/\n/g,'<br>') + '</div>';
-    }
-    document.getElementById('ms2-out').innerHTML = boostHTML;
+    document.getElementById('ms2-out').innerHTML = renderBoostHTML(txt);
     const entry=S.dailyEntries[today()]||{};
     entry.intellectualBoost=txt; S.dailyEntries[today()]=entry;
   }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.';btn.textContent='⚡ Activate Intellectual Boost';btn.disabled=false;}
@@ -1044,7 +1075,7 @@ async function mStep3(){
       200
     ).catch(()=>'Focus on your weakest pillar today.');
     document.getElementById('ms3-out').style.display='';
-    document.getElementById('ms3-out').textContent=txt;
+    document.getElementById('ms3-out').textContent=txt.replace(/\*\*/g,'').replace(/\*/g,'').trim();
     const entry=S.dailyEntries[today()]||{};
     entry.dailyQuest=txt; S.dailyEntries[today()]=entry;
   }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.';btn.textContent='🎯 Generate Daily Quest';btn.disabled=false;}
@@ -1466,9 +1497,9 @@ async function parseVoiceTx(text){
       150
     );
     let clean=raw.trim();
-    if(!clean.startsWith('{'))clean=clean.substring(clean.indexOf('{'));
-    if(!clean.endsWith('}'))clean=clean.substring(0,clean.lastIndexOf('}')+1);
-    clean=clean.replace(/[`]{3}json|[`]{3}/g,'').trim();
+    clean=clean.replace(/```json/g,'').replace(/```/g,'').trim();
+    const vs=clean.indexOf('{');const ve=clean.lastIndexOf('}');
+    if(vs!==-1&&ve!==-1)clean=clean.substring(vs,ve+1);
     voiceParsed=JSON.parse(clean);
     const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
     const icon=catIcons[voiceParsed.category]||'❓';
