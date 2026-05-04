@@ -715,9 +715,22 @@ select.fi option{background:var(--w)}
 </div></div>
 </div>
 <div class="sp">
-<div class="sl">📊 Data</div>
+<div class="sl">📊 Data & Backup</div>
 <div class="cd"><div class="cdb">
-<button class="bt bst" onclick="exportAllData()" style="margin-bottom:10px;font-size:13px">📥 Export All Data</button>
+<div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">Daily exports (.txt) are your permanent memory backup. Import them anytime to restore AERIS context.</div>
+
+<div style="font-size:11px;font-weight:700;color:var(--te);letter-spacing:.8px;margin-bottom:8px">EXPORT</div>
+<button class="bt bst" onclick="exportAllData()" style="margin-bottom:10px;font-size:13px">📥 Export Full App Data (JSON)</button>
+<button class="bt bst" onclick="downloadLastExport()" style="margin-bottom:14px;font-size:13px;background:var(--tsoft);color:var(--te);box-shadow:none">📋 Re-download Last Day Export</button>
+
+<div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+<div style="font-size:11px;font-weight:700;color:var(--vi);letter-spacing:.8px;margin-bottom:8px">IMPORT BACKUP</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:10px">Upload a previously exported .txt or .json file to restore sessions into AERIS memory.</div>
+<button class="bt bsv" onclick="importBackup()" style="margin-bottom:10px;font-size:13px">📂 Import Backup File</button>
+<div id="import-status" style="font-size:12px;text-align:center;color:var(--te);margin-bottom:14px"></div>
+
+<div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+<div style="font-size:11px;font-weight:700;color:var(--am);letter-spacing:.8px;margin-bottom:8px">RESET</div>
 <button class="bt" onclick="clearTodayMorning()" style="background:var(--amS);color:var(--am);box-shadow:none;margin-bottom:10px;font-size:13px">🔄 Reset Today Morning Flow</button>
 <button class="bt" onclick="confirmClearAll()" style="background:var(--coS);color:var(--co);box-shadow:none;font-size:13px">🗑️ Clear All Data</button>
 </div></div>
@@ -994,26 +1007,117 @@ function importBackup(){
   input.type='file';input.accept='.json,.txt';
   input.onchange=e=>{
     const file=e.target.files[0];if(!file)return;
+    const statusEl=document.getElementById('import-status');
+    if(statusEl)statusEl.textContent='Reading file...';
     const reader=new FileReader();
     reader.onload=ev=>{
+      const raw=ev.target.result;
       try{
-        const data=JSON.parse(ev.target.result);
-        if(data.sessions||data.currentSession||data.xp){
-          // Merge imported sessions
-          if(data.sessions&&Array.isArray(data.sessions)){
-            data.sessions.forEach(sess=>{
-              if(!S.sessions.find(s=>s.id===sess.id))S.sessions.push(sess);
-            });
+        // Try JSON first (full app backup)
+        const data=JSON.parse(raw);
+        let imported=0;
+        if(data.sessions&&Array.isArray(data.sessions)){
+          data.sessions.forEach(sess=>{
+            if(!S.sessions.find(s=>s.id===sess.id)){S.sessions.push(sess);imported++;}
+          });
+        }
+        // Also restore XP/streak/dims if they are higher (take best)
+        if(data.xp&&data.xp>S.xp)S.xp=data.xp;
+        if(data.streak&&data.streak>S.streak)S.streak=data.streak;
+        save();updateDash();
+        const msg='✅ Imported '+imported+' session(s) from JSON backup';
+        if(statusEl)statusEl.textContent=msg;
+        toast(msg);
+      }catch(jsonErr){
+        // Try parsing as .txt AERIS day record
+        try{
+          const parsed=parseTxtBackup(raw);
+          if(parsed){
+            if(!S.sessions.find(s=>s.id===parsed.id))S.sessions.push(parsed);
+            save();updateDash();
+            const msg='✅ Day record imported: '+parsed.gmDate;
+            if(statusEl)statusEl.textContent=msg;
+            toast(msg);
+          } else {
+            const msg='❌ Could not parse file — check format';
+            if(statusEl)statusEl.textContent=msg;
+            toast(msg);
           }
-          save();
-          toast('Backup imported ✅');
-          updateDash();
-        } else {toast('Invalid backup file format');}
-      }catch(err){toast('Could not read file — check format');}
+        }catch(txtErr){
+          const msg='❌ Could not read file';
+          if(statusEl)statusEl.textContent=msg;
+          toast(msg);
+        }
+      }
     };
     reader.readAsText(file);
   };
   input.click();
+}
+
+function parseTxtBackup(txt){
+  if(!txt.includes('[AERIS-DAY-RECORD]'))return null;
+  // Simple line-based parser - no regex
+  function getVal(key){
+    const lines=txt.split('\n');
+    const line=lines.find(function(l){return l.startsWith(key+':');});
+    return line?line.substring(key.length+1).trim():null;
+  }
+  function getBlock(key){
+    const start=txt.indexOf('['+key+']');
+    const end=txt.indexOf('[/'+key+']');
+    if(start===-1||end===-1)return null;
+    return txt.substring(start+key.length+2,end).trim();
+  }
+  function getDimension(yugas,dim,nextDim){
+    const start=yugas.indexOf(dim+':');
+    if(start===-1)return null;
+    const after=yugas.substring(start+dim.length+1);
+    const end=nextDim?after.indexOf(nextDim+':'):after.length;
+    return after.substring(0,end===-1?after.length:end).trim();
+  }
+  const sessId=getVal('SESSION-ID')||'imported_'+Date.now();
+  const gmDate=getVal('DATE')||'Unknown';
+  const yugas=getBlock('YUGA-SUTRA')||'';
+  const heartSeed=getBlock('HEART-SEED-BLOCK')||null;
+  const sess={
+    id:sessId,status:'sealed',
+    gmDate:gmDate,
+    gmTimeStr:getVal('DAY-START')||'—',
+    gnTimeStr:getVal('DAY-END')||'—',
+    gmTime:Date.now(),
+    nightFlowComplete:true,
+    heartSeed:heartSeed,
+    morningFlow:{
+      checkin:getVal('CHECKIN'),
+      optThought:getVal('OPTIMISTIC-THOUGHT'),
+      freq:parseFloat(getVal('FREQ-MORNING'))||0,
+      intellectualBoost:getVal('INTELLECTUAL-BOOST'),
+      dailyQuest:getVal('DAILY-QUEST'),
+    },
+    nightFlow:{
+      mental:getDimension(yugas,'MENTAL','EMOTIONAL'),
+      emotional:getDimension(yugas,'EMOTIONAL','CREATIVE'),
+      creative:getDimension(yugas,'CREATIVE','PHYSICAL'),
+      physical:getDimension(yugas,'PHYSICAL','FINANCIAL'),
+      financial:getDimension(yugas,'FINANCIAL',null),
+      freq:parseFloat(getVal('FREQ-EVENING'))||0,
+    },
+    chats:[],transactions:[],tfSessions:[],naps:[],
+  };
+  return sess;
+}
+
+function downloadLastExport(){
+  const text=window._lastExport||localStorage.getItem('aeris_last_export');
+  if(!text){toast('No export found — seal a day first');return}
+  const blob=new Blob([text],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='AERIS-last-export.txt';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Last export downloaded 📥');
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1264,12 +1368,16 @@ function sealSession(sess){
   dimKeys.forEach(k=>{if(nf[k]){S.dims[k]=Math.min(100,S.dims[k]+15);S.dimStreaks[k]++;}});
   earn('spartan');
   save();
-  // Generate export
+  // Generate export and store persistently
   const exportText=generateExportText(sess);
+  window._lastExport=exportText;
+  localStorage.setItem('aeris_last_export',exportText);
   showDayComplete(sess,exportText);
+  // Auto-trigger download
+  setTimeout(()=>downloadExport(sess.gmDate||new Date().toISOString().slice(0,10)),800);
   renderSleepTab();
   updateDash();
-  toast('Day sealed! Rest well 🌙 +100 XP');
+  toast('Day sealed! Downloading export 🌙 +100 XP');
 }
 
 function sealSessionOffline(sess){
@@ -1323,31 +1431,45 @@ function generateExportText(sess){
 }
 
 function showDayComplete(sess,exportText){
-  // Show on sleep tab
   const todayLog=document.getElementById('sleep-today-log');
-  if(todayLog){
-    todayLog.innerHTML=`
-    <div style="text-align:center;padding:16px">
-      <div style="font-size:40px;margin-bottom:10px">🌙</div>
-      <div style="font-family:'Noto Serif Display',serif;font-size:18px;font-weight:700;color:var(--vi);margin-bottom:6px">Day Sealed</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">${sess.gmDate}</div>
-      ${sess.heartSeed?'<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:13px;line-height:1.7;color:var(--ink2);text-align:left;margin-bottom:14px">💜 <strong>AERIS:</strong> '+sess.heartSeed+'</div>':''}
-      <button class="bt bsk" onclick="downloadExport()" style="font-size:13px">📥 Download Day Export</button>
+  if(!todayLog)return;
+  const nf=sess.nightFlow||{};
+  todayLog.innerHTML=`
+    <div style="text-align:center;padding:20px 16px">
+      <div style="font-size:48px;margin-bottom:12px">🌙</div>
+      <div style="font-family:'Noto Serif Display',serif;font-size:20px;font-weight:700;color:var(--vi);margin-bottom:4px">Day Sealed</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">${sess.gmDate} · ${sess.gmTimeStr} → ${sess.gnTimeStr||''}</div>
+      ${sess.heartSeed&&!sess.offlineGenerated?`<div style="background:var(--viS);border:1.5px solid var(--viM);border-radius:12px;padding:14px;font-size:13px;line-height:1.7;color:var(--ink2);text-align:left;margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--vi);letter-spacing:.8px;margin-bottom:6px">💜 AERIS — HEART SEED BLOCK</div>${sess.heartSeed}</div>`:''}
+      <div style="background:var(--tsoft);border:1.5px solid var(--tmid);border-radius:12px;padding:14px;margin-bottom:14px;text-align:left">
+        <div style="font-size:11px;font-weight:700;color:var(--te);letter-spacing:.8px;margin-bottom:8px">📊 DAY SUMMARY</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.8">
+          ☀️ Wake: ${sess.gmTimeStr}<br>
+          🌙 Sleep: ${sess.gnTimeStr||'—'}<br>
+          💤 Naps: ${(sess.naps||[]).filter(n=>n.end).length}<br>
+          💪 Workouts: ${(sess.tfSessions||[]).length}<br>
+          💰 Transactions: ${(sess.transactions||[]).length}<br>
+          💬 Chats: ${(sess.chats||[]).length}
+        </div>
+      </div>
+      <button class="bt bsk" onclick="downloadExport('${sess.gmDate||new Date().toISOString().slice(0,10)}')" style="margin-bottom:10px">📥 Download Day Export</button>
+      <button class="bt bsv" onclick="downloadExport('${sess.gmDate||new Date().toISOString().slice(0,10)}')" style="font-size:13px">📋 Download Again</button>
     </div>`;
-    // Store export text temporarily
-    window._lastExport=exportText;
-  }
 }
 
-function downloadExport(){
-  const text=window._lastExport||'No export available';
+
+function downloadExport(dateLabel){
+  // Try window cache first, then localStorage, then latest sealed session
+  const text=window._lastExport||localStorage.getItem('aeris_last_export')||'No export available';
   const blob=new Blob([text],{type:'text/plain'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;
-  const dateStr=new Date().toISOString().slice(0,10);
-  a.download='AERIS-'+dateStr+'.txt';
-  a.click();URL.revokeObjectURL(url);
+  const label=dateLabel||new Date().toISOString().slice(0,10);
+  a.download='AERIS-'+label+'.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
   toast('Day exported 📥');
 }
 
