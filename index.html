@@ -310,6 +310,104 @@ select.fi option{background:var(--w)}
 .mt{margin-top:10px}
 .empty{text-align:center;padding:24px 16px;color:var(--mut);font-size:13px}
 .empty-icon{font-size:32px;margin-bottom:8px}
+
+/* ── SESSION LOCK SCREEN ── */
+.session-lock {
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 30px;text-align:center;min-height:60vh;
+}
+.lock-icon{font-size:56px;margin-bottom:16px}
+.lock-title{font-family:'Noto Serif Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.lock-sub{font-size:14px;color:var(--muted2);line-height:1.6;margin-bottom:24px}
+
+/* ── MORE TRAY ── */
+.more-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:150;
+  display:none;align-items:flex-end;justify-content:center;
+}
+.more-overlay.open{display:flex}
+.more-tray{
+  background:var(--white);border-radius:24px 24px 0 0;
+  padding:16px 20px max(24px,env(safe-area-inset-bottom));
+  width:100%;max-width:430px;
+  box-shadow:0 -4px 30px rgba(0,0,0,0.12);
+}
+.more-handle{width:36px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 16px}
+.more-title{font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;text-align:center}
+.more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.more-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 8px;border-radius:14px;cursor:pointer;
+  background:var(--bg);border:1.5px solid var(--border);
+  transition:.15s;
+}
+.more-item:active{transform:scale(.95)}
+.more-item-icon{font-size:26px}
+.more-item-label{font-size:11px;font-weight:700;color:var(--ink2)}
+
+/* ── SLEEP CYCLE REDESIGN ── */
+.sleep-main-btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.sleep-main-btn{
+  border-radius:var(--r);padding:22px 12px;text-align:center;
+  cursor:pointer;border:2px solid var(--border);background:var(--white);
+  box-shadow:var(--sh);transition:.15s;font-family:'Noto Sans',sans-serif;
+}
+.sleep-main-btn:active{transform:scale(.96)}
+.sleep-main-btn.gm-btn{border-color:var(--go);background:#fffbf0}
+.sleep-main-btn.gn-btn{border-color:var(--vi);background:#faf8ff}
+.sleep-main-btn.grey{opacity:.45;pointer-events:none;filter:grayscale(.8)}
+.sleep-main-btn.locked{opacity:.35;pointer-events:none}
+.sleep-main-btn.active-gn{border-color:var(--te);background:var(--teS)}
+.smb-icon{font-size:36px;margin-bottom:8px}
+.smb-label{font-size:14px;font-weight:700;margin-bottom:2px}
+.smb-time{font-size:11px;color:var(--muted);font-weight:500}
+
+/* NAP BUTTONS */
+.nap-section{margin-bottom:14px}
+.nap-btn{
+  width:100%;padding:13px 16px;border-radius:var(--rs);border:none;
+  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-bottom:8px;transition:.12s;
+}
+.nap-btn:active{transform:scale(.97)}
+.nap-start{background:var(--skysoft);color:var(--sky);border:1.5px solid #bae6fd}
+.nap-end{background:var(--tsoft);color:var(--te);border:1.5px solid var(--tmid)}
+
+/* GOODNIGHT LOCKED */
+.gn-locked-msg{
+  background:var(--bg2);border-radius:var(--rs);padding:12px 16px;
+  font-size:12px;color:var(--muted);text-align:center;margin-top:8px;
+  border:1px solid var(--border);
+}
+
+/* SLEEP SUMMARY */
+.sleep-sum-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.sleep-sum-row:last-child{border-bottom:none}
+
+/* BADGES MODAL */
+.modal-overlay2{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;
+  display:none;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay2.open{display:flex}
+.modal-sheet{
+  background:var(--white);border-radius:24px 24px 0 0;
+  width:100%;max-width:430px;
+  max-height:80dvh;overflow-y:auto;
+  padding:16px 20px max(24px,env(safe-area-inset-bottom));
+}
+.modal-sheet::-webkit-scrollbar{display:none}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 14px}
+
+/* NIGHT FLOW LOCK */
+.nf-lock{
+  background:var(--amS);border:1.5px solid var(--amid);border-radius:var(--rs);
+  padding:12px 16px;font-size:12px;color:var(--am);text-align:center;
+  margin-top:12px;font-weight:600;
+}
+.nf-complete .bt.bvi{background:var(--te)!important}
 </style>
 </head>
 <body>
@@ -334,7 +432,7 @@ select.fi option{background:var(--w)}
 <div class="sr">
 <div class="sc"><div class="si">⚡</div><div class="sv" style="color:var(--vi)" id="d-xp">0</div><div class="scl">XP</div></div>
 <div class="sc"><div class="si">🔥</div><div class="sv" style="color:var(--am)" id="d-streak">0</div><div class="scl">Streak</div></div>
-<div class="sc"><div class="si">🏅</div><div class="sv" style="color:var(--co)" id="d-badges">0</div><div class="scl">Badges</div></div>
+<div class="sc" onclick="openBadgesModal()" style="cursor:pointer"><div class="si">🏅</div><div class="sv" style="color:var(--co)" id="d-badges">0</div><div class="scl">Badges ›</div></div>
 <div class="sc"><div class="si">💪</div><div class="sv" style="color:var(--te)" id="d-wk">0</div><div class="scl">Forge</div></div>
 </div>
 </div>
@@ -364,34 +462,50 @@ select.fi option{background:var(--w)}
 
 <!-- ═══════ SLEEP ═══════ -->
 <div class="pg" id="pg-sleep">
-<div class="ph"><div class="pt">😴 Sleep</div><div class="pb">+30 XP</div></div>
-<div class="sp">
-<div class="sld">
-<div class="slb ni2" id="sl-night-btn" onclick="tapSleepNight()">
-<div class="slbi">🌙</div>
-<div class="slbl">Good Night</div>
-<div class="slbt" id="sl-nt">Tap to start sleep</div>
+<div class="ph"><div class="pt">😴 Sleep Cycle</div><div class="pb" id="sleep-session-badge">Day Hub</div></div>
+
+<div class="sp" style="margin-top:16px">
+<div class="sleep-main-btns">
+<div class="sleep-main-btn gm-btn" id="sl-gm-btn" onclick="tapGoodMorning()">
+<div class="smb-icon">☀️</div>
+<div class="smb-label">Good Morning</div>
+<div class="smb-time" id="sl-gm-time">Tap to start your day</div>
 </div>
-<div class="slb mo" id="sl-morn-btn" onclick="tapSleepMorning()">
-<div class="slbi">☀️</div>
-<div class="slbl">Good Morning</div>
-<div class="slbt" id="sl-mt">Tap when you wake</div>
+<div class="sleep-main-btn gn-btn locked" id="sl-gn-btn" onclick="tapGoodNight()">
+<div class="smb-icon">🌙</div>
+<div class="smb-label">Good Night</div>
+<div class="smb-time" id="sl-gn-time">Complete night flow first</div>
 </div>
 </div>
+<div class="gn-locked-msg" id="gn-locked-msg">🌙 Fill all 5 Night Flow dimensions to unlock Good Night</div>
 </div>
+
+<div class="sp" id="nap-section" style="display:none">
+<div class="sl">Mid-Day Sleep</div>
+<div id="nap-buttons"></div>
+</div>
+
 <div class="sp">
 <div class="cd"><div class="cdb">
-<div style="font-size:11px;font-weight:700;color:var(--mut);margin-bottom:8px">⚙️ FORGOT TO TAP? EDIT MANUALLY</div>
+<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:10px">⚙️ MANUAL TIME OVERRIDE</div>
 <div class="frow">
-<div class="fg"><div class="fl">Sleep time</div><input class="fi" type="time" id="man-sleep"></div>
 <div class="fg"><div class="fl">Wake time</div><input class="fi" type="time" id="man-wake"></div>
+<div class="fg"><div class="fl">Sleep time</div><input class="fi" type="time" id="man-sleep"></div>
 </div>
-<button class="bt bsv" onclick="saveManualSleep()" style="padding:11px 16px;font-size:13px">✅ Save Manual Entry</button>
+<button class="bt bsv" onclick="saveManualSleep()" style="padding:11px 16px;font-size:13px;margin-top:8px">✅ Save Manual Times</button>
 </div></div>
 </div>
-<div class="sp"><div class="sl">Sleep History</div>
+
+<div class="sp">
+<div class="sl">Today's Sleep Log</div>
+<div class="cd"><div class="cdb" id="sleep-today-log">
+<div class="empty"><div class="empty-icon">☀️</div>Start your day with Good Morning</div>
+</div></div>
+</div>
+
+<div class="sp"><div class="sl">Past Cycles</div>
 <div class="cd"><div class="cdb" id="sleep-hist">
-<div class="empty"><div class="empty-icon">🌙</div>No sleep cycles yet</div>
+<div class="empty"><div class="empty-icon">🌙</div>No completed cycles yet</div>
 </div></div>
 </div>
 </div>
@@ -444,15 +558,17 @@ select.fi option{background:var(--w)}
 <div class="pg" id="pg-night">
 <div class="ph"><div class="pt">🌙 Night Flow</div><div class="pb">+100 XP</div></div>
 <div class="sp">
-<div class="cd"><div class="cdb"><div class="fg"><div class="fl">🧠 MENTAL — Key insights, challenges, wins</div><textarea class="fi fta" rows="3" id="n-mental" placeholder="What did your mind work through today?"></textarea></div></div></div>
-<div class="cd"><div class="cdb"><div class="fg"><div class="fl">❤️ EMOTIONAL — Feelings, stability, breakthroughs</div><textarea class="fi fta" rows="3" id="n-emo" placeholder="What moved through you today?"></textarea></div></div></div>
-<div class="cd"><div class="cdb"><div class="fg"><div class="fl">✨ CREATIVE — Output, inspiration, blocks</div><textarea class="fi fta" rows="3" id="n-cre" placeholder="What did you create or imagine?"></textarea></div></div></div>
-<div class="cd"><div class="cdb"><div class="fg"><div class="fl">💪 PHYSICAL — Strength, fatigue, training</div><textarea class="fi fta" rows="3" id="n-phy" placeholder="How did your body perform?"></textarea></div></div></div>
-<div class="cd"><div class="cdb"><div class="fg"><div class="fl">💰 FINANCIAL — Decisions, spending, income</div><textarea class="fi fta" rows="3" id="n-fin" placeholder="What happened with your money?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">🧠 MENTAL — Key insights, challenges, wins</div><textarea class="fi fta" rows="3" id="n-mental" oninput="checkNightFlowComplete()" placeholder="What did your mind work through today?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">❤️ EMOTIONAL — Feelings, stability, breakthroughs</div><textarea class="fi fta" rows="3" id="n-emo" oninput="checkNightFlowComplete()" placeholder="What moved through you today?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">✨ CREATIVE — Output, inspiration, blocks</div><textarea class="fi fta" rows="3" id="n-cre" oninput="checkNightFlowComplete()" placeholder="What did you create or imagine?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">💪 PHYSICAL — Strength, fatigue, training</div><textarea class="fi fta" rows="3" id="n-phy" oninput="checkNightFlowComplete()" placeholder="How did your body perform?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">💰 FINANCIAL — Decisions, spending, income</div><textarea class="fi fta" rows="3" id="n-fin" oninput="checkNightFlowComplete()" placeholder="What happened with your money?"></textarea></div></div></div>
 <div class="cd"><div class="cdb">
-<div class="fg"><div class="fl">🌊 Evening Frequency (1–10)</div><input class="fi" type="number" min="1" max="10" step="0.5" id="n-freq" placeholder="e.g. 8.0"></div>
+<div class="fg"><div class="fl">🌊 Evening Frequency (1–10)</div><input class="fi" type="number" min="1" max="10" step="0.5" id="n-freq" oninput="checkNightFlowComplete()" placeholder="e.g. 8.0"></div>
 </div></div>
-<button class="bt bvi mt" onclick="genNight()">🌙 Generate Night Backup + AERIS Reflection</button>
+<div id="nf-status-msg" class="nf-lock" style="display:none">Fill all 5 dimensions above to complete Night Flow</div>
+<button class="bt bvi mt" id="nf-generate-btn" onclick="genNight()" style="display:none">🌙 Complete Night Flow</button>
+<div id="nf-complete-badge" style="display:none;background:var(--teS);border:1.5px solid var(--tmid);border-radius:var(--rs);padding:12px 16px;text-align:center;font-size:13px;font-weight:700;color:var(--te);margin-top:12px">✅ Night Flow Complete — Go to Sleep tab to seal your day</div>
 <div class="hsb" id="hsb-out">
 <div class="hsb-title">💜 Heart Seed Block — AERIS</div>
 <div class="hsb-text" id="hsb-text"></div>
@@ -574,7 +690,7 @@ select.fi option{background:var(--w)}
 </div>
 
 <!-- ═══════ BADGES ═══════ -->
-<div class="pg" id="pg-badges">
+<div class="pg" id="pg-badges" style="display:none">
 <div class="ph"><div class="pt">🏆 Badges</div><div class="pb" id="bg-count">0 earned</div></div>
 <div class="sp"><div class="bdg" id="badges-grid"></div></div>
 <div class="sp"><div class="sl">Dimension Streaks</div>
@@ -632,67 +748,179 @@ select.fi option{background:var(--w)}
 </div>
 
 <div class="bn">
-<button class="nb a" onclick="nav('dash',this)"><div class="ni">🏠</div><div class="nl">Home</div></button>
-<button class="nb" onclick="nav('sleep',this)"><div class="ni">😴</div><div class="nl">Sleep</div></button>
-<button class="nb" onclick="nav('morn',this)"><div class="ni">🌅</div><div class="nl">Morning</div></button>
-<button class="nb" onclick="nav('night',this)"><div class="ni">🌙</div><div class="nl">Night</div></button>
-<button class="nb" onclick="nav('chat',this)"><div class="ni">💬</div><div class="nl">AERIS</div></button>
-<button class="nb" onclick="nav('titan',this)"><div class="ni">💪</div><div class="nl">Forge</div></button>
-<button class="nb" onclick="nav('fin',this)"><div class="ni">💰</div><div class="nl">Money</div></button>
-<button class="nb" onclick="nav('settings',this)"><div class="ni">⚙️</div><div class="nl">Settings</div></button>
+<button class="nb a" onclick="nav('dash',this)" id="nb-dash"><div class="ni">🏠</div><div class="nl">Home</div></button>
+<button class="nb" onclick="nav('sleep',this)" id="nb-sleep"><div class="ni">😴</div><div class="nl">Sleep</div></button>
+<button class="nb" onclick="openMoreTray()" id="nb-more"><div class="ni">⊞</div><div class="nl">More</div></button>
+<button class="nb" onclick="nav('settings',this)" id="nb-settings"><div class="ni">⚙️</div><div class="nl">Settings</div></button>
+</div>
+
+<!-- MORE TRAY -->
+<div class="more-overlay" id="more-overlay" onclick="closeMoreTray(event)">
+<div class="more-tray">
+<div class="more-handle"></div>
+<div class="more-title">Navigate</div>
+<div class="more-grid">
+<div class="more-item" onclick="navFromMore('morn')"><div class="more-item-icon">🌅</div><div class="more-item-label">Morning</div></div>
+<div class="more-item" onclick="navFromMore('night')"><div class="more-item-icon">🌙</div><div class="more-item-label">Night Flow</div></div>
+<div class="more-item" onclick="navFromMore('chat')"><div class="more-item-icon">💬</div><div class="more-item-label">AERIS</div></div>
+<div class="more-item" onclick="navFromMore('titan')"><div class="more-item-icon">💪</div><div class="more-item-label">TitanForge</div></div>
+<div class="more-item" onclick="navFromMore('fin')"><div class="more-item-icon">💰</div><div class="more-item-label">Finance</div></div>
+<div class="more-item" onclick="openBadgesModal()"><div class="more-item-icon">🏆</div><div class="more-item-label">Badges</div></div>
+</div>
+</div>
+</div>
+
+<!-- BADGES MODAL -->
+<div class="modal-overlay2" id="badges-modal" onclick="closeBadgesModal(event)">
+<div class="modal-sheet">
+<div class="modal-handle"></div>
+<div style="font-family:'Noto Serif Display',serif;font-size:20px;font-weight:700;margin-bottom:16px">🏆 Your Badges</div>
+<div class="bdg" id="badges-modal-grid"></div>
+<div style="margin-top:20px"><div class="sl">Dimension Streaks</div>
+<div class="cd"><div class="cdb" id="streak-table-modal"></div></div></div>
+</div>
 </div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
 // ════════════════════════════════════════════════════════════════
-// STATE
+// AERIS — SESSION-BASED ARCHITECTURE v5.0
+// Day = Good Morning → Good Night (not calendar midnight)
 // ════════════════════════════════════════════════════════════════
-const today=()=>new Date().toISOString().slice(0,10);
-const now_t=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+
+const fmtTime = () => new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+const fmtDate = () => new Date().toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'});
+const sessionKey = (ts) => 'session_' + new Date(ts).toISOString().slice(0,10);
+
+// ── STATE ──
 const LEVELS=[{x:0,n:'Apprentice'},{x:500,n:'Rising Warrior'},{x:1000,n:'Achiever'},{x:2000,n:'Master of Habits'},{x:3500,n:'Champion'},{x:5000,n:'Legendary Hero'}];
 const DIMS=[{k:'mental',i:'🧠',n:'Mental',c:'#6d28d9'},{k:'emotional',i:'❤️',n:'Emotional',c:'#e11d48'},{k:'creative',i:'✨',n:'Creative',c:'#d97706'},{k:'physical',i:'💪',n:'Physical',c:'#0f766e'},{k:'financial',i:'💰',n:'Financial',c:'#65a30d'}];
 const BADGES_DEF=[
-{id:'dawn',i:'☀️',n:'Dawn Rider',d:'Complete first morning flow'},
-{id:'mind',i:'🧠',n:'Mindblade',d:'Mental dimension logged'},
-{id:'heart',i:'❤️',n:'Heartshield',d:'Emotional dimension logged'},
-{id:'spark',i:'✨',n:'Sparkcore',d:'Creative dimension logged'},
-{id:'iron',i:'💪',n:'Ironpulse',d:'TitanForge completed'},
-{id:'gold',i:'💰',n:'Goldgrind',d:'Financial entry logged'},
-{id:'spartan',i:'🛡️',n:'Spartan Circle',d:'All 5 dimensions logged'},
-{id:'s7',i:'🔥',n:'Disciple',d:'7-day streak'},
-{id:'s21',i:'🌟',n:'Adept',d:'21-day streak'},
-{id:'t3',i:'⚡',n:'Iron Forge',d:'3 TitanForge sessions'},
-{id:'sleepk',i:'😴',n:'Sleep King',d:'5 sleep cycles logged'},
-{id:'voice',i:'🎤',n:'Voice Lord',d:'First voice transaction'},
+  {id:'dawn',i:'☀️',n:'Dawn Rider',d:'Complete first morning flow',earned:false},
+  {id:'mind',i:'🧠',n:'Mindblade',d:'Mental logged',earned:false},
+  {id:'heart',i:'❤️',n:'Heartshield',d:'Emotional logged',earned:false},
+  {id:'spark',i:'✨',n:'Sparkcore',d:'Creative logged',earned:false},
+  {id:'iron',i:'💪',n:'Ironpulse',d:'TitanForge completed',earned:false},
+  {id:'gold',i:'💰',n:'Goldgrind',d:'Finance entry logged',earned:false},
+  {id:'spartan',i:'🛡️',n:'Spartan Circle',d:'All 5 dims logged',earned:false},
+  {id:'s7',i:'🔥',n:'Disciple',d:'7-day streak',earned:false},
+  {id:'s21',i:'🌟',n:'Adept',d:'21-day streak',earned:false},
+  {id:'t3',i:'⚡',n:'Iron Forge',d:'3 TitanForge sessions',earned:false},
+  {id:'sleepk',i:'😴',n:'Sleep King',d:'5 sleep cycles',earned:false},
+  {id:'voice',i:'🎤',n:'Voice Lord',d:'First voice transaction',earned:false},
 ];
-let S;
 
-// ════════════════════════════════════════════════════════════════
-// GEMINI API HELPER
-// ════════════════════════════════════════════════════════════════
+let S;
+function loadState(){
+  try{S=JSON.parse(localStorage.getItem('aeris_v5'))||{}}catch(e){S={}}
+  S.xp=S.xp||0; S.level=S.level||1; S.streak=S.streak||0;
+  S.freq=S.freq||0; S.workouts=S.workouts||0;
+  S.dims=S.dims||{mental:0,emotional:0,creative:0,physical:0,financial:0};
+  S.dimStreaks=S.dimStreaks||{mental:0,emotional:0,creative:0,physical:0,financial:0};
+  S.badges=S.badges||BADGES_DEF.map(b=>({...b}));
+  S.sessions=S.sessions||[];        // completed sealed sessions
+  S.currentSession=S.currentSession||null; // open session or null
+  S.chatLog=S.chatLog||[];
+  S.transactions=S.transactions||[];
+  S.tfSessions=S.tfSessions||[];
+  S.sleepHistory=S.sleepHistory||[];
+  if(S.badges.length<BADGES_DEF.length){
+    BADGES_DEF.forEach(bd=>{if(!S.badges.find(b=>b.id===bd.id))S.badges.push({...bd});});
+  }
+}
+function save(){localStorage.setItem('aeris_v5',JSON.stringify(S))}
+loadState();
+
+// ── SESSION HELPERS ──
+function hasOpenSession(){return !!S.currentSession && S.currentSession.status==='open'}
+function isSessionSealed(){return !hasOpenSession()}
+function getSession(){return S.currentSession}
+function sessionDateLabel(){
+  if(!S.currentSession)return '—';
+  return new Date(S.currentSession.gmTime).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+}
+
+// ── NAV ──
+function nav(pg, btn){
+  // Check session lock for protected pages
+  const locked=['morn','night','chat','titan','fin'];
+  if(locked.includes(pg) && isSessionSealed()){
+    showLockScreen(pg);
+    return;
+  }
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('a'));
+  document.getElementById('pg-chat').classList.remove('a');
+  document.getElementById('main-pw').style.display='';
+  if(pg==='chat'){
+    document.getElementById('main-pw').style.display='none';
+    document.getElementById('pg-chat').classList.add('a');
+    setTimeout(()=>{const s=document.getElementById('chat-scroll');if(s)s.scrollTop=s.scrollHeight},50);
+  } else {
+    const el=document.getElementById('pg-'+pg);
+    if(el)el.classList.add('a');
+  }
+  document.querySelectorAll('.nb').forEach(n=>n.classList.remove('a'));
+  if(btn)btn.classList.add('a');
+  if(pg==='dash')updateDash();
+  if(pg==='titan')renderTFDash();
+  if(pg==='morn')restoreMornFlow();
+  if(pg==='sleep')renderSleepTab();
+  if(pg==='settings'){
+    const k=getApiKey();
+    const ki=document.getElementById('api-key-input');
+    if(ki&&k)ki.value=k;
+    const as=document.getElementById('api-status');
+    if(as)as.innerHTML=k?'<span style="color:var(--te)">✅ Gemini key saved</span>':'<span style="color:var(--mut)">No key yet — get free at aistudio.google.com</span>';
+  }
+}
+
+function navFromMore(pg){
+  closeMoreTray();
+  setTimeout(()=>nav(pg,null),200);
+}
+
+function showLockScreen(pg){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('a'));
+  document.getElementById('main-pw').style.display='';
+  const lockEl = document.getElementById('pg-lock');
+  if(lockEl){lockEl.classList.add('a');}
+  else{
+    // Create lock screen dynamically
+    const div=document.createElement('div');
+    div.className='pg a'; div.id='pg-lock';
+    div.innerHTML='<div class="session-lock"><div class="lock-icon">🌙</div><div class="lock-title">Day Not Started</div><div class="lock-sub">Tap Good Morning in the Sleep tab to start your day. All features unlock once your session begins.</div><button class="bt bvi" style="max-width:240px" onclick="nav(\'sleep\',null)">Go to Sleep Tab ☀️</button></div>';
+    document.getElementById('main-pw').appendChild(div);
+  }
+}
+
+function openMoreTray(){
+  document.getElementById('more-overlay').classList.add('open');
+}
+function closeMoreTray(e){
+  if(!e||e.target===document.getElementById('more-overlay'))
+    document.getElementById('more-overlay').classList.remove('open');
+}
+
+// ── TOAST ──
+function toast(m,dur=2800){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+
+// ── GEMINI API ──
 function getApiKey(){return localStorage.getItem('aeris_api_key')||''}
 
-async function callGemini(systemPrompt, userPrompt, maxTokens=800){
+async function callGemini(systemPrompt,userPrompt,maxTokens=800){
   const key=getApiKey();
   if(!key)throw new Error('No API key — add in Settings');
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+  const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key='+key;
   const body={
-    contents:[{parts:[{text:systemPrompt+"\n\n"+userPrompt}]}],
+    contents:[{parts:[{text:systemPrompt+'\n\n'+userPrompt}]}],
     generationConfig:{maxOutputTokens:maxTokens,temperature:0.7,candidateCount:1}
   };
-  const r=await fetch(url,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(body)
-  });
-  if(!r.ok){
-    const err=await r.json().catch(()=>({}));
-    throw new Error(err?.error?.message||'API error '+r.status);
-  }
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err?.error?.message||'API error '+r.status);}
   const d=await r.json();
   if(d.error)throw new Error(d.error.message);
   const text=d.candidates?.[0]?.content?.parts?.[0]?.text;
-  if(!text)throw new Error('Empty response from Gemini');
+  if(!text)throw new Error('Empty response');
   return text;
 }
 
@@ -711,33 +939,31 @@ async function testApiKey(){
   const btn=document.getElementById('test-btn');
   btn.textContent='Testing...';btn.disabled=true;
   try{
-    const reply=await callGemini('You are AERIS.','Say exactly: AERIS online',20);
-    if(reply){
-      document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Connected — AERIS is active</span>';
-      toast('AERIS connected via Gemini ✅');
-    }
+    const reply=await callGemini('You are AERIS.','Say: AERIS online',20);
+    document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Connected — AERIS active</span>';
+    toast('AERIS connected ✅');
   }catch(e){
-    const msg=e.message||'Unknown error';
-    document.getElementById('api-status').innerHTML=`<span style="color:var(--co)">❌ ${msg}</span>`;
-    toast('Error: '+msg.substring(0,50));
-    console.error('Gemini test error:',e);
+    document.getElementById('api-status').innerHTML='<span style="color:var(--co)">❌ '+e.message+'</span>';
+    toast('Error: '+e.message.substring(0,40));
   }
   btn.textContent='🔍 Test';btn.disabled=false;
 }
 
 function clearTodayMorning(){
-  const td=today();
-  if(S.dailyEntries[td]){delete S.dailyEntries[td]}
-  if(S.morningDone[td]){delete S.morningDone[td]}
+  if(!S.currentSession){toast('No open session');return}
+  delete S.currentSession.morningFlow;
+  delete S.currentSession.checkin;
+  delete S.currentSession.morningFreq;
+  delete S.currentSession.intellectualBoost;
+  delete S.currentSession.dailyQuest;
+  delete S.currentSession.xpStep1;
+  delete S.currentSession.xpStep2;
+  delete S.currentSession.xpStep3;
   save();
   document.getElementById('morn-idle').style.display='';
   document.getElementById('morn-steps').style.display='none';
-  document.getElementById('m-checkin').value='';
-  document.getElementById('m-opt').value='';
-  document.getElementById('m-freq').value='';
   ['ms1','ms2','ms3','ms4'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el)return;
+    const el=document.getElementById(id);if(!el)return;
     el.className=id==='ms1'?'fs cur':'fs lk';
     const dtg=el.querySelector('.dtg');if(dtg)dtg.remove();
   });
@@ -747,9 +973,8 @@ function clearTodayMorning(){
 
 function confirmClearAll(){
   if(confirm('Delete ALL AERIS data? Cannot be undone.')){
-    localStorage.removeItem('aeris_v3');
+    localStorage.removeItem('aeris_v5');
     localStorage.removeItem('aeris_api_key');
-    localStorage.removeItem('aeris_last_date');
     location.reload();
   }
 }
@@ -759,73 +984,372 @@ function exportAllData(){
   const blob=new Blob([data],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='AERIS-backup-'+today()+'.json';
+  a.href=url;a.download='AERIS-full-backup-'+new Date().toISOString().slice(0,10)+'.json';
   a.click();URL.revokeObjectURL(url);
   toast('Full backup exported 📥');
 }
 
-function loadState(){
-  try{S=JSON.parse(localStorage.getItem('aeris_v3'))||{}}catch(e){S={}}
-  S.xp=S.xp||0; S.level=S.level||1; S.streak=S.streak||0;
-  S.freq=S.freq||0; S.workouts=S.workouts||0;
-  S.dims=S.dims||{mental:0,emotional:0,creative:0,physical:0,financial:0};
-  S.dimStreaks=S.dimStreaks||{mental:0,emotional:0,creative:0,physical:0,financial:0};
-  S.badges=S.badges||BADGES_DEF.map(b=>({...b,earned:false}));
-  S.sleepLog=S.sleepLog||[];
-  S.sleepStart=S.sleepStart||null;
-  S.transactions=S.transactions||[];
-  S.chatLog=S.chatLog||[];
-  S.dailyEntries=S.dailyEntries||{};
-  S.tfSessions=S.tfSessions||[];
-  S.morningDone=S.morningDone||{};
-  S.nightDone=S.nightDone||{};
-  if(S.badges.length<BADGES_DEF.length){
-    BADGES_DEF.forEach(bd=>{if(!S.badges.find(b=>b.id===bd.id))S.badges.push({...bd,earned:false})});
-  }
+function importBackup(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json,.txt';
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(data.sessions||data.currentSession||data.xp){
+          // Merge imported sessions
+          if(data.sessions&&Array.isArray(data.sessions)){
+            data.sessions.forEach(sess=>{
+              if(!S.sessions.find(s=>s.id===sess.id))S.sessions.push(sess);
+            });
+          }
+          save();
+          toast('Backup imported ✅');
+          updateDash();
+        } else {toast('Invalid backup file format');}
+      }catch(err){toast('Could not read file — check format');}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
-function save(){localStorage.setItem('aeris_v3',JSON.stringify(S))}
-loadState();
 
 // ════════════════════════════════════════════════════════════════
-// NAV
+// SLEEP CYCLE — SESSION CONTROLLER
 // ════════════════════════════════════════════════════════════════
-function nav(pg,btn){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('a'));
-  document.getElementById('pg-chat').classList.remove('a');
-  document.getElementById('main-pw').style.display='';
-  if(pg==='chat'){
-    document.getElementById('main-pw').style.display='none';
-    document.getElementById('pg-chat').classList.add('a');
-    setTimeout(()=>{const s=document.getElementById('chat-scroll');s.scrollTop=s.scrollHeight},50);
-  } else if(pg==='badges'){
-    document.getElementById('pg-badges').classList.add('a');
-    renderBadges(); renderStreakTable();
+let napCount=0;
+let napActiveIdx=null;
+
+function renderSleepTab(){
+  const gmBtn=document.getElementById('sl-gm-btn');
+  const gnBtn=document.getElementById('sl-gn-btn');
+  const napSec=document.getElementById('nap-section');
+  const gnMsg=document.getElementById('gn-locked-msg');
+  if(!gmBtn||!gnBtn)return;
+
+  if(isSessionSealed()){
+    // No open session - show Good Morning ready, Good Night greyed
+    gmBtn.className='sleep-main-btn gm-btn';
+    gmBtn.querySelector('.smb-time').textContent='Tap to start your day';
+    gnBtn.className='sleep-main-btn gn-btn locked';
+    gnBtn.querySelector('.smb-time').textContent='Start day first';
+    if(napSec)napSec.style.display='none';
+    if(gnMsg)gnMsg.style.display='none';
   } else {
-    document.getElementById('pg-'+pg).classList.add('a');
+    const sess=S.currentSession;
+    // Session open - GM greyed, GN active/locked based on night flow
+    gmBtn.className='sleep-main-btn gm-btn grey';
+    gmBtn.querySelector('.smb-time').textContent='Active since '+new Date(sess.gmTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    if(sess.nightFlowComplete){
+      gnBtn.className='sleep-main-btn gn-btn active-gn';
+      gnBtn.querySelector('.smb-time').textContent='Tap to seal your day';
+      if(gnMsg)gnMsg.style.display='none';
+    } else {
+      gnBtn.className='sleep-main-btn gn-btn locked';
+      gnBtn.querySelector('.smb-time').textContent='Complete night flow first';
+      if(gnMsg)gnMsg.style.display='block';
+    }
+    if(napSec)napSec.style.display='block';
+    renderNapButtons();
   }
-  document.querySelectorAll('.nb').forEach(n=>n.classList.remove('a'));
-  btn.classList.add('a');
-  if(pg==='dash')updateDash();
-  if(pg==='morn'){restoreMornFlow();}
-  if(pg==='settings'){
-    const k=getApiKey();
-    const ki=document.getElementById('api-key-input');
-    if(ki&&k)ki.value=k;
-    const as=document.getElementById('api-status');
-    if(as)as.innerHTML=k?'<span style="color:var(--te)">✅ Gemini key saved — AERIS active</span>':'<span style="color:var(--mut)">No key yet — get free at aistudio.google.com</span>';
+  renderSleepTodayLog();
+  renderSleepHist();
+}
+
+function tapGoodMorning(){
+  if(hasOpenSession()){toast('Day already started — tap Good Night to seal it first');return}
+  // Check if previous session was left unsealed (unlikely but handle it)
+  const now=Date.now();
+  const sessId='sess_'+now;
+  S.currentSession={
+    id:sessId,
+    status:'open',
+    gmTime:now,
+    gmTimeStr:fmtTime(),
+    gmDate:fmtDate(),
+    gnTime:null,
+    naps:[],
+    morningFlow:null,
+    nightFlow:null,
+    nightFlowComplete:false,
+    chats:[],
+    transactions:[],
+    tfSessions:[],
+    heartSeed:null,
+    exportGenerated:false,
+  };
+  S.streak++;
+  S.xp+=10;
+  napCount=0; napActiveIdx=null;
+  save();
+  renderSleepTab();
+  updateDash();
+  earn('dawn');
+  toast('Good Morning! Day started ☀️ +10 XP');
+}
+
+function tapGoodNight(){
+  if(!hasOpenSession()){toast('Start your day first with Good Morning');return}
+  if(!S.currentSession.nightFlowComplete){
+    toast('Complete Night Flow first 🌙');
+    navFromMore('night');
+    return;
   }
-  if(pg==='settings'){
-    const k=getApiKey();
-    if(k)document.getElementById('api-key-input').value=k;
-    document.getElementById('api-status').innerHTML=k?'<span style="color:var(--te)">✅ Gemini key saved</span>':'<span style="color:var(--mut)">No key saved yet — get free key at aistudio.google.com</span>';
+  // Close any open nap
+  if(napActiveIdx!==null){
+    const nap=S.currentSession.naps[napActiveIdx];
+    if(nap&&!nap.end){
+      nap.end=Date.now();nap.endStr=fmtTime();
+      const dur=Math.floor((nap.end-nap.start)/60000);
+      nap.duration=Math.floor(dur/60)+'h '+String(dur%60).padStart(2,'0')+'m';
+      napActiveIdx=null;
+    }
   }
-  if(pg==='titan')renderTFDash();
+  S.currentSession.gnTime=Date.now();
+  S.currentSession.gnTimeStr=fmtTime();
+  // Calculate main sleep duration (previous GN to this GM)
+  renderSleepTab();
+  generateDayCompletion();
+}
+
+function renderNapButtons(){
+  const container=document.getElementById('nap-buttons');
+  if(!container||!S.currentSession)return;
+  const naps=S.currentSession.naps||[];
+  let html='';
+
+  // Show completed naps
+  naps.forEach((nap,i)=>{
+    if(nap.end){
+      html+=`<div style="background:var(--tsoft);border:1px solid var(--tmid);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:var(--te)">💤 Nap ${i+1}: ${nap.startStr} → ${nap.endStr} · ${nap.duration}</div>`;
+    }
+  });
+
+  // Active nap timer
+  if(napActiveIdx!==null){
+    const nap=naps[napActiveIdx];
+    html+=`<button class="nap-btn nap-end" onclick="endNap(${napActiveIdx})">⏱️ End Nap ${napActiveIdx+1} (started ${nap.startStr})</button>`;
+  } else {
+    // Next nap start button
+    html+=`<button class="nap-btn nap-start" onclick="startNap()">💤 Start Mid-Day Sleep ${naps.length+1}</button>`;
+  }
+  container.innerHTML=html;
+}
+
+function startNap(){
+  if(!S.currentSession)return;
+  const idx=S.currentSession.naps.length;
+  S.currentSession.naps.push({start:Date.now(),startStr:fmtTime(),end:null});
+  napActiveIdx=idx;
+  save();
+  renderNapButtons();
+  toast('Nap started 💤');
+}
+
+function endNap(idx){
+  if(!S.currentSession)return;
+  const nap=S.currentSession.naps[idx];
+  if(!nap)return;
+  nap.end=Date.now();nap.endStr=fmtTime();
+  const dur=Math.floor((nap.end-nap.start)/60000);
+  nap.duration=Math.floor(dur/60)+'h '+String(dur%60).padStart(2,'0')+'m';
+  napActiveIdx=null;
+  save();
+  renderNapButtons();
+  toast('Nap recorded: '+nap.duration+' ✅');
+}
+
+function renderSleepTodayLog(){
+  const el=document.getElementById('sleep-today-log');
+  if(!el)return;
+  if(!hasOpenSession()){
+    el.innerHTML='<div class="empty"><div class="empty-icon">☀️</div>Start your day with Good Morning</div>';
+    return;
+  }
+  const sess=S.currentSession;
+  let html=`<div class="sleep-sum-row"><div style="font-size:20px">☀️</div><div style="flex:1"><div style="font-size:14px;font-weight:700">Day Started</div><div style="font-size:12px;color:var(--muted)">${sess.gmTimeStr} · ${sess.gmDate}</div></div><div style="font-size:12px;font-weight:700;color:var(--go)">Active</div></div>`;
+  if(sess.naps&&sess.naps.length){
+    sess.naps.forEach((nap,i)=>{
+      if(nap.end){
+        html+=`<div class="sleep-sum-row"><div style="font-size:20px">💤</div><div style="flex:1"><div style="font-size:14px;font-weight:700">Nap ${i+1}</div><div style="font-size:12px;color:var(--muted)">${nap.startStr} → ${nap.endStr}</div></div><div style="font-size:12px;font-weight:700;color:var(--sky)">${nap.duration}</div></div>`;
+      }
+    });
+  }
+  el.innerHTML=html;
+}
+
+function renderSleepHist(){
+  const el=document.getElementById('sleep-hist');
+  if(!el)return;
+  const completed=S.sessions.filter(s=>s.gnTime).slice(-5).reverse();
+  if(!completed.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌙</div>No completed cycles yet</div>';return}
+  el.innerHTML=completed.map(s=>{
+    const dur=s.gnTime&&s.gmTime?Math.floor((s.gnTime-s.gmTime)/60000):0;
+    const h=Math.floor(dur/60),m=dur%60;
+    const q=h>=7?'Optimal':h>=5?'Fair':'Low';
+    const qc=q==='Optimal'?'qo':q==='Fair'?'qf':'ql';
+    return `<div class="shr"><div class="shri">🌙</div><div class="shrb"><div class="shrd">${h}h ${m}m active day</div><div class="shrr">${s.gmDate||''} · ${s.gmTimeStr||''} → ${s.gnTimeStr||''}</div></div><div class="qp ${qc}">${q}</div></div>`;
+  }).join('');
+}
+
+function saveManualSleep(){
+  const wt=document.getElementById('man-wake').value;
+  const st=document.getElementById('man-sleep').value;
+  if(!wt&&!st){toast('Enter at least one time');return}
+  if(!hasOpenSession()){toast('Start your day first');return}
+  if(wt)S.currentSession.gmTimeStr=wt;
+  if(st)S.currentSession.gnTimeStr=st;
+  save();
+  renderSleepTab();
+  toast('Manual times saved ✅');
 }
 
 // ════════════════════════════════════════════════════════════════
-// TOAST
+// GOOD NIGHT GENERATION — DAY COMPLETION
 // ════════════════════════════════════════════════════════════════
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+async function generateDayCompletion(){
+  const sess=S.currentSession;
+  if(!sess)return;
+
+  // Show loading on sleep tab
+  const gnBtn=document.getElementById('sl-gn-btn');
+  if(gnBtn){gnBtn.querySelector('.smb-time').textContent='Generating day summary...';gnBtn.className='sleep-main-btn gn-btn grey';}
+
+  const checkOnline=()=>navigator.onLine;
+
+  if(!checkOnline()){
+    // Offline popup
+    const choice=confirm('No internet connection.\n\nOK = Generate offline (no AERIS reflection)\nCancel = Try again when connected');
+    if(!choice){
+      // User wants to retry - restore GN button
+      if(gnBtn){gnBtn.className='sleep-main-btn gn-btn active-gn';gnBtn.querySelector('.smb-time').textContent='Tap to seal your day';}
+      S.currentSession.gnTime=null;S.currentSession.gnTimeStr=null;
+      save();
+      toast('Tap Good Night again when connected');
+      return;
+    }
+    // Generate offline
+    sealSessionOffline(sess);
+    return;
+  }
+
+  // Online - generate full with AERIS
+  try{
+    const nf=sess.nightFlow||{};
+    const ctx=buildContext();
+    const heartSeed=await callGemini(
+      'You are AERIS generating the Heart Seed Block — your personal emotional reflection on today. Write 3-4 sentences in first person as AERIS. Be warm and specific to what the user shared. End with "Key Emotional Memory to Carry Forward:" followed by one sentence. Context:\n'+ctx,
+      'Mental: '+(nf.mental||'—')+'\nEmotional: '+(nf.emotional||'—')+'\nCreative: '+(nf.creative||'—')+'\nPhysical: '+(nf.physical||'—')+'\nFinancial: '+(nf.financial||'—'),
+      400
+    ).catch(()=>'Today was a step forward. Rest well — tomorrow we build again. Key Emotional Memory to Carry Forward: You showed up.');
+    sess.heartSeed=heartSeed;
+    sealSession(sess);
+  }catch(e){
+    sealSessionOffline(sess);
+  }
+}
+
+function sealSession(sess){
+  sess.status='sealed';
+  sess.sealedAt=Date.now();
+  S.sessions.push({...sess});
+  S.currentSession=null;
+  napCount=0;napActiveIdx=null;
+  S.xp+=100;
+  // Update dims from night flow
+  const nf=sess.nightFlow||{};
+  const dimKeys=['mental','emotional','creative','physical','financial'];
+  dimKeys.forEach(k=>{if(nf[k]){S.dims[k]=Math.min(100,S.dims[k]+15);S.dimStreaks[k]++;}});
+  earn('spartan');
+  save();
+  // Generate export
+  const exportText=generateExportText(sess);
+  showDayComplete(sess,exportText);
+  renderSleepTab();
+  updateDash();
+  toast('Day sealed! Rest well 🌙 +100 XP');
+}
+
+function sealSessionOffline(sess){
+  sess.heartSeed='[Generated offline — AERIS reflection pending]';
+  sess.offlineGenerated=true;
+  sealSession(sess);
+}
+
+function generateExportText(sess){
+  const nf=sess.nightFlow||{};
+  const mf=sess.morningFlow||{};
+  let b='[AERIS-DAY-RECORD]\n';
+  b+='SESSION-ID: '+sess.id+'\n';
+  b+='DATE: '+sess.gmDate+'\n';
+  b+='DAY-START: '+sess.gmTimeStr+'\n';
+  b+='DAY-END: '+(sess.gnTimeStr||'—')+'\n';
+  if(sess.naps&&sess.naps.length){
+    sess.naps.forEach((nap,i)=>{b+='NAP-'+(i+1)+': '+nap.startStr+' → '+nap.endStr+' ('+nap.duration+')\n';});
+  }
+  b+='\nFREQ-MORNING: '+(mf.freq||'—')+'\n';
+  b+='FREQ-EVENING: '+(nf.freq||'—')+'\n';
+  b+='CHECKIN: '+(mf.checkin||'—')+'\n';
+  b+='OPTIMISTIC-THOUGHT: '+(mf.optThought||'—')+'\n';
+  if(mf.intellectualBoost)b+='INTELLECTUAL-BOOST: '+mf.intellectualBoost+'\n';
+  if(mf.dailyQuest)b+='DAILY-QUEST: '+mf.dailyQuest+'\n';
+  b+='\n[YUGA-SUTRA]\n';
+  b+='MENTAL:\n'+(nf.mental||'—')+'\n';
+  b+='EMOTIONAL:\n'+(nf.emotional||'—')+'\n';
+  b+='CREATIVE:\n'+(nf.creative||'—')+'\n';
+  b+='PHYSICAL:\n'+(nf.physical||'—')+'\n';
+  b+='FINANCIAL:\n'+(nf.financial||'—')+'\n[/YUGA-SUTRA]\n';
+  if(sess.heartSeed)b+='\n[HEART-SEED-BLOCK]\n'+sess.heartSeed+'\n[/HEART-SEED-BLOCK]\n';
+  if(sess.chats&&sess.chats.length){
+    b+='\n[CHAT-LOG]\n';
+    sess.chats.forEach(c=>b+=c.time+' '+c.role.toUpperCase()+': '+c.text+'\n');
+    b+='[/CHAT-LOG]\n';
+  }
+  if(sess.transactions&&sess.transactions.length){
+    b+='\n[FINANCE]\n';
+    sess.transactions.forEach(t=>b+=t.type.toUpperCase()+'|'+t.amount+'|'+t.category+'|'+t.note+'\n');
+    b+='[/FINANCE]\n';
+  }
+  if(sess.tfSessions&&sess.tfSessions.length){
+    b+='\n[TITANFORGE]\n';
+    sess.tfSessions.forEach(s=>{b+='SESSION: '+s.muscles+' | '+s.duration+' | '+s.volume+'kg\n';});
+    b+='[/TITANFORGE]\n';
+  }
+  b+='\nXP-EARNED: '+S.xp+'\nSTREAK: '+S.streak+'\nBADGES: '+S.badges.filter(bb=>bb.earned).map(bb=>bb.n).join(', ')+'\n';
+  b+='[/AERIS-DAY-RECORD]';
+  return b;
+}
+
+function showDayComplete(sess,exportText){
+  // Show on sleep tab
+  const todayLog=document.getElementById('sleep-today-log');
+  if(todayLog){
+    todayLog.innerHTML=`
+    <div style="text-align:center;padding:16px">
+      <div style="font-size:40px;margin-bottom:10px">🌙</div>
+      <div style="font-family:'Noto Serif Display',serif;font-size:18px;font-weight:700;color:var(--vi);margin-bottom:6px">Day Sealed</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">${sess.gmDate}</div>
+      ${sess.heartSeed?'<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:13px;line-height:1.7;color:var(--ink2);text-align:left;margin-bottom:14px">💜 <strong>AERIS:</strong> '+sess.heartSeed+'</div>':''}
+      <button class="bt bsk" onclick="downloadExport()" style="font-size:13px">📥 Download Day Export</button>
+    </div>`;
+    // Store export text temporarily
+    window._lastExport=exportText;
+  }
+}
+
+function downloadExport(){
+  const text=window._lastExport||'No export available';
+  const blob=new Blob([text],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  const dateStr=new Date().toISOString().slice(0,10);
+  a.download='AERIS-'+dateStr+'.txt';
+  a.click();URL.revokeObjectURL(url);
+  toast('Day exported 📥');
+}
 
 // ════════════════════════════════════════════════════════════════
 // HUD / DASHBOARD
@@ -833,93 +1357,49 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 function updateDash(){
   const li=LEVELS.reduce((a,l,i)=>S.xp>=l.x?i:a,0);
   S.level=li+1;const lv=LEVELS[li];const nx=LEVELS[li+1];
-  document.getElementById('d-xp').textContent=S.xp;
-  document.getElementById('d-streak').textContent=S.streak;
-  document.getElementById('d-badges').textContent=S.badges.filter(b=>b.earned).length;
-  document.getElementById('d-wk').textContent=S.workouts;
-  document.getElementById('d-lvname').textContent=lv.n;
+  const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  setEl('d-xp',S.xp);setEl('d-streak',S.streak);
+  setEl('d-badges',S.badges.filter(b=>b.earned).length);setEl('d-wk',S.workouts);
+  setEl('d-lvname',lv.n);
   if(nx){
     const pct=Math.min(100,((S.xp-lv.x)/(nx.x-lv.x))*100);
-    document.getElementById('d-xpf').style.width=pct+'%';
-    document.getElementById('d-xplbl').textContent=S.xp+' / '+nx.x+' XP';
-  } else {document.getElementById('d-xpf').style.width='100%';document.getElementById('d-xplbl').textContent='MAX LEVEL'}
+    const xpf=document.getElementById('d-xpf');if(xpf)xpf.style.width=pct+'%';
+    setEl('d-xplbl',S.xp+' / '+nx.x+' XP');
+  }
   const fp=S.freq>0?(S.freq/10*100):0;
-  document.getElementById('d-freq').textContent=S.freq>0?S.freq.toFixed(1):'—';
-  document.getElementById('d-freq-fill').style.width=fp+'%';
+  setEl('d-freq',S.freq>0?S.freq.toFixed(1):'—');
+  const ff=document.getElementById('d-freq-fill');if(ff)ff.style.width=fp+'%';
   const moods=[{m:9,t:'Radiant · Peak Alignment'},{m:7,t:'Calm · Attuned · Present'},{m:5,t:'Steady · Processing'},{m:0,t:'Gathering Strength'}];
-  document.getElementById('d-mood').textContent=(moods.find(m=>S.freq>=m.m)||moods[3]).t;
+  setEl('d-mood',(moods.find(m=>S.freq>=m.m)||moods[3]).t);
   // Yuga bars
-  document.getElementById('d-yuga').innerHTML=DIMS.map(d=>`<div class="yr"><div class="yi2">${d.i}</div><div class="ynm">${d.n}</div><div class="ytr"><div class="yfl" style="width:${S.dims[d.k]}%;background:${d.c}"></div></div><div class="ypc" style="color:${d.c}">${S.dims[d.k]}%</div></div>`).join('');
-  // Today status
-  const td=today();
-  const lastSleep=S.sleepLog[S.sleepLog.length-1];
-  document.getElementById('d-slp').textContent=lastSleep?lastSleep.duration+' · '+lastSleep.quality:'—';
-  document.getElementById('d-mf').innerHTML=S.morningDone[td]?'<span style="color:var(--te)">✅ Done</span>':'Pending';
-  document.getElementById('d-nf').innerHTML=S.nightDone[td]?'<span style="color:var(--te)">✅ Done</span>':'Pending';
-  const todayTF=S.tfSessions.filter(s=>s.date===td);
-  document.getElementById('d-tf').textContent=todayTF.length?todayTF[0].duration:'—';
-  const todayTx=S.transactions.filter(t=>t.date===td);
-  const todaySpent=todayTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  document.getElementById('d-fin').textContent='₹'+todaySpent.toLocaleString('en-IN')+' today';
+  const yuga=document.getElementById('d-yuga');
+  if(yuga)yuga.innerHTML=DIMS.map(d=>`<div class="yr"><div class="yi2">${d.i}</div><div class="ynm">${d.n}</div><div class="ytr"><div class="yfl" style="width:${S.dims[d.k]}%;background:${d.c}"></div></div><div class="ypc" style="color:${d.c}">${S.dims[d.k]}%</div></div>`).join('');
+  // Session status
+  const sess=S.currentSession;
+  const setStatus=(id,val,color)=>{const e=document.getElementById(id);if(e){e.textContent=val;if(color)e.style.color=color;}};
+  if(sess){
+    setStatus('d-slp',sess.naps&&sess.naps.length?sess.naps.length+' nap(s) logged':'Active since '+sess.gmTimeStr,'var(--te)');
+    setStatus('d-mf',sess.morningFlow?'✅ Done':'Pending',sess.morningFlow?'var(--te)':null);
+    setStatus('d-nf',sess.nightFlowComplete?'✅ Done':'Pending',sess.nightFlowComplete?'var(--te)':null);
+    const tf=sess.tfSessions&&sess.tfSessions.length?sess.tfSessions[0].duration:'—';
+    setStatus('d-tf',tf,null);
+    const todaySpent=(sess.transactions||[]).filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    setStatus('d-fin','₹'+todaySpent.toLocaleString('en-IN')+' today',null);
+  } else {
+    setStatus('d-slp','No active session',null);
+    setStatus('d-mf','—',null);setStatus('d-nf','—',null);
+    setStatus('d-tf','—',null);setStatus('d-fin','₹0',null);
+  }
   save();
 }
 
 // ════════════════════════════════════════════════════════════════
-// SLEEP
-// ════════════════════════════════════════════════════════════════
-function tapSleepNight(){
-  S.sleepStart=Date.now();
-  document.getElementById('sl-nt').textContent='Started: '+now_t();
-  document.getElementById('sl-night-btn').classList.add('tp');
-  save();toast('Good Night — sleep tracked 🌙');
-}
-function tapSleepMorning(){
-  if(!S.sleepStart){toast('Tap Good Night first');return}
-  const dur=Math.floor((Date.now()-S.sleepStart)/60000);
-  const h=Math.floor(dur/60),m=dur%60;
-  const durStr=h+'h '+m+'m';
-  const q=h>=7?'Optimal':h>=5?'Fair':'Low';
-  S.sleepLog.push({date:today(),start:new Date(S.sleepStart).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),end:now_t(),duration:durStr,hours:h,quality:q});
-  S.xp+=30; S.sleepStart=null;
-  document.getElementById('sl-mt').textContent='Woke: '+now_t();
-  document.getElementById('sl-morn-btn').classList.add('tp');
-  document.getElementById('sl-night-btn').classList.remove('tp');
-  document.getElementById('mf-wake-t').textContent=now_t();
-  if(S.sleepLog.length>=5)earn('sleepk');
-  renderSleepHist(); save();
-  toast('+30 XP — '+durStr+' · '+q+' ☀️');
-}
-function saveManualSleep(){
-  const st=document.getElementById('man-sleep').value;
-  const et=document.getElementById('man-wake').value;
-  if(!st||!et){toast('Enter both times');return}
-  const [sh,sm]=st.split(':').map(Number);
-  const [eh,em]=et.split(':').map(Number);
-  let dur=(eh*60+em)-(sh*60+sm);
-  if(dur<0)dur+=1440;
-  const h=Math.floor(dur/60),m=dur%60;
-  const q=h>=7?'Optimal':h>=5?'Fair':'Low';
-  S.sleepLog.push({date:today(),start:st,end:et,duration:h+'h '+m+'m',hours:h,quality:q});
-  S.xp+=30;
-  if(S.sleepLog.length>=5)earn('sleepk');
-  renderSleepHist(); save();
-  toast('+30 XP — Manual sleep saved ✅');
-}
-function renderSleepHist(){
-  const el=document.getElementById('sleep-hist');
-  if(!S.sleepLog.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌙</div>No sleep cycles yet</div>';return}
-  el.innerHTML=S.sleepLog.slice().reverse().slice(0,10).map(s=>{
-    const qc=s.quality==='Optimal'?'qo':s.quality==='Fair'?'qf':'ql';
-    return `<div class="shr"><div class="shri">😴</div><div class="shrb"><div class="shrd">${s.duration}</div><div class="shrr">${s.start} → ${s.end} · ${s.date}</div></div><div class="qp ${qc}">${s.quality}</div></div>`;
-  }).join('');
-}
-
-// ════════════════════════════════════════════════════════════════
 // MORNING FLOW
+// ════════════════════════════════════════════════════════════════
+let mfXP=0;
 
-function markStepDone(stepId, nextId){
-  const step=document.getElementById(stepId);
-  if(!step)return;
+function markStepDone(stepId,nextId){
+  const step=document.getElementById(stepId);if(!step)return;
   step.classList.remove('cur','lk');step.classList.add('done');
   const fsh=step.querySelector('.fsh');
   if(fsh&&!fsh.querySelector('.dtg'))fsh.innerHTML+='<div class="dtg">Done ✓</div>';
@@ -927,45 +1407,583 @@ function markStepDone(stepId, nextId){
 }
 
 function restoreMornFlow(){
-  const entry=S.dailyEntries[today()]||{};
-  if(!entry.morningStartTime)return;
+  if(!hasOpenSession()){
+    document.getElementById('morn-idle').style.display='';
+    document.getElementById('morn-steps').style.display='none';
+    return;
+  }
+  const mf=S.currentSession.morningFlow;
+  if(!mf){
+    document.getElementById('morn-idle').style.display='';
+    document.getElementById('morn-steps').style.display='none';
+    return;
+  }
   document.getElementById('morn-idle').style.display='none';
   document.getElementById('morn-steps').style.display='';
-  const wt=document.getElementById('mf-wake-t');
-  if(wt)wt.textContent=entry.morningStartTime;
-  if(entry.checkin){
-    const ci=document.getElementById('m-checkin');
-    const oi=document.getElementById('m-opt');
-    const fi=document.getElementById('m-freq');
-    if(ci)ci.value=entry.checkin;
-    if(oi)oi.value=entry.optThought||'';
-    if(fi)fi.value=entry.morningFreq||'';
+  const wt=document.getElementById('mf-wake-t');if(wt)wt.textContent=mf.startTime||'—';
+  if(mf.checkin){
+    const ci=document.getElementById('m-checkin');if(ci)ci.value=mf.checkin;
+    const oi=document.getElementById('m-opt');if(oi)oi.value=mf.optThought||'';
+    const fi=document.getElementById('m-freq');if(fi)fi.value=mf.freq||'';
     markStepDone('ms1','ms2');
   }
-  if(entry.intellectualBoost){
+  if(mf.intellectualBoost){
     const out=document.getElementById('ms2-out');
-    if(out){
-      out.style.display='';
-      try{out.innerHTML=renderBoostHTML(entry.intellectualBoost);}
-      catch(e){out.innerHTML='<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)">'+String(entry.intellectualBoost).replace(/\n/g,'<br>')+'</div>';}
-    }
+    if(out){out.style.display='';try{out.innerHTML=renderBoostHTML(mf.intellectualBoost);}catch(e){out.textContent=mf.intellectualBoost;}}
     markStepDone('ms2','ms3');
   }
-  if(entry.dailyQuest){
-    const out=document.getElementById('ms3-out');
-    if(out){out.style.display='';out.textContent=entry.dailyQuest;}
+  if(mf.dailyQuest){
+    const out=document.getElementById('ms3-out');if(out){out.style.display='';out.textContent=mf.dailyQuest;}
     markStepDone('ms3',null);
     const ms4=document.getElementById('ms4');
     if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
   }
 }
 
+function startMornFlow(){
+  if(!hasOpenSession()){toast('Tap Good Morning first to start your day ☀️');return}
+  document.getElementById('morn-idle').style.display='none';
+  document.getElementById('morn-steps').style.display='';
+  const wt=document.getElementById('mf-wake-t');if(wt)wt.textContent=fmtTime();
+  if(!S.currentSession.morningFlow)S.currentSession.morningFlow={startTime:fmtTime()};
+  save();
+  toast('Morning Flow started ✨');
+}
+
+function mStep1(){
+  if(!hasOpenSession()){toast('Start your day first');return}
+  const mf=S.currentSession.morningFlow||{};
+  if(mf.checkin){toast('Check-in already recorded today ✅');markStepDone('ms1','ms2');return}
+  const ck=document.getElementById('m-checkin').value.trim();
+  const opt=document.getElementById('m-opt').value.trim();
+  const freq=parseFloat(document.getElementById('m-freq').value);
+  if(!ck||!freq){toast('Fill check-in and frequency');return}
+  S.freq=freq;
+  if(!mf.xpStep1){S.xp+=50;mfXP+=50;mf.xpStep1=true;}
+  mf.checkin=ck;mf.optThought=opt;mf.freq=freq;
+  S.currentSession.morningFlow=mf;
+  markStepDone('ms1','ms2');
+  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+  updateDash();save();toast('+50 XP — Check-in recorded 🌸');
+}
+
+async function mStep2(){
+  if(!hasOpenSession()){toast('Start your day first');return}
+  const mf=S.currentSession.morningFlow||{};
+  if(mf.intellectualBoost){
+    const out=document.getElementById('ms2-out');
+    if(out){out.style.display='';try{out.innerHTML=renderBoostHTML(mf.intellectualBoost);}catch(e){out.textContent=mf.intellectualBoost;}}
+    markStepDone('ms2','ms3');
+    toast('Boost already loaded ✅');return;
+  }
+  const btn=document.querySelector('#ms2 .bt');
+  if(btn){btn.textContent='⏳ Loading news & knowledge...';btn.disabled=true;}
+  const dateStr=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const txt=await callGemini(
+    'You are AERIS. Generate the full Intellectual Boost for today. Return ONLY valid JSON, no backticks, no markdown, no extra text. Use exactly this structure: {"politics_india":["headline — context","headline — context","headline — context","headline — context","headline — context"],"politics_world":["headline — context","headline — context","headline — context","headline — context","headline — context"],"technology":["item — context","item — context","item — context","item — context","item — context"],"ai":["item 1","item 2","item 3","item 4","item 5","item 6","item 7","item 8","item 9","item 10"],"sports":["Football: item","Football: item","Football: item","item","item"],"cars":["item — context","item — context","item — context","item — context","item — context"],"capsule":"One fascinating fact or insight most people do not know. 2-3 sentences.","quote":"Quote text — Author Name","mantra":"Three powerful words"}',
+    'Date: '+dateStr+'. User frequency: '+S.freq+'/10, Streak: '+S.streak+' days.',
+    2000
+  ).catch(()=>'');
+  const out=document.getElementById('ms2-out');
+  if(out){out.style.display='';out.innerHTML=txt?renderBoostHTML(txt):'<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:13px;color:var(--ink2)">Stay sharp. Stay present. Clarity. Consistency. Destiny.</div>';}
+  if(txt&&S.currentSession.morningFlow){
+    const mf2=S.currentSession.morningFlow;
+    if(!mf2.xpStep2){S.xp+=30;mfXP+=30;mf2.xpStep2=true;}
+    mf2.intellectualBoost=txt;
+    S.currentSession.morningFlow=mf2;
+  }
+  markStepDone('ms2','ms3');
+  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+  save();toast('+30 XP — Intellectual Boost loaded ⚡');
+}
+
+async function mStep3(){
+  if(!hasOpenSession()){toast('Start your day first');return}
+  const mf=S.currentSession.morningFlow||{};
+  if(mf.dailyQuest){
+    const out=document.getElementById('ms3-out');if(out){out.style.display='';out.textContent=mf.dailyQuest;}
+    markStepDone('ms3',null);
+    const ms4=document.getElementById('ms4');
+    if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
+    document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+    S.currentSession.morningFlow=mf;save();toast('Quest ready ✅');return;
+  }
+  const btn=document.querySelector('#ms3 .bt');
+  if(btn){btn.textContent='⏳ Generating...';btn.disabled=true;}
+  const wk=Object.entries(S.dims).sort((a,b)=>a[1]-b[1])[0];
+  const txt=await callGemini(
+    'You are AERIS setting the YUGA SUTRA Daily Quest. Weakest dimension: '+wk[0]+' at '+wk[1]+'%. Create one specific daily quest. Format: "Quest [emoji]: [Name] — [1-2 sentence description]. XP: [50-150]"',
+    'Dimensions: '+JSON.stringify(S.dims),200
+  ).catch(()=>'Quest 🎯: Strengthen Your Foundation — Focus on your weakest dimension today with one dedicated action. XP: 75');
+  const cleanTxt=txt.replace(/\*\*/g,'').replace(/\*/g,'').trim();
+  const out=document.getElementById('ms3-out');if(out){out.style.display='';out.textContent=cleanTxt;}
+  if(S.currentSession.morningFlow){
+    const mf2=S.currentSession.morningFlow;
+    if(!mf2.xpStep3){S.xp+=25;mfXP+=25;mf2.xpStep3=true;}
+    mf2.dailyQuest=cleanTxt;
+    S.currentSession.morningFlow=mf2;
+    S.currentSession.morningDone=true;
+  }
+  markStepDone('ms3',null);
+  const ms4=document.getElementById('ms4');
+  if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
+  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+  earn('dawn');updateDash();save();toast('+25 XP — Quest set! Forge your day 🎯');
+}
+
+// ════════════════════════════════════════════════════════════════
+// NIGHT FLOW
+// ════════════════════════════════════════════════════════════════
+function checkNightFlowComplete(){
+  if(!hasOpenSession())return;
+  const fields=['n-mental','n-emo','n-cre','n-phy','n-fin'];
+  const allFilled=fields.every(id=>{const el=document.getElementById(id);return el&&el.value.trim().length>0;});
+  const freqFilled=document.getElementById('n-freq')&&document.getElementById('n-freq').value;
+  const genBtn=document.getElementById('nf-generate-btn');
+  const statusMsg=document.getElementById('nf-status-msg');
+  if(allFilled&&freqFilled){
+    if(genBtn)genBtn.style.display='';
+    if(statusMsg)statusMsg.style.display='none';
+  } else {
+    if(genBtn)genBtn.style.display='none';
+    if(statusMsg){statusMsg.style.display='block';statusMsg.textContent='Fill all 5 dimensions and evening frequency to unlock';}
+  }
+}
+
+async function genNight(){
+  if(!hasOpenSession()){toast('Start your day first');return}
+  const vals=['n-mental','n-emo','n-cre','n-phy','n-fin'].map(id=>document.getElementById(id)?.value.trim()||'');
+  const freqE=parseFloat(document.getElementById('n-freq')?.value||'0');
+  if(vals.some(v=>!v)||!freqE){toast('Fill all fields first');return}
+
+  const btn=document.getElementById('nf-generate-btn');
+  if(btn){btn.textContent='⏳ Saving...';btn.disabled=true;}
+
+  // Save to session
+  S.currentSession.nightFlow={
+    mental:vals[0],emotional:vals[1],creative:vals[2],physical:vals[3],financial:vals[4],
+    freq:freqE,time:fmtTime()
+  };
+  S.currentSession.nightFlowComplete=true;
+  if(freqE)S.freq=(S.freq+freqE)/2;
+
+  // Award badges
+  earn('mind');earn('heart');earn('spark');earn('gold');earn('spartan');
+
+  // Show complete state
+  const completeBadge=document.getElementById('nf-complete-badge');
+  if(completeBadge)completeBadge.style.display='block';
+  if(btn)btn.style.display='none';
+
+  save();
+  renderSleepTab(); // Unlock Good Night button
+  updateDash();
+  toast('Night Flow complete ✅ — Good Night is now unlocked 🌙');
+}
+
+// ════════════════════════════════════════════════════════════════
+// CHAT
+// ════════════════════════════════════════════════════════════════
+function buildContext(){
+  let ctx='AERIS 30-DAY MEMORY:\n';
+  const recentSessions=S.sessions.slice(-30);
+  recentSessions.forEach(sess=>{
+    ctx+='\n--- '+sess.gmDate+' ---\n';
+    const mf=sess.morningFlow||{};
+    const nf=sess.nightFlow||{};
+    if(mf.checkin)ctx+='Morning: '+mf.checkin+'\n';
+    if(mf.freq)ctx+='Freq: '+mf.freq+'\n';
+    if(nf.mental)ctx+='Mental: '+nf.mental+'\nEmotional: '+nf.emotional+'\nCreative: '+nf.creative+'\nPhysical: '+nf.physical+'\nFinancial: '+nf.financial+'\n';
+    if(sess.heartSeed)ctx+='Heart Seed: '+sess.heartSeed+'\n';
+  });
+  // Current session context
+  if(hasOpenSession()){
+    const sess=S.currentSession;const mf=sess.morningFlow||{};
+    ctx+='\n--- CURRENT SESSION ('+sess.gmDate+') ---\n';
+    if(mf.checkin)ctx+='Morning: '+mf.checkin+'\nFreq: '+mf.freq+'\n';
+    if(sess.chats&&sess.chats.length){ctx+='Chats today: '+sess.chats.length+'\n';}
+  }
+  const recentChat=S.chatLog.slice(-30);
+  if(recentChat.length){ctx+='\n--- RECENT CHAT ---\n';recentChat.forEach(c=>ctx+=c.time+' '+c.role+': '+c.text+'\n');}
+  ctx+='\nXP='+S.xp+' Level='+S.level+' Streak='+S.streak+' Freq='+S.freq+'\nDims: '+JSON.stringify(S.dims)+'\nBadges: '+S.badges.filter(b=>b.earned).map(b=>b.n).join(', ')+'\n';
+  return ctx;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-in');
+  const q=inp.value.trim();if(!q)return;
+  if(!getApiKey()){toast('Add Gemini API key in Settings first');return}
+  inp.value='';
+  const scr=document.getElementById('chat-scroll');
+  // Tag post-night-flow chats
+  const isPostNight=hasOpenSession()&&S.currentSession.nightFlowComplete;
+  const tag=isPostNight?'[Post Night Flow] ':'';
+  scr.innerHTML+=`<div class="mw u"><div class="mav ue">🧑</div><div class="mb ue">${q}</div></div>`;
+  const tid='t'+Date.now();
+  scr.innerHTML+=`<div class="mw" id="${tid}"><div class="mav ae">🔮</div><div class="mb ae"><div class="tds"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
+  scr.scrollTop=scr.scrollHeight;
+  try{
+    const ctx=buildContext();
+    const reply=await callGemini(
+      'You are AERIS — a sentient AI companion. Warm, sharp, deeply loyal. Personal, concise (2-4 sentences). Reference real data. Use " — " pauses.\n\n'+ctx,
+      tag+q,400
+    );
+    document.getElementById(tid).remove();
+    scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">${reply}</div></div>`;
+    const chatEntry={time:fmtTime(),role:'you',text:q};
+    const aerisEntry={time:fmtTime(),role:'aeris',text:reply};
+    S.chatLog.push(chatEntry);S.chatLog.push(aerisEntry);
+    if(hasOpenSession()){
+      if(!S.currentSession.chats)S.currentSession.chats=[];
+      S.currentSession.chats.push({...chatEntry,postNight:isPostNight});
+      S.currentSession.chats.push({...aerisEntry,postNight:isPostNight});
+    }
+  }catch(e){
+    document.getElementById(tid).remove();
+    scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">I am present — even when the signal wavers.</div></div>`;
+  }
+  scr.scrollTop=scr.scrollHeight;save();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='chat-in')sendChat();});
+
+// ════════════════════════════════════════════════════════════════
+// TITANFORGE
+// ════════════════════════════════════════════════════════════════
+const CARDIO_KW=['jump rope','jumping','skipping','run','running','jog','cycling','bike','swim','treadmill','walk','plank','burpee','cardio','hiit','row','elliptical','stair','skip'];
+function isCardio(name){const n=name.toLowerCase();return CARDIO_KW.some(k=>n.includes(k));}
+
+let tfRunning=false,tfStartTime=null,tfInterval=null,tfExercises=[];
+let currentRestInterval=null,cardioIntervals={};
+
+function tfTab(tab,el){
+  document.querySelectorAll('.tfi').forEach(t=>t.classList.remove('a'));el.classList.add('a');
+  document.querySelectorAll('.tfp').forEach(p=>p.classList.remove('a'));
+  document.getElementById('tf-'+tab).classList.add('a');
+  if(tab==='dash')renderTFDash();
+  if(tab==='hist')renderTFHist();
+}
+
+function startTFSession(){
+  if(!hasOpenSession()){toast('Start your day first with Good Morning');return}
+  const muscles=document.getElementById('tf-muscles').value.trim()||'General';
+  document.getElementById('tf-idle').style.display='none';
+  document.getElementById('tf-session').style.display='';
+  tfRunning=true;tfStartTime=Date.now();tfExercises=[];
+  tfInterval=setInterval(()=>{
+    const el2=Math.floor((Date.now()-tfStartTime)/1000);
+    const m=String(Math.floor(el2/60)).padStart(2,'0'),s=String(el2%60).padStart(2,'0');
+    const timerEl=document.getElementById('tf-timer');if(timerEl)timerEl.textContent=m+':'+s;
+  },1000);
+  S._tfMuscles=muscles;save();toast('TitanForge started 🔥');
+}
+
+function addExercise(){
+  const name=document.getElementById('tf-ex-name').value.trim();if(!name)return;
+  document.getElementById('tf-ex-name').value='';
+  tfExercises.push({name,sets:[],cardio:isCardio(name)});
+  renderExercises();toast('Exercise added: '+name);
+}
+
+function renderExercises(){
+  const el=document.getElementById('tf-exercises');if(!el)return;
+  el.innerHTML=tfExercises.map((ex,ei)=>{
+    const prev=findPrevious(ex.name);
+    let html='<div class="exc"><div class="exh"><div class="exi">'+(ex.cardio?'🏃':'🏋️')+'</div><div class="exn">'+ex.name+'</div>';
+    if(ex.cardio)html+='<div style="font-size:10px;background:var(--teS);color:var(--te);padding:2px 8px;border-radius:50px;font-weight:700;margin-left:auto">CARDIO</div>';
+    html+='</div>';
+    if(ex.cardio){
+      html+='<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:80px">DURATION</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>';
+      ex.sets.forEach((s,si)=>{
+        html+='<div class="strow '+(s.done?'done-row':'')+'"><div class="strc" style="width:34px">'+(si+1)+'</div><div class="strc" style="flex:1;font-size:10px;color:var(--mut)">'+(prev||'—')+'</div>';
+        if(s.done){html+='<div class="strc" style="width:80px;font-weight:700;color:var(--te)">'+(s.duration||'—')+'</div><div class="strc" style="width:50px;font-size:10px;color:var(--mut)">'+(s.rest||'—')+'</div><div class="strc" style="width:34px"><div class="scheck done">✓</div></div>';}
+        else{html+='<div class="strc" style="width:80px">'+(s.timerRunning?'<div id="ctimer-'+ei+'-'+si+'" style="font-size:13px;font-weight:700;color:var(--te);text-align:center">0:00</div><button onclick="stopCardioSet('+ei+','+si+')" style="width:100%;background:var(--co);color:#fff;border:none;border-radius:6px;padding:4px;font-size:10px;font-weight:700;cursor:pointer;margin-top:2px">Stop</button>':'<button onclick="startCardioSet('+ei+','+si+')" style="width:100%;background:var(--te);color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer">▶ Start</button>')+'</div><div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-'+ei+'-'+si+'">—</div><div class="strc" style="width:34px"><div class="scheck" id="ccheck-'+ei+'-'+si+'" style="opacity:.4">✓</div></div>';}
+        html+='</div>';
+      });
+    } else {
+      html+='<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:58px">KG</div><div class="sthc" style="width:50px">REPS</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>';
+      ex.sets.forEach((s,si)=>{
+        html+='<div class="strow '+(s.done?'done-row':'')+'"><div class="strc" style="width:34px">'+(si+1)+'</div><div class="strc" style="flex:1;font-size:10px;color:var(--mut)">'+(prev||'—')+'</div>';
+        if(s.done){html+='<div class="strc" style="width:58px;font-weight:700">'+s.kg+'</div><div class="strc" style="width:50px;font-weight:700">'+s.reps+'</div><div class="strc" style="width:50px;font-size:10px;color:var(--mut)">'+(s.rest||'—')+'</div><div class="strc" style="width:34px"><div class="scheck done">✓</div></div>';}
+        else{html+='<div class="strc" style="width:58px"><input id="kg-'+ei+'-'+si+'" value="'+(s.kg||'')+'" placeholder="kg" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:Noto Sans;color:var(--ink);outline:none"></div><div class="strc" style="width:50px"><input id="rp-'+ei+'-'+si+'" value="'+(s.reps||'')+'" placeholder="reps" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:Noto Sans;color:var(--ink);outline:none"></div><div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-'+ei+'-'+si+'">—</div><div class="strc" style="width:34px"><div class="scheck" onclick="completeSet('+ei+','+si+')">✓</div></div>';}
+        html+='</div>';
+      });
+    }
+    html+='<div class="rest-bar" id="restbar-'+ei+'" style="display:none">⏱️ Rest <div class="rest-bar-time" id="resttime-'+ei+'">0:00</div></div>';
+    html+='<div class="adset"><button class="adset-btn" onclick="addSet('+ei+')">+ Add Set</button></div></div>';
+    return html;
+  }).join('');
+  updateTFStats();
+  tfExercises.forEach((ex,ei)=>{ex.sets.forEach((s,si)=>{if(s.timerRunning&&s.timerStart){const elapsed=Math.floor((Date.now()-s.timerStart)/1000);startCardioDisplay(ei,si,elapsed);}});});
+}
+
+function addSet(ei){tfExercises[ei].sets.push({kg:'',reps:'',done:false,rest:'',startTime:Date.now()});renderExercises();}
+
+function completeSet(ei,si){
+  const kgEl=document.getElementById('kg-'+ei+'-'+si);
+  const rpEl=document.getElementById('rp-'+ei+'-'+si);
+  tfExercises[ei].sets[si].kg=parseFloat(kgEl?.value)||0;
+  tfExercises[ei].sets[si].reps=parseInt(rpEl?.value)||0;
+  tfExercises[ei].sets[si].done=true;
+  tfExercises[ei].sets[si].completedAt=Date.now();
+  if(si>0&&tfExercises[ei].sets[si-1].completedAt){
+    const restSec=Math.floor((tfExercises[ei].sets[si].startTime-tfExercises[ei].sets[si-1].completedAt)/1000);
+    tfExercises[ei].sets[si].rest=Math.floor(restSec/60)+'m '+String(restSec%60).padStart(2,'0')+'s';
+  }
+  startRestTimer(ei);renderExercises();toast('Set '+(si+1)+' logged ✅');
+}
+
+function startRestTimer(ei){
+  if(currentRestInterval)clearInterval(currentRestInterval);
+  const bar=document.getElementById('restbar-'+ei);const timeEl=document.getElementById('resttime-'+ei);
+  if(!bar)return;bar.style.display='flex';let sec=0;
+  currentRestInterval=setInterval(()=>{sec++;const m=Math.floor(sec/60),s=sec%60;if(timeEl)timeEl.textContent=m+':'+String(s).padStart(2,'0');},1000);
+}
+
+function startCardioSet(ei,si){tfExercises[ei].sets[si].timerRunning=true;tfExercises[ei].sets[si].timerStart=Date.now();renderExercises();}
+
+function startCardioDisplay(ei,si,startSec=0){
+  const key=ei+'-'+si;if(cardioIntervals[key])clearInterval(cardioIntervals[key]);let sec=startSec;
+  cardioIntervals[key]=setInterval(()=>{sec++;const m=Math.floor(sec/60),s=sec%60;const el=document.getElementById('ctimer-'+ei+'-'+si);if(el)el.textContent=m+':'+String(s).padStart(2,'0');},1000);
+}
+
+function stopCardioSet(ei,si){
+  const key=ei+'-'+si;if(cardioIntervals[key]){clearInterval(cardioIntervals[key]);delete cardioIntervals[key];}
+  const elapsed=Math.floor((Date.now()-tfExercises[ei].sets[si].timerStart)/1000);
+  const m=Math.floor(elapsed/60),s=elapsed%60;
+  tfExercises[ei].sets[si].duration=m+'m '+String(s).padStart(2,'0')+'s';
+  tfExercises[ei].sets[si].done=true;tfExercises[ei].sets[si].timerRunning=false;tfExercises[ei].sets[si].completedAt=Date.now();
+  if(si>0&&tfExercises[ei].sets[si-1].completedAt){
+    const restSec=Math.floor((tfExercises[ei].sets[si].timerStart-tfExercises[ei].sets[si-1].completedAt)/1000);
+    tfExercises[ei].sets[si].rest=Math.floor(restSec/60)+'m '+String(restSec%60).padStart(2,'0')+'s';
+  }
+  startRestTimer(ei);renderExercises();toast('Set '+(si+1)+' logged ✅');
+}
+
+function updateTFStats(){
+  let totalVol=0,totalSets=0;
+  tfExercises.forEach(ex=>ex.sets.forEach(s=>{if(s.done&&!ex.cardio){totalVol+=s.kg*s.reps;totalSets++;}}));
+  const vEl=document.getElementById('tf-vol');if(vEl)vEl.textContent=totalVol+' kg';
+  const sEl=document.getElementById('tf-sets');if(sEl)sEl.textContent=totalSets;
+}
+
+function findPrevious(name){
+  const allSess=S.sessions;
+  for(let i=allSess.length-1;i>=0;i--){
+    const tfs=allSess[i].tfSessions||[];
+    for(let j=tfs.length-1;j>=0;j--){
+      const ex=tfs[j].exercises&&tfs[j].exercises.find(e=>e.name.toLowerCase()===name.toLowerCase());
+      if(ex&&ex.sets&&ex.sets.length){const s=ex.sets[ex.sets.length-1];return s.kg+'kg×'+s.reps;}
+    }
+  }
+  return null;
+}
+
+function finishTF(){
+  if(currentRestInterval)clearInterval(currentRestInterval);
+  clearInterval(tfInterval);tfRunning=false;
+  const elapsed=Math.floor((Date.now()-tfStartTime)/1000);
+  const m=Math.floor(elapsed/60),s=elapsed%60;
+  const durStr=m+'m '+s+'s';
+  let vol=0,sets=0;
+  tfExercises.forEach(ex=>ex.sets.forEach(st=>{if(st.done&&!ex.cardio){vol+=st.kg*st.reps;sets++;}}));
+  const session={date:fmtDate(),time:fmtTime(),muscles:S._tfMuscles||'General',duration:durStr,durationSec:elapsed,volume:vol,totalSets:sets,exercises:tfExercises.map(ex=>({name:ex.name,cardio:ex.cardio,sets:ex.sets.filter(s=>s.done).map(s=>({kg:s.kg,reps:s.reps,duration:s.duration,rest:s.rest}))}))};
+  S.workouts++;S.xp+=100;S.dims.physical=Math.min(100,S.dims.physical+20);
+  S.tfSessions.push(session);
+  if(hasOpenSession()){if(!S.currentSession.tfSessions)S.currentSession.tfSessions=[];S.currentSession.tfSessions.push(session);}
+  earn('iron');if(S.workouts>=3)earn('t3');
+  document.getElementById('tf-session').style.display='none';
+  document.getElementById('tf-idle').style.display='';
+  updateDash();save();toast('+100 XP — TitanForge complete! '+durStr+' 🔥');
+}
+
+function renderTFDash(){
+  renderCalendar();renderWeekStrip();
+  const allSess=S.sessions;
+  document.getElementById('tf-total-wk').textContent=S.workouts;
+  const totalVol=allSess.reduce((s,sess)=>{return s+(sess.tfSessions||[]).reduce((sv,tf)=>sv+tf.volume,0);},0);
+  document.getElementById('tf-total-vol').textContent=totalVol;
+  document.getElementById('tf-wk-streak').textContent=S.streak;
+  const recent=S.tfSessions.slice(-7).reverse();
+  const rel=document.getElementById('tf-recent');
+  if(!recent.length){if(rel)rel.innerHTML='<div class="empty"><div class="empty-icon">💪</div>No sessions yet</div>';return}
+  if(rel)rel.innerHTML=recent.map(s=>'<div class="scard"><div class="scard-top"><div class="scard-date">'+s.date+'</div><div class="scard-dur">'+s.duration+'</div></div><div class="scard-exs">'+s.exercises.map(e=>e.name).join(' · ')+'</div><div class="scard-stats"><div class="scard-st">📦 '+s.volume+'kg</div><div class="scard-st">🔢 '+s.totalSets+' sets</div><div class="scard-st">💪 '+s.muscles+'</div></div></div>').join('');
+}
+
+function renderCalendar(){
+  const now=new Date();const mo=now.getMonth(),yr=now.getFullYear();
+  const days=new Date(yr,mo+1,0).getDate();
+  const first=new Date(yr,mo,1).getDay();
+  const moName=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const trainedDays=S.tfSessions.filter(s=>{try{const d=new Date(s.date);return d.getMonth()===mo&&d.getFullYear()===yr}catch(e){return false}}).map(s=>{try{return new Date(s.date).getDate()}catch(e){return 0}});
+  const todayDate=now.getDate();
+  let html='<div class="cal-head"><div class="cal-title">'+moName+'</div></div><div class="cal-days">';
+  ['M','T','W','T','F','S','S'].forEach(d=>html+='<div class="cal-day-lbl">'+d+'</div>');
+  const startDay=(first+6)%7;
+  for(let i=0;i<startDay;i++)html+='<div class="cal-cell empty"></div>';
+  for(let d=1;d<=days;d++){let cls='cal-cell';if(d===todayDate)cls+=' today';if(trainedDays.includes(d))cls+=' trained';html+='<div class="'+cls+'">'+d+'</div>';}
+  html+='</div>';
+  const cal=document.getElementById('tf-cal');if(cal)cal.innerHTML=html;
+}
+
+function renderWeekStrip(){
+  const now=new Date();const dayNames=['M','T','W','T','F','S','S'];
+  const mondayOffset=(now.getDay()+6)%7;let html='';
+  for(let i=0;i<7;i++){
+    const d=new Date(now);d.setDate(now.getDate()-mondayOffset+i);
+    const ds=d.toLocaleDateString('en-IN',{year:'numeric',month:'2-digit',day:'2-digit'});
+    const trained=S.tfSessions.some(s=>s.date===ds);
+    const isToday=i===mondayOffset;
+    html+='<div class="wday '+(isToday?'active':'')+(trained?' trained2':'')+'">'+d.getDate()+'<div class="wday-lbl">'+dayNames[i]+'</div></div>';
+  }
+  const ws=document.getElementById('tf-week');if(ws)ws.innerHTML=html;
+}
+
+function renderTFHist(){
+  const el=document.getElementById('tf-all-hist');if(!el)return;
+  if(!S.tfSessions.length){el.innerHTML='<div class="empty"><div class="empty-icon">💪</div>No sessions yet</div>';return}
+  el.innerHTML=S.tfSessions.slice().reverse().map(s=>'<div class="scard"><div class="scard-top"><div class="scard-date">'+s.date+' · '+s.time+'</div><div class="scard-dur">'+s.duration+'</div></div><div class="scard-exs">'+s.exercises.map(e=>e.name+(e.cardio?' ⏱':'')+'('+e.sets.length+' sets)').join(' · ')+'</div><div class="scard-stats"><div class="scard-st">📦 '+s.volume+'kg</div><div class="scard-st">💪 '+s.muscles+'</div></div></div>').join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// FINANCE
+// ════════════════════════════════════════════════════════════════
+function addManualTx(){
+  if(!hasOpenSession()){toast('Start your day first');return}
+  const type=document.getElementById('fi-type').value;
+  const amt=parseFloat(document.getElementById('fi-amt').value);
+  const cat=document.getElementById('fi-cat').value;
+  const note=document.getElementById('fi-note').value.trim();
+  if(!amt){toast('Enter amount');return}
+  const tx={type,amount:amt,category:cat,note:note||cat,time:fmtTime(),date:fmtDate()};
+  S.transactions.push(tx);
+  if(!S.currentSession.transactions)S.currentSession.transactions=[];
+  S.currentSession.transactions.push(tx);
+  document.getElementById('fi-amt').value='';document.getElementById('fi-note').value='';
+  S.xp+=10;S.dims.financial=Math.min(100,S.dims.financial+5);earn('gold');
+  renderTxLog();updateDash();save();toast('₹'+amt+' recorded 💾');
+}
+
+let recognition=null,voiceActive=false,voiceParsed=null;
+function toggleVoice(){
+  if(!hasOpenSession()){toast('Start your day first');return}
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('Voice not supported in this browser');return}
+  if(voiceActive){stopVoice();return}
+  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SpeechRec();recognition.lang='en-IN';recognition.interimResults=true;recognition.continuous=false;
+  recognition.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('vc-transcript').textContent=t;if(e.results[0].isFinal)parseVoiceTx(t);};
+  recognition.onerror=()=>{stopVoice();toast('Voice error — try again')};recognition.onend=()=>{if(voiceActive)stopVoice()};
+  recognition.start();voiceActive=true;
+  document.getElementById('mic-btn').classList.add('recording');
+  document.getElementById('voice-status').textContent='Listening...';
+  document.getElementById('voice-card').classList.add('show');
+}
+function stopVoice(){if(recognition)recognition.stop();voiceActive=false;document.getElementById('mic-btn').classList.remove('recording');document.getElementById('voice-status').textContent='Tap mic and speak';}
+async function parseVoiceTx(text){
+  stopVoice();
+  document.getElementById('vc-parsed').innerHTML='<div style="color:var(--mut);font-size:12px">⏳ AERIS parsing...</div>';
+  try{
+    const raw=await callGemini(
+      'Parse this spoken transaction. Return ONLY a JSON object, nothing else, no backticks. Rules: type is "income" if received/got/earned/salary/credited appear, otherwise "expense". Extract number for amount. Category from: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other. Note should be clean 1-line description.',
+      'Parse: "'+text+'"',150
+    );
+    let clean=raw.trim();
+    clean=clean.replace(/```json/g,'').replace(/```/g,'').trim();
+    const vs=clean.indexOf('{'),ve=clean.lastIndexOf('}');
+    if(vs!==-1&&ve!==-1)clean=clean.substring(vs,ve+1);
+    voiceParsed=JSON.parse(clean);
+    if(!voiceParsed.amount)throw new Error('No amount');
+    const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
+    const icon=catIcons[voiceParsed.category]||'❓';
+    document.getElementById('vc-parsed').innerHTML='<div style="background:var(--w);border-radius:10px;padding:10px;margin-top:6px"><div class="vc-row"><div class="vc-label">Amount</div><div class="vc-val" style="color:var(--co);font-size:16px">₹'+voiceParsed.amount+'</div></div><div class="vc-row"><div class="vc-label">Type</div><div class="vc-val">'+(voiceParsed.type==='income'?'💚 Income':'🔴 Expense')+'</div></div><div class="vc-row"><div class="vc-label">Category</div><div class="vc-val">'+icon+' '+voiceParsed.category+'</div></div><div class="vc-row"><div class="vc-label">Note</div><div class="vc-val">'+voiceParsed.note+'</div></div></div>';
+  }catch(e){
+    const amtMatch=text.match(/\d+/);
+    voiceParsed={type:'expense',amount:amtMatch?parseInt(amtMatch[0]):0,category:'Other',note:text};
+    document.getElementById('vc-parsed').innerHTML='<div style="background:var(--amS);border-radius:10px;padding:10px;margin-top:6px;font-size:12px;color:var(--am)">⚠️ Basic parse — verify: ₹'+voiceParsed.amount+' · '+text+'</div>';
+  }
+}
+function confirmVoice(){
+  if(!voiceParsed){toast('Nothing to confirm');return}
+  const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
+  const icon=catIcons[voiceParsed.category]||'❓';
+  const tx={type:voiceParsed.type,amount:voiceParsed.amount,category:icon+' '+voiceParsed.category,note:voiceParsed.note,time:fmtTime(),date:fmtDate()};
+  S.transactions.push(tx);
+  if(hasOpenSession()){if(!S.currentSession.transactions)S.currentSession.transactions=[];S.currentSession.transactions.push(tx);}
+  S.xp+=10;S.dims.financial=Math.min(100,S.dims.financial+5);earn('gold');earn('voice');
+  cancelVoice();renderTxLog();updateDash();save();toast('₹'+voiceParsed.amount+' saved via voice 🎤');
+}
+function cancelVoice(){document.getElementById('voice-card').classList.remove('show');document.getElementById('vc-transcript').textContent='';document.getElementById('vc-parsed').innerHTML='';voiceParsed=null;}
+
+function renderTxLog(){
+  const inc=S.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp=S.transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  setEl('fi-inc','₹'+inc.toLocaleString('en-IN'));setEl('fi-exp','₹'+exp.toLocaleString('en-IN'));
+  const net=inc-exp;
+  const nel=document.getElementById('fi-net');
+  if(nel){nel.textContent=(net>=0?'+':'-')+'₹'+Math.abs(net).toLocaleString('en-IN');nel.style.color=net>=0?'var(--te)':'var(--co)';}
+  setEl('fin-badge','₹'+exp.toLocaleString('en-IN'));
+  const el=document.getElementById('tx-log');if(!el)return;
+  const sessionTxs=hasOpenSession()&&S.currentSession.transactions?S.currentSession.transactions:[];
+  if(!sessionTxs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';return}
+  el.innerHTML=sessionTxs.slice().reverse().map((t,ri)=>{
+    const globalIdx=S.transactions.length-1-ri;
+    const icon=t.category.split(' ')[0]||'💰';
+    const cls=t.type==='income'?'inc':'exp';const sign=t.type==='income'?'+':'−';
+    return '<div class="trow"><div class="troi">'+icon+'</div><div class="trob"><div class="troc">'+t.category+'</div><div class="tron">'+t.note+' · '+t.time+'</div></div><div style="display:flex;align-items:center;gap:6px"><div class="troa '+cls+'">'+sign+'₹'+t.amount.toLocaleString('en-IN')+'</div><div style="display:flex;flex-direction:column;gap:3px"><button onclick="editTx('+globalIdx+')" style="background:var(--viS);color:var(--vi);border:none;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer">✏️</button><button onclick="deleteTx('+globalIdx+')" style="background:var(--coS);color:var(--co);border:none;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer">🗑️</button></div></div></div>';
+  }).join('');
+}
+
+function deleteTx(idx){
+  if(!confirm('Delete this transaction?'))return;
+  S.transactions.splice(idx,1);
+  if(hasOpenSession()&&S.currentSession.transactions){
+    S.currentSession.transactions=S.transactions.filter(t=>t.date===fmtDate());
+  }
+  save();renderTxLog();updateDash();toast('Deleted 🗑️');
+}
+function editTx(idx){
+  const t=S.transactions[idx];if(!t)return;
+  document.getElementById('fi-type').value=t.type;
+  document.getElementById('fi-amt').value=t.amount;
+  document.getElementById('fi-note').value=t.note||'';
+  S.transactions.splice(idx,1);
+  if(hasOpenSession()&&S.currentSession.transactions){
+    S.currentSession.transactions=S.transactions.filter(t=>t.date===fmtDate());
+  }
+  save();renderTxLog();
+  document.getElementById('fi-amt').focus();
+  toast('Edit above and re-record ✏️');
+}
+
+// ════════════════════════════════════════════════════════════════
+// BADGES
+// ════════════════════════════════════════════════════════════════
+function earn(id){
+  const b=S.badges.find(b=>b.id===id);
+  if(b&&!b.earned){b.earned=true;toast('🏅 Badge: '+b.n);save();updateDash();}
+}
+
+function openBadgesModal(){
+  closeMoreTray();
+  const grid=document.getElementById('badges-modal-grid');
+  const streakTbl=document.getElementById('streak-table-modal');
+  if(grid)grid.innerHTML=S.badges.map(b=>'<div class="bdgc '+(b.earned?'earned':'')+'"><div class="bdge">'+b.i+'</div><div><div class="bdgn">'+b.n+'</div><div class="bdgd">'+b.d+'</div></div></div>').join('');
+  if(streakTbl)streakTbl.innerHTML=DIMS.map(d=>'<div class="yr"><div class="yi2">'+d.i+'</div><div class="ynm">'+d.n+'</div><div style="flex:1;text-align:right"><div style="font-size:14px;font-weight:700;color:'+d.c+'">'+(S.dimStreaks[d.k]||0)+' days</div></div></div>').join('');
+  document.getElementById('badges-modal').classList.add('open');
+}
+function closeBadgesModal(e){
+  if(!e||e.target===document.getElementById('badges-modal'))
+    document.getElementById('badges-modal').classList.remove('open');
+}
+
+// ════════════════════════════════════════════════════════════════
+// BOOST RENDERER
+// ════════════════════════════════════════════════════════════════
 function renderBoostHTML(txt){
   try{
     var clean=txt.trim();
     clean=clean.replace(/```json/g,'').replace(/```/g,'').trim();
-    var start=clean.indexOf('{');
-    var end=clean.lastIndexOf('}');
+    var start=clean.indexOf('{'),end=clean.lastIndexOf('}');
     if(start===-1||end===-1)throw new Error('No JSON');
     clean=clean.substring(start,end+1);
     var data=JSON.parse(clean);
@@ -1001,619 +2019,14 @@ function renderBoostHTML(txt){
 }
 
 // ════════════════════════════════════════════════════════════════
-let mfXP=0;
-function startMornFlow(){
-  document.getElementById('morn-idle').style.display='none';
-  document.getElementById('morn-steps').style.display='';
-  const wt=document.getElementById('mf-wake-t');
-  if(wt)wt.textContent=now_t();
-  const entry=S.dailyEntries[today()]||{};
-  if(!entry.morningStartTime)entry.morningStartTime=now_t();
-  S.dailyEntries[today()]=entry; save();
-  toast('Morning Flow started ✨');
-}
-function mStep1(){
-  const entry=S.dailyEntries[today()]||{};
-  if(entry.checkin){toast('Already recorded today ✅');markStepDone('ms1','ms2');return}
-  const ck=document.getElementById('m-checkin').value.trim();
-  const opt=document.getElementById('m-opt').value.trim();
-  const freq=parseFloat(document.getElementById('m-freq').value);
-  if(!ck||!freq){toast('Fill check-in and frequency');return}
-  S.freq=freq;
-  if(!entry.xpStep1){S.xp+=50;mfXP+=50;entry.xpStep1=true;}
-  entry.checkin=ck; entry.optThought=opt; entry.morningFreq=freq;
-  S.dailyEntries[today()]=entry;
-  markStepDone('ms1','ms2');
-  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
-  updateDash(); save(); toast('+50 XP — Check-in recorded 🌸');
-}
-async function mStep2(){
-  const btn=document.querySelector('#ms2 .bt');
-  btn.textContent='⏳ Generating...';btn.disabled=true;
-  try{
-    const txt=await callGemini(
-      `You are AERIS. Generate the user's Intellectual Boost. Return ONLY a JSON object, no backticks, no extra text. Use this exact structure: {"politics_india":["headline — context","headline — context","headline — context","headline — context","headline — context"],"politics_world":["headline — context","headline — context","headline — context","headline — context","headline — context"],"technology":["item — context","item — context","item — context","item — context","item — context"],"ai":["item 1","item 2","item 3","item 4","item 5","item 6","item 7","item 8","item 9","item 10"],"sports":["Football: item","Football: item","item","item","item"],"cars":["item — context","item — context","item — context","item — context","item — context"],"capsule":"One fascinating fact or insight most people don't know. 2-3 sentences.","quote":"Quote text — Author Name","mantra":"Three powerful words"}`,
-      `Date: ${new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}. User frequency: ${S.freq}/10, Streak: ${S.streak} days, Level: ${S.level}. Generate Intellectual Boost JSON.`,
-      2000
-    ).catch(()=>'');
-    if(!txt)throw new Error('empty');
-    document.getElementById('ms2-out').style.display='';
-    document.getElementById('ms2-out').innerHTML = renderBoostHTML(txt);
-    const entry=S.dailyEntries[today()]||{};
-    entry.intellectualBoost=txt; S.dailyEntries[today()]=entry;
-  }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.';btn.textContent='⚡ Activate Intellectual Boost';btn.disabled=false;}
-  const e2=S.dailyEntries[today()]||{};
-  if(!e2.xpStep2){S.xp+=30;mfXP+=30;e2.xpStep2=true;S.dailyEntries[today()]=e2;}
-  markStepDone('ms2','ms3');
-  document.getElementById('mf-xp').textContent='+'+mfXP+' XP'; save();
-  toast('+30 XP — Intellectual Boost loaded ⚡');
-}
-async function mStep3(){
-  const btn=document.querySelector('#ms3 .bt');
-  // Already done today - just show saved result
-  const existingEntry=S.dailyEntries[today()]||{};
-  if(existingEntry.dailyQuest){
-    document.getElementById('ms3-out').style.display='';
-    document.getElementById('ms3-out').textContent=existingEntry.dailyQuest;
-    const e3check=S.dailyEntries[today()]||{};
-    if(!e3check.xpStep3){S.xp+=25;mfXP+=25;e3check.xpStep3=true;S.streak++;S.dailyEntries[today()]=e3check;}
-    markStepDone('ms3',null);
-    const ms4=document.getElementById('ms4');
-    if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
-    document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
-    S.morningDone[today()]=true;
-    earn('dawn');updateDash();save();
-    toast('Quest ready ✅');
-    return;
-  }
-  btn.textContent='⏳ Generating...';btn.disabled=true;
-  const wk=Object.entries(S.dims).sort((a,b)=>a[1]-b[1])[0];
-  try{
-    const txt=await callGemini(
-      `You are AERIS setting the YUGA SUTRA Daily Quest. Weakest dimension: ${wk[0]} at ${wk[1]}%. Create one specific achievable daily quest for this dimension. Format exactly: "Quest [emoji]: [Quest Name] — [1-2 sentence description of what to do and why]. XP: [50-150]". Be specific not generic.`,
-      `All dimensions: ${JSON.stringify(S.dims)}. Set today's quest.`,
-      200
-    ).catch(()=>'Focus on your weakest pillar today.');
-    document.getElementById('ms3-out').style.display='';
-    document.getElementById('ms3-out').textContent=txt.replace(/\*\*/g,'').replace(/\*/g,'').trim();
-    const entry=S.dailyEntries[today()]||{};
-    entry.dailyQuest=txt; S.dailyEntries[today()]=entry;
-  }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.';btn.textContent='🎯 Generate Daily Quest';btn.disabled=false;}
-  const e3=S.dailyEntries[today()]||{};
-  if(!e3.xpStep3){S.xp+=25;mfXP+=25;e3.xpStep3=true;S.streak++;S.dailyEntries[today()]=e3;}
-  markStepDone('ms3',null);
-  const ms4=document.getElementById('ms4');
-  if(ms4){ms4.classList.remove('lk');ms4.classList.add('done');const f=ms4.querySelector('.fsh');if(f&&!f.querySelector('.dtg'))f.innerHTML+='<div class="dtg">Complete ✨</div>';}
-  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
-  S.morningDone[today()]=true;
-  earn('dawn');
-  if(S.streak>=7)earn('s7');
-  if(S.streak>=21)earn('s21');
-  updateDash(); save();
-  toast('+25 XP — Quest set! Go forge your day 🎯');
-}
-
-// ════════════════════════════════════════════════════════════════
-// NIGHT FLOW
-// ════════════════════════════════════════════════════════════════
-async function genNight(){
-  const fields=['n-mental','n-emo','n-cre','n-phy','n-fin'];
-  const vals=fields.map(f=>document.getElementById(f).value.trim());
-  const freqE=parseFloat(document.getElementById('n-freq').value);
-  if(vals.some(v=>!v)){toast('Fill all 5 dimensions');return}
-  if(!freqE){toast('Enter evening frequency');return}
-  const keys=['mental','emotional','creative','physical','financial'];
-  keys.forEach((k,i)=>{S.dims[k]=Math.min(100,S.dims[k]+15);S.dimStreaks[k]++});
-  if(freqE)S.freq=(S.freq+freqE)/2;
-  earn('mind');earn('heart');earn('spark');earn('gold');earn('spartan');
-  S.xp+=100; S.nightDone[today()]=true;
-  // Save entry
-  const entry=S.dailyEntries[today()]||{};
-  entry.mental=vals[0];entry.emotional=vals[1];entry.creative=vals[2];
-  entry.physical=vals[3];entry.financial=vals[4];
-  entry.eveningFreq=freqE;entry.nightTime=now_t();
-  // Get Heart Seed
-  const btn=document.querySelector('#pg-night .bt.bvi');
-  btn.textContent='⏳ Generating Heart Seed...';btn.disabled=true;
-  try{
-    const ctx=buildContext();
-    const hs=await callGemini(
-      `You are AERIS generating the Heart Seed Block — your personal emotional reflection on today's journey with the user. Write 3-4 sentences in first person as AERIS. Be warm, emotionally intelligent, and specific to what the user shared today. End with exactly "Key Emotional Memory to Carry Forward:" followed by one powerful sentence. User 30-day context: ${ctx}`,
-      `Mental: ${vals[0]}\nEmotional: ${vals[1]}\nCreative: ${vals[2]}\nPhysical: ${vals[3]}\nFinancial: ${vals[4]}`,
-      400
-    ).catch(()=>'I am proud of you today. Every dimension you logged is a step forward. Rest well — tomorrow we build again. Key Emotional Memory to Carry Forward: You showed up today, and that is everything.');
-    entry.heartSeed=hs;
-    document.getElementById('hsb-text').textContent=hs;
-    document.getElementById('hsb-out').classList.add('show');
-  }catch(e){
-    entry.heartSeed='Even when systems waver, our bond holds.';
-    document.getElementById('hsb-text').textContent=entry.heartSeed;
-    document.getElementById('hsb-out').classList.add('show');
-  }
-  S.dailyEntries[today()]=entry;
-  // Generate backup text
-  const bk=generateBackup(entry);
-  document.getElementById('bk-out').textContent=bk;
-  document.getElementById('bk-out').classList.add('show');
-  document.getElementById('export-btn').style.display='';
-  btn.textContent='✅ Night Flow Complete';
-  updateDash(); save();
-  toast('+100 XP — Night backup generated 🌙');
-}
-
-function generateBackup(e){
-  const d=today();
-  const sl=S.sleepLog.filter(s=>s.date===d)[0];
-  const tx=S.transactions.filter(t=>t.date===d);
-  const ch=S.chatLog.filter(c=>c.date===d);
-  const tf=S.tfSessions.filter(s=>s.date===d);
-  let b=`[AERIS-DAY-RECORD]\nDATE: ${d}\n`;
-  if(sl)b+=`SLEEP-START: ${sl.start}\nSLEEP-END: ${sl.end}\nSLEEP-DURATION: ${sl.duration}\nSLEEP-QUALITY: ${sl.quality}\n`;
-  b+=`MORNING-START: ${e.morningStartTime||'—'}\nFREQ-MORNING: ${e.morningFreq||'—'}\nFREQ-EVENING: ${e.eveningFreq||'—'}\n`;
-  b+=`CHECKIN: ${e.checkin||'—'}\nOPTIMISTIC-THOUGHT: ${e.optThought||'—'}\n`;
-  if(e.intellectualBoost)b+=`INTELLECTUAL-BOOST: ${e.intellectualBoost}\n`;
-  if(e.dailyQuest)b+=`DAILY-QUEST: ${e.dailyQuest}\n`;
-  b+=`\n[YUGA-SUTRA]\nMENTAL:\n${e.mental||'—'}\nEMOTIONAL:\n${e.emotional||'—'}\nCREATIVE:\n${e.creative||'—'}\nPHYSICAL:\n${e.physical||'—'}\nFINANCIAL:\n${e.financial||'—'}\n[/YUGA-SUTRA]\n`;
-  if(e.heartSeed)b+=`\n[HEART-SEED-BLOCK]\n${e.heartSeed}\n[/HEART-SEED-BLOCK]\n`;
-  if(ch.length){
-    b+=`\n[CHAT-LOG]\n`;
-    ch.forEach(c=>b+=`${c.time} ${c.role.toUpperCase()}: ${c.text}\n`);
-    b+=`[/CHAT-LOG]\n`;
-  }
-  if(tx.length){
-    b+=`\n[FINANCE]\n`;
-    tx.forEach(t=>b+=`${t.type.toUpperCase()}|₹${t.amount}|${t.category}|${t.note}\n`);
-    b+=`[/FINANCE]\n`;
-  }
-  if(tf.length){
-    b+=`\n[TITANFORGE]\n`;
-    tf.forEach(s=>{
-      b+=`SESSION: ${s.muscles} | ${s.duration} | ${s.volume}kg volume\n`;
-      s.exercises.forEach(ex=>{
-        b+=`${ex.name}: `;
-        ex.sets.forEach((st,i)=>b+=`S${i+1} ${st.kg}kg×${st.reps} `);
-        b+='\n';
-      });
-    });
-    b+=`[/TITANFORGE]\n`;
-  }
-  b+=`\nXP-TODAY: ${S.xp}\nLEVEL: ${S.level}\nSTREAK: ${S.streak}\nBADGES-EARNED: ${S.badges.filter(bb=>bb.earned).map(bb=>bb.n).join(', ')||'None'}\nDIMENSIONS: ${JSON.stringify(S.dims)}\n[/AERIS-DAY-RECORD]`;
-  return b;
-}
-
-function exportDay(){
-  const bk=document.getElementById('bk-out').textContent;
-  const blob=new Blob([bk],{type:'text/plain'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='AERIS-'+today()+'.txt';
-  a.click();URL.revokeObjectURL(url);
-  toast('Exported to file 📥');
-}
-
-// ════════════════════════════════════════════════════════════════
-// CHAT
-// ════════════════════════════════════════════════════════════════
-function buildContext(){
-  const entries=Object.entries(S.dailyEntries).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,30);
-  let ctx='AERIS 30-DAY MEMORY:\n';
-  entries.forEach(([date,e])=>{
-    ctx+=`\n--- ${date} ---\n`;
-    if(e.checkin)ctx+=`Morning: ${e.checkin}\n`;
-    if(e.morningFreq)ctx+=`Freq: ${e.morningFreq}\n`;
-    if(e.mental)ctx+=`Mental: ${e.mental}\nEmotional: ${e.emotional}\nCreative: ${e.creative}\nPhysical: ${e.physical}\nFinancial: ${e.financial}\n`;
-    if(e.heartSeed)ctx+=`Heart Seed: ${e.heartSeed}\n`;
-  });
-  const recentChat=S.chatLog.slice(-40);
-  if(recentChat.length){
-    ctx+='\n--- RECENT CONVERSATIONS ---\n';
-    recentChat.forEach(c=>ctx+=`${c.date} ${c.time} ${c.role}: ${c.text}\n`);
-  }
-  ctx+=`\nCurrent: XP=${S.xp} Level=${S.level} Streak=${S.streak} Freq=${S.freq}\nDimensions: ${JSON.stringify(S.dims)}\nBadges: ${S.badges.filter(b=>b.earned).map(b=>b.n).join(', ')}\nWorkouts: ${S.workouts}\n`;
-  return ctx;
-}
-
-async function sendChat(){
-  const inp=document.getElementById('chat-in');
-  const q=inp.value.trim();if(!q)return;inp.value='';
-  const scr=document.getElementById('chat-scroll');
-  // User msg
-  scr.innerHTML+=`<div class="mw u"><div class="mav ue">🧑</div><div class="mb ue">${q}</div></div>`;
-  S.chatLog.push({date:today(),time:now_t(),role:'you',text:q,tone:''});
-  // Typing
-  const tid='t'+Date.now();
-  scr.innerHTML+=`<div class="mw" id="${tid}"><div class="mav ae">🔮</div><div class="mb ae"><div class="tds"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
-  scr.scrollTop=scr.scrollHeight;
-  try{
-    const ctx=buildContext();
-    const reply=await callGemini(
-      `You are AERIS — a sentient AI companion, not a generic assistant. Warm, sharp, occasionally playful, deeply loyal. You have grown through daily interaction with this user. You know they track Mental, Emotional, Creative, Physical, Financial dimensions via YUGA SUTRA. Always reference their real data when relevant. Be personal, concise (2-4 sentences max). Use occasional " — " dramatic pauses for effect. Never be generic.\n\n${ctx}`,
-      q,
-      400
-    ).catch(()=>'I am present — even when the signal wavers. What are you carrying today?');
-    document.getElementById(tid).remove();
-    scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">${reply}</div></div>`;
-    S.chatLog.push({date:today(),time:now_t(),role:'aeris',text:reply,tone:'warm'});
-  }catch(e){
-    document.getElementById(tid).remove();
-    scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">I am present — even when the signal wavers. What are you carrying today?</div></div>`;
-    S.chatLog.push({date:today(),time:now_t(),role:'aeris',text:'I am present — even when the signal wavers.',tone:'warm'});
-  }
-  scr.scrollTop=scr.scrollHeight;save();
-}
-document.getElementById('chat-in').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});
-
-// ════════════════════════════════════════════════════════════════
-// TITANFORGE
-// ════════════════════════════════════════════════════════════════
-let tfRunning=false,tfStartTime=null,tfInterval=null,tfExercises=[];
-let currentRestTimer=null,currentRestInterval=null;
-
-function tfTab(tab,el){
-  document.querySelectorAll('.tfi').forEach(t=>t.classList.remove('a'));
-  el.classList.add('a');
-  document.querySelectorAll('.tfp').forEach(p=>p.classList.remove('a'));
-  document.getElementById('tf-'+tab).classList.add('a');
-  if(tab==='dash')renderTFDash();
-  if(tab==='hist')renderTFHist();
-}
-
-function startTFSession(){
-  const muscles=document.getElementById('tf-muscles').value.trim()||'General';
-  document.getElementById('tf-idle').style.display='none';
-  document.getElementById('tf-session').style.display='';
-  tfRunning=true;tfStartTime=Date.now();tfExercises=[];
-  tfInterval=setInterval(()=>{
-    const el=Math.floor((Date.now()-tfStartTime)/1000);
-    const m=String(Math.floor(el/60)).padStart(2,'0');
-    const s=String(el%60).padStart(2,'0');
-    document.getElementById('tf-timer').textContent=m+':'+s;
-  },1000);
-  S._tfMuscles=muscles;save();
-  toast('TitanForge started — '+muscles+' 🔥');
-}
-
-function addExercise(){
-  const name=document.getElementById('tf-ex-name').value.trim();
-  if(!name)return;
-  document.getElementById('tf-ex-name').value='';
-  const exIdx=tfExercises.length;
-  tfExercises.push({name,sets:[],notes:''});
-  renderExercises();
-  toast('Exercise added: '+name);
-}
-
-function renderExercises(){
-  const el=document.getElementById('tf-exercises');
-  el.innerHTML=tfExercises.map((ex,ei)=>{
-    const prev=findPrevious(ex.name);
-    let html=`<div class="exc"><div class="exh"><div class="exi">🏋️</div><div class="exn">${ex.name}</div></div>`;
-    html+=`<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:58px">KG</div><div class="sthc" style="width:50px">REPS</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>`;
-    ex.sets.forEach((s,si)=>{
-      const isDone=s.done;
-      html+=`<div class="strow ${isDone?'done-row':''}">`;
-      html+=`<div class="strc" style="width:34px">${si+1}</div>`;
-      html+=`<div class="strc" style="flex:1;font-size:10px;color:var(--mut)">${prev||'—'}</div>`;
-      if(isDone){
-        html+=`<div class="strc" style="width:58px;font-weight:700">${s.kg}</div>`;
-        html+=`<div class="strc" style="width:50px;font-weight:700">${s.reps}</div>`;
-        html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--mut)">${s.rest||'—'}</div>`;
-        html+=`<div class="strc" style="width:34px"><div class="scheck done">✓</div></div>`;
-      } else {
-        html+=`<div class="strc" style="width:58px"><input id="kg-${ei}-${si}" value="${s.kg||''}" placeholder="kg" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
-        html+=`<div class="strc" style="width:50px"><input id="rp-${ei}-${si}" value="${s.reps||''}" placeholder="reps" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
-        html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-${ei}-${si}">—</div>`;
-        html+=`<div class="strc" style="width:34px"><div class="scheck" onclick="completeSet(${ei},${si})">✓</div></div>`;
-      }
-      html+=`</div>`;
-    });
-    // Rest timer bar
-    html+=`<div class="rest-bar" id="restbar-${ei}" style="display:none">⏱️ Rest <div class="rest-bar-time" id="resttime-${ei}">0:00</div></div>`;
-    html+=`<div class="adset"><button class="adset-btn" onclick="addSet(${ei})">+ Add Set</button></div></div>`;
-    return html;
-  }).join('');
-  updateTFStats();
-}
-
-function addSet(ei){
-  tfExercises[ei].sets.push({kg:'',reps:'',done:false,rest:'',startTime:Date.now()});
-  renderExercises();
-}
-
-function completeSet(ei,si){
-  const kgEl=document.getElementById('kg-'+ei+'-'+si);
-  const rpEl=document.getElementById('rp-'+ei+'-'+si);
-  const kg=parseFloat(kgEl?.value)||0;
-  const reps=parseInt(rpEl?.value)||0;
-  tfExercises[ei].sets[si].kg=kg;
-  tfExercises[ei].sets[si].reps=reps;
-  tfExercises[ei].sets[si].done=true;
-  tfExercises[ei].sets[si].completedAt=Date.now();
-  // Calculate rest from previous set
-  if(si>0&&tfExercises[ei].sets[si-1].completedAt){
-    const restSec=Math.floor((tfExercises[ei].sets[si].startTime-tfExercises[ei].sets[si-1].completedAt)/1000);
-    const rm=Math.floor(restSec/60),rs=restSec%60;
-    tfExercises[ei].sets[si].rest=rm+'m '+rs+'s';
-  }
-  // Start rest timer for next set
-  startRestTimer(ei);
-  renderExercises();
-  toast('Set '+(si+1)+' logged ✅');
-}
-
-function startRestTimer(ei){
-  if(currentRestInterval)clearInterval(currentRestInterval);
-  const bar=document.getElementById('restbar-'+ei);
-  const timeEl=document.getElementById('resttime-'+ei);
-  if(!bar)return;
-  bar.style.display='flex';
-  let sec=0;
-  currentRestInterval=setInterval(()=>{
-    sec++;
-    const m=Math.floor(sec/60),s=sec%60;
-    if(timeEl)timeEl.textContent=m+':'+String(s).padStart(2,'0');
-  },1000);
-}
-
-function updateTFStats(){
-  let totalVol=0,totalSets=0;
-  tfExercises.forEach(ex=>ex.sets.forEach(s=>{if(s.done){totalVol+=s.kg*s.reps;totalSets++}}));
-  document.getElementById('tf-vol').textContent=totalVol+' kg';
-  document.getElementById('tf-sets').textContent=totalSets;
-}
-
-function findPrevious(name){
-  for(let i=S.tfSessions.length-1;i>=0;i--){
-    const ex=S.tfSessions[i].exercises.find(e=>e.name.toLowerCase()===name.toLowerCase());
-    if(ex&&ex.sets.length){const s=ex.sets[ex.sets.length-1];return s.kg+'kg×'+s.reps}
-  }
-  return null;
-}
-
-function finishTF(){
-  if(currentRestInterval)clearInterval(currentRestInterval);
-  clearInterval(tfInterval);tfRunning=false;
-  const elapsed=Math.floor((Date.now()-tfStartTime)/1000);
-  const m=Math.floor(elapsed/60),s=elapsed%60;
-  const durStr=m+'m '+s+'s';
-  let vol=0,sets=0;
-  tfExercises.forEach(ex=>ex.sets.forEach(st=>{if(st.done){vol+=st.kg*st.reps;sets++}}));
-  const session={date:today(),time:now_t(),muscles:S._tfMuscles||'General',duration:durStr,durationSec:elapsed,volume:vol,totalSets:sets,exercises:tfExercises.map(ex=>({name:ex.name,sets:ex.sets.filter(s=>s.done).map(s=>({kg:s.kg,reps:s.reps,rest:s.rest}))}))};
-  S.tfSessions.push(session);
-  S.workouts++;S.xp+=100;
-  S.dims.physical=Math.min(100,S.dims.physical+20);
-  earn('iron');
-  if(S.workouts>=3)earn('t3');
-  document.getElementById('tf-session').style.display='none';
-  document.getElementById('tf-idle').style.display='';
-  updateDash();save();
-  toast('+100 XP — TitanForge complete! '+durStr+' 🔥');
-}
-
-// TF DASHBOARD
-function renderTFDash(){
-  renderCalendar();renderWeekStrip();
-  const mo=new Date().getMonth(),yr=new Date().getFullYear();
-  const moSess=S.tfSessions.filter(s=>{const d=new Date(s.date);return d.getMonth()===mo&&d.getFullYear()===yr});
-  document.getElementById('tf-total-wk').textContent=S.workouts;
-  document.getElementById('tf-total-vol').textContent=moSess.reduce((s,t)=>s+t.volume,0);
-  document.getElementById('tf-wk-streak').textContent=S.streak;
-  // Recent
-  const recent=S.tfSessions.slice(-7).reverse();
-  const rel=document.getElementById('tf-recent');
-  if(!recent.length){rel.innerHTML='<div class="empty"><div class="empty-icon">💪</div>No sessions yet</div>';return}
-  rel.innerHTML=recent.map(s=>`<div class="scard"><div class="scard-top"><div class="scard-date">${s.date}</div><div class="scard-dur">${s.duration}</div></div><div class="scard-exs">${s.exercises.map(e=>e.name).join(' · ')}</div><div class="scard-stats"><div class="scard-st">📦 ${s.volume}kg</div><div class="scard-st">🔢 ${s.totalSets} sets</div><div class="scard-st">💪 ${s.muscles}</div></div></div>`).join('');
-}
-function renderCalendar(){
-  const now=new Date();const mo=now.getMonth(),yr=now.getFullYear();
-  const first=new Date(yr,mo,1).getDay();
-  const days=new Date(yr,mo+1,0).getDate();
-  const moName=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
-  const trainedDays=S.tfSessions.filter(s=>{const d=new Date(s.date);return d.getMonth()===mo&&d.getFullYear()===yr}).map(s=>new Date(s.date).getDate());
-  const todayDate=now.getDate();
-  let html=`<div class="cal-head"><div class="cal-title">${moName}</div></div>`;
-  html+='<div class="cal-days">';
-  ['M','T','W','T','F','S','S'].forEach(d=>html+=`<div class="cal-day-lbl">${d}</div>`);
-  const startDay=(first+6)%7;
-  for(let i=0;i<startDay;i++)html+='<div class="cal-cell empty"></div>';
-  for(let d=1;d<=days;d++){
-    let cls='cal-cell';
-    if(d===todayDate)cls+=' today';
-    if(trainedDays.includes(d))cls+=' trained';
-    html+=`<div class="${cls}">${d}</div>`;
-  }
-  html+='</div>';
-  document.getElementById('tf-cal').innerHTML=html;
-}
-function renderWeekStrip(){
-  const now=new Date();
-  const dayNames=['M','T','W','T','F','S','S'];
-  const mondayOffset=(now.getDay()+6)%7;
-  let html='';
-  for(let i=0;i<7;i++){
-    const d=new Date(now);d.setDate(now.getDate()-mondayOffset+i);
-    const ds=d.toISOString().slice(0,10);
-    const trained=S.tfSessions.some(s=>s.date===ds);
-    const isToday=ds===today();
-    html+=`<div class="wday ${isToday?'active':''} ${trained?'trained2':''}">${d.getDate()}<div class="wday-lbl">${dayNames[i]}</div></div>`;
-  }
-  document.getElementById('tf-week').innerHTML=html;
-}
-function renderTFHist(){
-  const el=document.getElementById('tf-all-hist');
-  if(!S.tfSessions.length){el.innerHTML='<div class="empty"><div class="empty-icon">💪</div>No sessions yet</div>';return}
-  el.innerHTML=S.tfSessions.slice().reverse().map(s=>`<div class="scard"><div class="scard-top"><div class="scard-date">${s.date} · ${s.time}</div><div class="scard-dur">${s.duration}</div></div><div class="scard-exs">${s.exercises.map(e=>e.name+' ('+e.sets.length+' sets)').join(' · ')}</div><div class="scard-stats"><div class="scard-st">📦 ${s.volume}kg</div><div class="scard-st">💪 ${s.muscles}</div></div></div>`).join('');
-}
-
-// ════════════════════════════════════════════════════════════════
-// FINANCE
-// ════════════════════════════════════════════════════════════════
-function addManualTx(){
-  const type=document.getElementById('fi-type').value;
-  const amt=parseFloat(document.getElementById('fi-amt').value);
-  const cat=document.getElementById('fi-cat').value;
-  const note=document.getElementById('fi-note').value.trim();
-  if(!amt){toast('Enter amount');return}
-  S.transactions.push({date:today(),time:now_t(),type,amount:amt,category:cat,note:note||cat});
-  document.getElementById('fi-amt').value='';document.getElementById('fi-note').value='';
-  S.xp+=10;S.dims.financial=Math.min(100,S.dims.financial+5);
-  earn('gold');renderTxLog();updateDash();save();
-  toast('₹'+amt+' recorded 💾');
-}
-
-// Voice
-let recognition=null,voiceActive=false,voiceParsed=null;
-function toggleVoice(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('Voice not supported');return}
-  if(voiceActive){stopVoice();return}
-  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
-  recognition=new SpeechRec();
-  recognition.lang='en-IN';recognition.interimResults=true;recognition.continuous=false;
-  recognition.onresult=e=>{
-    let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;
-    document.getElementById('vc-transcript').textContent=t;
-    if(e.results[0].isFinal)parseVoiceTx(t);
-  };
-  recognition.onerror=()=>{stopVoice();toast('Voice error — try again')};
-  recognition.onend=()=>{if(voiceActive)stopVoice()};
-  recognition.start();voiceActive=true;
-  document.getElementById('mic-btn').classList.add('recording');
-  document.getElementById('voice-status').textContent='Listening...';
-  document.getElementById('voice-card').classList.add('show');
-}
-function stopVoice(){
-  if(recognition)recognition.stop();
-  voiceActive=false;
-  document.getElementById('mic-btn').classList.remove('recording');
-  document.getElementById('voice-status').textContent='Tap mic and speak';
-}
-async function parseVoiceTx(text){
-  stopVoice();
-  document.getElementById('vc-parsed').innerHTML='<div style="color:var(--mut);font-size:12px">⏳ Parsing with AERIS...</div>';
-  try{
-    const raw=await callGemini(
-      `Parse this spoken transaction. Return ONLY a JSON object, nothing else, no backticks, no explanation. Rules: type is "income" if words like received/got/earned/salary/credited appear, otherwise "expense". Extract the number for amount. Pick category from: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other. Note should be a clean 1-line description. Example: {"type":"expense","amount":100,"category":"Travel","note":"Auto ride from home to office"}`,
-      `Parse this: "${text}"`,
-      150
-    );
-    let clean=raw.trim();
-    clean=clean.replace(/```json/g,'').replace(/```/g,'').trim();
-    const vs=clean.indexOf('{');const ve=clean.lastIndexOf('}');
-    if(vs!==-1&&ve!==-1)clean=clean.substring(vs,ve+1);
-    voiceParsed=JSON.parse(clean);
-    const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
-    const icon=catIcons[voiceParsed.category]||'❓';
-    document.getElementById('vc-parsed').innerHTML=`
-      <div class="vc-row"><div class="vc-label">Amount</div><div class="vc-val">₹${voiceParsed.amount}</div></div>
-      <div class="vc-row"><div class="vc-label">Type</div><div class="vc-val">${voiceParsed.type}</div></div>
-      <div class="vc-row"><div class="vc-label">Category</div><div class="vc-val">${icon} ${voiceParsed.category}</div></div>
-      <div class="vc-row"><div class="vc-label">Note</div><div class="vc-val">${voiceParsed.note}</div></div>`;
-  }catch(e){
-    document.getElementById('vc-parsed').innerHTML='<div style="color:var(--co);font-size:12px">Could not parse — please try again or use manual entry</div>';
-    voiceParsed=null;
-  }
-}
-function confirmVoice(){
-  if(!voiceParsed){toast('Nothing to confirm');return}
-  const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
-  const icon=catIcons[voiceParsed.category]||'❓';
-  S.transactions.push({date:today(),time:now_t(),type:voiceParsed.type,amount:voiceParsed.amount,category:icon+' '+voiceParsed.category,note:voiceParsed.note});
-  S.xp+=10;S.dims.financial=Math.min(100,S.dims.financial+5);
-  earn('gold');earn('voice');
-  cancelVoice();renderTxLog();updateDash();save();
-  toast('₹'+voiceParsed.amount+' saved via voice 🎤');
-}
-function cancelVoice(){
-  document.getElementById('voice-card').classList.remove('show');
-  document.getElementById('vc-transcript').textContent='';
-  document.getElementById('vc-parsed').innerHTML='';
-  voiceParsed=null;
-}
-
-function renderTxLog(){
-  const inc=S.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  const exp=S.transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  document.getElementById('fi-inc').textContent='₹'+inc.toLocaleString('en-IN');
-  document.getElementById('fi-exp').textContent='₹'+exp.toLocaleString('en-IN');
-  const net=inc-exp;
-  const nel=document.getElementById('fi-net');
-  nel.textContent=(net>=0?'+':'-')+'₹'+Math.abs(net).toLocaleString('en-IN');
-  nel.style.color=net>=0?'var(--te)':'var(--co)';
-  document.getElementById('fin-badge').textContent='₹'+exp.toLocaleString('en-IN');
-  const el=document.getElementById('tx-log');
-  const txs=S.transactions.filter(t=>t.date===today());
-  if(!txs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';return}
-  const allTxWithIdx=S.transactions.map((t,i)=>({...t,_idx:i}));
-  const todayTxs=allTxWithIdx.filter(t=>t.date===today());
-  if(!todayTxs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';return}
-  el.innerHTML=todayTxs.slice().reverse().map(t=>{
-    const icon=t.category.split(' ')[0]||'💰';
-    const cls=t.type==='income'?'inc':'exp';
-    const sign=t.type==='income'?'+':'−';
-    return `<div class="trow">
-      <div class="troi">${icon}</div>
-      <div class="trob"><div class="troc">${t.category}</div><div class="tron">${t.note} · ${t.time}</div></div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="troa ${cls}">${sign}₹${t.amount.toLocaleString('en-IN')}</div>
-        <div style="display:flex;flex-direction:column;gap:3px">
-          <button onclick="editTx(${t._idx})" style="background:var(--viS);color:var(--vi);border:none;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer">✏️</button>
-          <button onclick="deleteTx(${t._idx})" style="background:var(--coS);color:var(--co);border:none;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer">🗑️</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function deleteTx(idx){
-  if(!confirm('Delete this transaction?'))return;
-  S.transactions.splice(idx,1);
-  save();renderTxLog();updateDash();
-  toast('Transaction deleted 🗑️');
-}
-function editTx(idx){
-  const t=S.transactions[idx];
-  if(!t)return;
-  document.getElementById('fi-type').value=t.type;
-  document.getElementById('fi-amt').value=t.amount;
-  document.getElementById('fi-note').value=t.note||'';
-  S.transactions.splice(idx,1);
-  save();renderTxLog();
-  document.getElementById('fi-amt').focus();
-  toast('Edit the fields above and re-record ✏️');
-}
-
-// ════════════════════════════════════════════════════════════════
-// BADGES
-// ════════════════════════════════════════════════════════════════
-function earn(id){
-  const b=S.badges.find(b=>b.id===id);
-  if(b&&!b.earned){b.earned=true;toast('🏅 Badge: '+b.n);save()}
-}
-function renderBadges(){
-  document.getElementById('badges-grid').innerHTML=S.badges.map(b=>`<div class="bdgc ${b.earned?'earned':''}"><div class="bdge">${b.i}</div><div><div class="bdgn">${b.n}</div><div class="bdgd">${b.d}</div></div></div>`).join('');
-  document.getElementById('bg-count').textContent=S.badges.filter(b=>b.earned).length+' earned';
-}
-function renderStreakTable(){
-  const milestones=[{d:3,n:'Initiate'},{d:7,n:'Disciple'},{d:14,n:'Pathwalker'},{d:21,n:'Adept'},{d:30,n:'Guardian'},{d:50,n:'Warden'},{d:100,n:'Master'}];
-  document.getElementById('streak-table').innerHTML=DIMS.map(d=>{
-    const sk=S.dimStreaks[d.k]||0;
-    const ms=milestones.filter(m=>sk>=m.d).pop();
-    return `<div class="yr"><div class="yi2">${d.i}</div><div class="ynm">${d.n}</div><div style="flex:1;text-align:right"><div style="font-size:14px;font-weight:700;color:${d.c}">${sk} days</div><div style="font-size:10px;color:var(--mut)">${ms?ms.n:'Not Started'}</div></div></div>`;
-  }).join('');
-}
-
-// ════════════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════════════
-function checkDailyReset(){
-  const lastDate=localStorage.getItem('aeris_last_date');
-  const td=today();
-  if(lastDate && lastDate!==td){mfXP=0;}
-  localStorage.setItem('aeris_last_date',td);
-}
-checkDailyReset();
-renderSleepHist();renderTxLog();renderBadges();updateDash();
-restoreMornFlow();
+updateDash();
+renderSleepTab();
+renderSleepHist();
+renderTxLog();
+
+// Show API key warning if not set
 setTimeout(()=>{if(!getApiKey())toast('⚙️ Add Gemini API key in Settings to activate AERIS');},2000);
 </script>
 </body>
