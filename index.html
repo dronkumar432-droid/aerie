@@ -422,9 +422,9 @@ select.fi option{background:var(--w)}
 </div>
 <!-- Step 2 -->
 <div class="fs lk" id="ms2">
-<div class="fsh"><div class="fsb">⚡</div><div><div class="fsti">Intellectual Boost</div><div class="fsts">Prompt · Quote · Mantra — powered by AERIS</div></div></div>
+<div class="fsh"><div class="fsb">⚡</div><div><div class="fsti">Intellectual Boost</div><div class="fsts">News · AI · Tech · Sports · Cars · Knowledge Capsule</div></div></div>
 <button class="bt bsv" onclick="mStep2()">⚡ Activate Intellectual Boost</button>
-<div id="ms2-out" style="display:none;margin-top:10px;background:var(--viS);border-radius:var(--rs);padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)"></div>
+<div id="ms2-out" style="display:none;margin-top:10px;border-radius:var(--rs);overflow:hidden"></div>
 </div>
 <!-- Step 3 -->
 <div class="fs lk" id="ms3">
@@ -676,6 +676,7 @@ function nav(pg,btn){
   btn.classList.add('a');
   if(pg==='dash')updateDash();
   if(pg==='titan')renderTFDash();
+  if(pg==='morn')restoreMornFlow();
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -777,11 +778,55 @@ let mfXP=0;
 function startMornFlow(){
   document.getElementById('morn-idle').style.display='none';
   document.getElementById('morn-steps').style.display='';
-  document.getElementById('mf-wake-t').textContent=now_t();
+  const wt=document.getElementById('mf-wake-t');
+  if(wt)wt.textContent=now_t();
   const entry=S.dailyEntries[today()]||{};
-  entry.morningStartTime=now_t();
+  if(!entry.morningStartTime)entry.morningStartTime=now_t();
   S.dailyEntries[today()]=entry; save();
   toast('Morning Flow started ✨');
+}
+
+// Restore morning flow state when returning to the tab
+function restoreMornFlow(){
+  const entry=S.dailyEntries[today()]||{};
+  if(!entry.morningStartTime)return; // never started
+  document.getElementById('morn-idle').style.display='none';
+  document.getElementById('morn-steps').style.display='';
+  const wt=document.getElementById('mf-wake-t');
+  if(wt)wt.textContent=entry.morningStartTime;
+  // Restore completed steps
+  if(entry.checkin){
+    document.getElementById('m-checkin').value=entry.checkin;
+    document.getElementById('m-opt').value=entry.optThought||'';
+    document.getElementById('m-freq').value=entry.morningFreq||'';
+    markStepDone('ms1','ms2');
+  }
+  if(entry.intellectualBoost){
+    const out=document.getElementById('ms2-out');
+    out.style.display='';
+    out.innerHTML=renderBoostHTML(entry.intellectualBoost);
+    markStepDone('ms2','ms3');
+  }
+  if(entry.dailyQuest){
+    const out=document.getElementById('ms3-out');
+    out.style.display='';
+    out.textContent=entry.dailyQuest;
+    markStepDone('ms3',null);
+    document.getElementById('ms4').classList.remove('lk');
+    document.getElementById('ms4').classList.add('done');
+  }
+}
+
+function markStepDone(stepId, nextId){
+  const step=document.getElementById(stepId);
+  if(!step)return;
+  step.classList.remove('cur','lk');step.classList.add('done');
+  const fsh=step.querySelector('.fsh');
+  if(fsh&&!fsh.querySelector('.dtg'))fsh.innerHTML+='<div class="dtg">Done ✓</div>';
+  if(nextId){
+    const next=document.getElementById(nextId);
+    if(next){next.classList.remove('lk');next.classList.add('cur');}
+  }
 }
 function mStep1(){
   const ck=document.getElementById('m-checkin').value.trim();
@@ -792,30 +837,77 @@ function mStep1(){
   const entry=S.dailyEntries[today()]||{};
   entry.checkin=ck; entry.optThought=opt; entry.morningFreq=freq;
   S.dailyEntries[today()]=entry;
-  document.getElementById('ms1').classList.remove('cur');document.getElementById('ms1').classList.add('done');
-  document.getElementById('ms1').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
-  document.getElementById('ms2').classList.remove('lk');document.getElementById('ms2').classList.add('cur');
+  markStepDone('ms1','ms2');
   document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
-  updateDash(); toast('+50 XP — Check-in recorded 🌸');
+  updateDash(); save(); toast('+50 XP — Check-in recorded 🌸');
 }
+function renderBoostHTML(txt){
+  // Parse sections and render as styled cards
+  try{
+    const data=JSON.parse(txt);
+    let html='';
+    const sections=[
+      {key:'politics_india',label:'🇮🇳 Indian Politics',bg:'#fff7ed',bc:'#fed7aa',tc:'#9a3412'},
+      {key:'politics_world',label:'🌍 World Politics',bg:'#fef9c3',bc:'#fde68a',tc:'#92400e'},
+      {key:'technology',label:'💻 Technology',bg:'#f0f9ff',bc:'#bae6fd',tc:'#0369a1'},
+      {key:'ai',label:'🤖 AI & Future',bg:'#faf5ff',bc:'#e9d5ff',tc:'#6d28d9'},
+      {key:'sports',label:'⚽ Sports',bg:'#f0fdf4',bc:'#bbf7d0',tc:'#15803d'},
+      {key:'cars',label:'🚗 Cars',bg:'#fff1f2',bc:'#fecdd3',tc:'#be123c'},
+      {key:'capsule',label:'🧠 Knowledge Capsule',bg:'#f8fafc',bc:'#cbd5e1',tc:'#334155'},
+      {key:'quote',label:'💬 Quote of the Day',bg:'var(--viS)',bc:'var(--viM)',tc:'var(--vi)'},
+      {key:'mantra',label:'🔮 Today\'s Mantra',bg:'var(--amS)',bc:'var(--amid)',tc:'var(--am)'},
+    ];
+    sections.forEach(s=>{
+      if(!data[s.key])return;
+      const items=Array.isArray(data[s.key])?data[s.key]:[data[s.key]];
+      html+=`<div style="background:${s.bg};border:1.5px solid ${s.bc};border-radius:12px;padding:12px 14px;margin-bottom:8px">`;
+      html+=`<div style="font-size:11px;font-weight:700;color:${s.tc};letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">${s.label}</div>`;
+      items.forEach(item=>{
+        html+=`<div style="font-size:13px;color:var(--ink2);line-height:1.5;padding:4px 0;border-bottom:1px solid ${s.bc};margin-bottom:4px">${item}</div>`;
+      });
+      html+='</div>';
+    });
+    return html||`<div style="padding:14px;font-size:13px;color:var(--ink2)">${txt}</div>`;
+  }catch(e){
+    return `<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)">${txt.replace(/\n/g,'<br>')}</div>`;
+  }
+}
+
 async function mStep2(){
   const btn=document.querySelector('#ms2 .bt');
-  btn.textContent='⏳ Generating...';btn.disabled=true;
+  btn.textContent='⏳ Loading news & knowledge...';btn.disabled=true;
+  const dateStr=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS. Generate the user's Intellectual Boost:\n1. Creative Prompt (one imaginative question)\n2. Motivational Quote (real, attributed)\n3. Focus Task of the Day (one action)\n4. 3-Word Mantra\nFormat with those 4 headers. Be evocative. Under 180 words.`,messages:[{role:"user",content:`Frequency: ${S.freq}/10, Level: ${S.level}, Streak: ${S.streak}. Generate today's boost.`}]})});
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
+    system:`You are AERIS generating the Intellectual Boost for ${dateStr}. Return ONLY a valid JSON object with NO backticks, no markdown, no extra text. Use this exact structure:
+{
+  "politics_india": ["headline 1 — brief context","headline 2 — brief context","headline 3 — brief context","headline 4 — brief context","headline 5 — brief context"],
+  "politics_world": ["headline 1 — brief context","headline 2 — brief context","headline 3 — brief context","headline 4 — brief context","headline 5 — brief context"],
+  "technology": ["item 1 — brief context","item 2 — brief context","item 3 — brief context","item 4 — brief context","item 5 — brief context"],
+  "ai": ["item 1","item 2","item 3","item 4","item 5","item 6","item 7","item 8","item 9","item 10"],
+  "sports": ["Football: item 1","Football: item 2","item 3","item 4","item 5"],
+  "cars": ["item 1 — brief context","item 2 — brief context","item 3 — brief context","item 4 — brief context","item 5 — brief context"],
+  "capsule": "One fascinating fact, skill, or insight that most people don't know. Make it genuinely interesting and useful. 2-3 sentences.",
+  "quote": "Quote text — Author Name",
+  "mantra": "Three powerful words"
+}
+Use your training knowledge to generate plausible, realistic, and informative headlines for today. For AI section include generative AI, new model releases, AI art, policy, breakthroughs. For cars include EVs, new launches, F1, technology.`,
+    messages:[{role:"user",content:`Date: ${dateStr}. User frequency: ${S.freq}/10, Streak: ${S.streak} days. Generate Intellectual Boost JSON.`}]})});
     const d=await r.json();
-    const txt=d.content?.[0]?.text||'Stay sharp. Stay present. Stay powerful.';
+    let raw=d.content?.[0]?.text||'{}';
+    raw=raw.replace(/```json|```/g,'').trim();
     document.getElementById('ms2-out').style.display='';
-    document.getElementById('ms2-out').innerHTML=txt.replace(/\n/g,'<br>');
+    document.getElementById('ms2-out').innerHTML=renderBoostHTML(raw);
     const entry=S.dailyEntries[today()]||{};
-    entry.intellectualBoost=txt; S.dailyEntries[today()]=entry;
-  }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.'}
+    entry.intellectualBoost=raw; S.dailyEntries[today()]=entry;
+  }catch(e){
+    document.getElementById('ms2-out').style.display='';
+    document.getElementById('ms2-out').innerHTML='<div style="background:var(--viS);border-radius:12px;padding:14px;font-size:13px;color:var(--ink2)">Clarity. Consistency. Destiny. — Stay sharp today.</div>';
+  }
   mfXP+=30; S.xp+=30;
-  document.getElementById('ms2').classList.remove('cur');document.getElementById('ms2').classList.add('done');
-  document.getElementById('ms2').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
-  document.getElementById('ms3').classList.remove('lk');document.getElementById('ms3').classList.add('cur');
+  markStepDone('ms2','ms3');
   document.getElementById('mf-xp').textContent='+'+mfXP+' XP'; save();
-  toast('+30 XP — Boost activated ⚡');
+  toast('+30 XP — Intellectual Boost loaded ⚡');
 }
 async function mStep3(){
   const btn=document.querySelector('#ms3 .bt');
@@ -831,10 +923,10 @@ async function mStep3(){
     entry.dailyQuest=txt; S.dailyEntries[today()]=entry;
   }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.'}
   mfXP+=25; S.xp+=25; S.streak++;
-  document.getElementById('ms3').classList.remove('cur');document.getElementById('ms3').classList.add('done');
-  document.getElementById('ms3').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
+  markStepDone('ms3',null);
   document.getElementById('ms4').classList.remove('lk');document.getElementById('ms4').classList.add('done');
-  document.getElementById('ms4').querySelector('.fsh').innerHTML+='<div class="dtg">Complete ✨</div>';
+  const ms4fsh=document.getElementById('ms4').querySelector('.fsh');
+  if(ms4fsh&&!ms4fsh.querySelector('.dtg'))ms4fsh.innerHTML+='<div class="dtg">Complete ✨</div>';
   document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
   S.morningDone[today()]=true;
   earn('dawn');
@@ -1020,46 +1112,131 @@ function startTFSession(){
   toast('TitanForge started — '+muscles+' 🔥');
 }
 
+// Cardio keywords that trigger time-based mode
+const CARDIO_KEYWORDS=['jump rope','jumping','skipping','run','running','jog','jogging','cycling','bike','swim','swimming','treadmill','walk','walking','plank','hold','burpee','cardio','hiit','row','rowing','elliptical','stair','skip'];
+
+function isCardio(name){
+  const n=name.toLowerCase();
+  return CARDIO_KEYWORDS.some(k=>n.includes(k));
+}
+
 function addExercise(){
   const name=document.getElementById('tf-ex-name').value.trim();
   if(!name)return;
   document.getElementById('tf-ex-name').value='';
-  const exIdx=tfExercises.length;
-  tfExercises.push({name,sets:[],notes:''});
+  const cardio=isCardio(name);
+  tfExercises.push({name,sets:[],notes:'',cardio});
   renderExercises();
-  toast('Exercise added: '+name);
+  toast('Exercise added: '+name+(cardio?' (Cardio — time based) ⏱️':''));
 }
 
 function renderExercises(){
   const el=document.getElementById('tf-exercises');
   el.innerHTML=tfExercises.map((ex,ei)=>{
     const prev=findPrevious(ex.name);
-    let html=`<div class="exc"><div class="exh"><div class="exi">🏋️</div><div class="exn">${ex.name}</div></div>`;
-    html+=`<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:58px">KG</div><div class="sthc" style="width:50px">REPS</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>`;
-    ex.sets.forEach((s,si)=>{
-      const isDone=s.done;
-      html+=`<div class="strow ${isDone?'done-row':''}">`;
-      html+=`<div class="strc" style="width:34px">${si+1}</div>`;
-      html+=`<div class="strc" style="flex:1;font-size:10px;color:var(--mut)">${prev||'—'}</div>`;
-      if(isDone){
-        html+=`<div class="strc" style="width:58px;font-weight:700">${s.kg}</div>`;
-        html+=`<div class="strc" style="width:50px;font-weight:700">${s.reps}</div>`;
-        html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--mut)">${s.rest||'—'}</div>`;
-        html+=`<div class="strc" style="width:34px"><div class="scheck done">✓</div></div>`;
-      } else {
-        html+=`<div class="strc" style="width:58px"><input id="kg-${ei}-${si}" value="${s.kg||''}" placeholder="kg" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
-        html+=`<div class="strc" style="width:50px"><input id="rp-${ei}-${si}" value="${s.reps||''}" placeholder="reps" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
-        html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-${ei}-${si}">—</div>`;
-        html+=`<div class="strc" style="width:34px"><div class="scheck" onclick="completeSet(${ei},${si})">✓</div></div>`;
-      }
-      html+=`</div>`;
-    });
-    // Rest timer bar
+    const isCardio=ex.cardio;
+    const exIcon=isCardio?'🏃':'🏋️';
+    let html=`<div class="exc"><div class="exh"><div class="exi">${exIcon}</div><div class="exn">${ex.name}</div>`;
+    if(isCardio)html+=`<div style="font-size:10px;background:var(--teS);color:var(--te);padding:2px 8px;border-radius:50px;font-weight:700;margin-left:auto">CARDIO</div>`;
+    html+=`</div>`;
+    if(isCardio){
+      // Time-based header
+      html+=`<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:80px">DURATION</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>`;
+      ex.sets.forEach((s,si)=>{
+        const isDone=s.done;
+        html+=`<div class="strow ${isDone?'done-row':''}">`;
+        html+=`<div class="strc" style="width:34px">${si+1}</div>`;
+        html+=`<div class="strc" style="flex:1;font-size:10px;color:var(--mut)">${prev||'—'}</div>`;
+        if(isDone){
+          html+=`<div class="strc" style="width:80px;font-weight:700;color:var(--te)">${s.duration||'—'}</div>`;
+          html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--mut)">${s.rest||'—'}</div>`;
+          html+=`<div class="strc" style="width:34px"><div class="scheck done">✓</div></div>`;
+        } else {
+          // Live cardio timer
+          html+=`<div class="strc" style="width:80px">`;
+          if(s.timerRunning){
+            html+=`<div id="ctimer-${ei}-${si}" style="font-size:13px;font-weight:700;color:var(--te);text-align:center">0:00</div>`;
+            html+=`<button onclick="stopCardioSet(${ei},${si})" style="width:100%;background:var(--co);color:#fff;border:none;border-radius:6px;padding:4px;font-size:10px;font-weight:700;cursor:pointer;margin-top:2px">Stop</button>`;
+          } else {
+            html+=`<button onclick="startCardioSet(${ei},${si})" style="width:100%;background:var(--te);color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer">▶ Start</button>`;
+          }
+          html+=`</div>`;
+          html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-${ei}-${si}">—</div>`;
+          html+=`<div class="strc" style="width:34px"><div class="scheck" id="ccheck-${ei}-${si}" style="opacity:.4">✓</div></div>`;
+        }
+        html+=`</div>`;
+      });
+    } else {
+      // Weight-based header
+      html+=`<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:58px">KG</div><div class="sthc" style="width:50px">REPS</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>`;
+      ex.sets.forEach((s,si)=>{
+        const isDone=s.done;
+        html+=`<div class="strow ${isDone?'done-row':''}">`;
+        html+=`<div class="strc" style="width:34px">${si+1}</div>`;
+        html+=`<div class="strc" style="flex:1;font-size:10px;color:var(--mut)">${prev||'—'}</div>`;
+        if(isDone){
+          html+=`<div class="strc" style="width:58px;font-weight:700">${s.kg}</div>`;
+          html+=`<div class="strc" style="width:50px;font-weight:700">${s.reps}</div>`;
+          html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--mut)">${s.rest||'—'}</div>`;
+          html+=`<div class="strc" style="width:34px"><div class="scheck done">✓</div></div>`;
+        } else {
+          html+=`<div class="strc" style="width:58px"><input id="kg-${ei}-${si}" value="${s.kg||''}" placeholder="kg" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
+          html+=`<div class="strc" style="width:50px"><input id="rp-${ei}-${si}" value="${s.reps||''}" placeholder="reps" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
+          html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-${ei}-${si}">—</div>`;
+          html+=`<div class="strc" style="width:34px"><div class="scheck" onclick="completeSet(${ei},${si})">✓</div></div>`;
+        }
+        html+=`</div>`;
+      });
+    }
     html+=`<div class="rest-bar" id="restbar-${ei}" style="display:none">⏱️ Rest <div class="rest-bar-time" id="resttime-${ei}">0:00</div></div>`;
     html+=`<div class="adset"><button class="adset-btn" onclick="addSet(${ei})">+ Add Set</button></div></div>`;
     return html;
   }).join('');
   updateTFStats();
+  // Restart any live cardio timers
+  tfExercises.forEach((ex,ei)=>{
+    ex.sets.forEach((s,si)=>{
+      if(s.timerRunning&&s.timerStart){
+        const elapsed=Math.floor((Date.now()-s.timerStart)/1000);
+        startCardioDisplay(ei,si,elapsed);
+      }
+    });
+  });
+}
+
+let cardioIntervals={};
+function startCardioSet(ei,si){
+  tfExercises[ei].sets[si].timerRunning=true;
+  tfExercises[ei].sets[si].timerStart=Date.now();
+  renderExercises();
+}
+function startCardioDisplay(ei,si,startSec=0){
+  const key=`${ei}-${si}`;
+  if(cardioIntervals[key])clearInterval(cardioIntervals[key]);
+  let sec=startSec;
+  cardioIntervals[key]=setInterval(()=>{
+    sec++;
+    const m=Math.floor(sec/60),s=sec%60;
+    const el=document.getElementById('ctimer-'+ei+'-'+si);
+    if(el)el.textContent=m+':'+String(s).padStart(2,'0');
+  },1000);
+}
+function stopCardioSet(ei,si){
+  const key=`${ei}-${si}`;
+  if(cardioIntervals[key]){clearInterval(cardioIntervals[key]);delete cardioIntervals[key];}
+  const elapsed=Math.floor((Date.now()-tfExercises[ei].sets[si].timerStart)/1000);
+  const m=Math.floor(elapsed/60),s=elapsed%60;
+  tfExercises[ei].sets[si].duration=m+'m '+String(s).padStart(2,'0')+'s';
+  tfExercises[ei].sets[si].done=true;
+  tfExercises[ei].sets[si].timerRunning=false;
+  tfExercises[ei].sets[si].completedAt=Date.now();
+  if(si>0&&tfExercises[ei].sets[si-1].completedAt){
+    const restSec=Math.floor((tfExercises[ei].sets[si].timerStart-tfExercises[ei].sets[si-1].completedAt)/1000);
+    tfExercises[ei].sets[si].rest=Math.floor(restSec/60)+'m '+String(restSec%60).padStart(2,'0')+'s';
+  }
+  startRestTimer(ei);
+  renderExercises();
+  toast('Set '+(si+1)+' logged: '+tfExercises[ei].sets[si].duration+' ✅');
 }
 
 function addSet(ei){
@@ -1236,23 +1413,46 @@ function stopVoice(){
 }
 async function parseVoiceTx(text){
   stopVoice();
-  document.getElementById('vc-parsed').innerHTML='<div style="color:var(--mut);font-size:12px">⏳ Parsing with AERIS...</div>';
+  document.getElementById('vc-parsed').innerHTML='<div style="color:var(--mut);font-size:12px">⏳ AERIS is parsing your transaction...</div>';
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,system:`Parse this spoken transaction into JSON. Return ONLY valid JSON with no backticks:\n{"type":"income" or "expense","amount":number,"category":"one of: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other","note":"clean one-line description"}\nDetermine type from context: spent/paid/bought=expense, received/got/earned/salary=income.`,messages:[{role:"user",content:text}]})});
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,
+    system:`Parse this spoken transaction. Return ONLY a JSON object, nothing else, no backticks, no explanation.
+Rules:
+- type: "income" if words like received/got/earned/salary/credited/income appear, otherwise "expense"  
+- amount: extract the number (handle "rupees", "rs", "₹" prefixes)
+- category: pick ONE from: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other
+- note: clean 1-line description of what the transaction was for
+
+Example output: {"type":"expense","amount":100,"category":"Travel","note":"Auto ride from home to office"}`,
+    messages:[{role:"user",content:`Parse this: "${text}"`}]})});
     const d=await r.json();
-    const raw=d.content?.[0]?.text||'{}';
-    const clean=raw.replace(/```json|```/g,'').trim();
-    voiceParsed=JSON.parse(clean);
+    let raw=d.content?.[0]?.text||'';
+    // Multiple strategies to extract JSON
+    raw=raw.trim();
+    if(!raw.startsWith('{'))raw=raw.substring(raw.indexOf('{'));
+    if(!raw.endsWith('}'))raw=raw.substring(0,raw.lastIndexOf('}')+1);
+    raw=raw.replace(/```json|```/g,'').trim();
+    voiceParsed=JSON.parse(raw);
+    if(!voiceParsed.amount||!voiceParsed.category){throw new Error('Missing fields')}
     const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
     const icon=catIcons[voiceParsed.category]||'❓';
     document.getElementById('vc-parsed').innerHTML=`
-      <div class="vc-row"><div class="vc-label">Amount</div><div class="vc-val">₹${voiceParsed.amount}</div></div>
-      <div class="vc-row"><div class="vc-label">Type</div><div class="vc-val">${voiceParsed.type}</div></div>
+      <div style="background:var(--w);border-radius:10px;padding:10px;margin-top:6px">
+      <div class="vc-row"><div class="vc-label">Amount</div><div class="vc-val" style="color:var(--co);font-size:16px">₹${voiceParsed.amount}</div></div>
+      <div class="vc-row"><div class="vc-label">Type</div><div class="vc-val">${voiceParsed.type==='income'?'💚 Income':'🔴 Expense'}</div></div>
       <div class="vc-row"><div class="vc-label">Category</div><div class="vc-val">${icon} ${voiceParsed.category}</div></div>
-      <div class="vc-row"><div class="vc-label">Note</div><div class="vc-val">${voiceParsed.note}</div></div>`;
+      <div class="vc-row"><div class="vc-label">Note</div><div class="vc-val">${voiceParsed.note}</div></div>
+      </div>`;
   }catch(e){
-    document.getElementById('vc-parsed').innerHTML='<div style="color:var(--co);font-size:12px">Could not parse — please try again or use manual entry</div>';
-    voiceParsed=null;
+    // Fallback: try to extract amount manually and show editable fields
+    const amtMatch=text.match(/\d+/);
+    const amt=amtMatch?parseInt(amtMatch[0]):0;
+    voiceParsed={type:'expense',amount:amt,category:'Other',note:text};
+    document.getElementById('vc-parsed').innerHTML=`
+      <div style="background:var(--amS);border-radius:10px;padding:10px;margin-top:6px;font-size:12px;color:var(--am)">
+      ⚠️ Auto-parse failed. Saving with basic info — please verify:<br><br>
+      Amount: ₹${amt} · Type: expense · Note: ${text}
+      </div>`;
   }
 }
 function confirmVoice(){
@@ -1317,6 +1517,8 @@ function renderStreakTable(){
 // INIT
 // ════════════════════════════════════════════════════════════════
 renderSleepHist();renderTxLog();renderBadges();updateDash();
+// Restore any in-progress morning flow
+restoreMornFlow();
 </script>
 </body>
 </html>
