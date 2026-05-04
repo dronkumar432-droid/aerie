@@ -674,24 +674,35 @@ function getApiKey(){return localStorage.getItem('aeris_api_key')||''}
 
 async function callGemini(systemPrompt, userPrompt, maxTokens=800){
   const key=getApiKey();
-  if(!key)throw new Error('No API key');
+  if(!key)throw new Error('No API key — add in Settings');
   const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
   const body={
-    contents:[{role:"user",parts:[{text:systemPrompt+"\n\n"+userPrompt}]}],
-    generationConfig:{maxOutputTokens:maxTokens,temperature:0.7}
+    contents:[{parts:[{text:systemPrompt+"\n\n"+userPrompt}]}],
+    generationConfig:{maxOutputTokens:maxTokens,temperature:0.7,candidateCount:1}
   };
-  const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const r=await fetch(url,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){
+    const err=await r.json().catch(()=>({}));
+    throw new Error(err?.error?.message||'API error '+r.status);
+  }
   const d=await r.json();
   if(d.error)throw new Error(d.error.message);
-  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  const text=d.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!text)throw new Error('Empty response from Gemini');
+  return text;
 }
 
 function saveApiKey(){
-  const k=document.getElementById('api-key-input').value.trim();
+  const k=document.getElementById('api-key-input').value.trim().replace(/\s/g,'');
   if(!k){toast('Please paste your Gemini API key');return}
+  if(!k.startsWith('AIza')){toast('Key should start with AIza — check it');return}
   localStorage.setItem('aeris_api_key',k);
-  document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Gemini key saved — AERIS is active</span>';
-  toast('API key saved — AERIS is now fully active 🔮');
+  document.getElementById('api-status').innerHTML='<span style="color:var(--te)">✅ Gemini key saved</span>';
+  toast('Key saved ✅');
 }
 
 async function testApiKey(){
@@ -706,8 +717,10 @@ async function testApiKey(){
       toast('AERIS connected via Gemini ✅');
     }
   }catch(e){
-    document.getElementById('api-status').innerHTML='<span style="color:var(--co)">❌ Invalid key — check and retry</span>';
-    toast('Connection failed — check your key');
+    const msg=e.message||'Unknown error';
+    document.getElementById('api-status').innerHTML=`<span style="color:var(--co)">❌ ${msg}</span>`;
+    toast('Error: '+msg.substring(0,50));
+    console.error('Gemini test error:',e);
   }
   btn.textContent='🔍 Test';btn.disabled=false;
 }
