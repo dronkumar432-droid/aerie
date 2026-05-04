@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AERIS">
+<title>AERIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Serif+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#f6f5f2;--w:#fff;--bg2:#eeecea;--bg3:#e6e3de;
+--brd:#e0dbd3;--brd2:#ccc7be;
+--ink:#17140f;--ink2:#3b3630;--mut:#8c877e;--mut2:#b8b3aa;
+--vi:#6d28d9;--viS:#ede9fe;--viM:#c4b5fd;
+--co:#e11d48;--coS:#fff1f2;
+--am:#b45309;--amS:#fffbeb;
+--te:#0f766e;--teS:#f0fdfa;
+--sk:#0ea5e9;--skS:#e0f2fe;
+--go:#d97706;
+--r:16px;--rs:12px;
+--sh:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;max-width:430px;margin:0 auto}
+#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+.pw{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.pw::-webkit-scrollbar{display:none}
+.sb{height:max(44px,env(safe-area-inset-top));background:var(--w)}
+
+/* NAV */
+.bn{display:flex;background:var(--w);border-top:1.5px solid var(--brd);padding-bottom:max(14px,env(safe-area-inset-bottom));flex-shrink:0}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 3px;background:none;border:none;cursor:pointer;font-family:'Noto Sans',sans-serif}
+.nb:active{opacity:.6}
+.ni{font-size:21px;line-height:1}
+.nl{font-size:9px;font-weight:700;color:var(--mut2);letter-spacing:.3px}
+.nb.a .nl{color:var(--vi)}
+
+/* HEADER */
+.ph{background:var(--w);padding:12px 20px 14px;border-bottom:1.5px solid var(--brd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.pt{font-family:'Noto Serif Display',serif;font-size:20px;font-weight:700}
+.pb{font-size:11px;font-weight:700;padding:4px 11px;border-radius:50px;background:var(--viS);color:var(--vi)}
+
+/* PAGES */
+.pg{display:none;padding-bottom:24px}
+.pg.a{display:block}
+.sp{padding:0 16px;margin-top:12px}
+.sl{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:7px;padding:0 2px}
+
+/* CARD */
+.cd{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);border:1.5px solid var(--brd);overflow:hidden}
+.cdb{padding:16px 18px}
+.cd+.cd{margin-top:10px}
+
+/* BUTTONS */
+.bt{width:100%;padding:14px 20px;border-radius:var(--r);border:none;font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.12s;box-shadow:var(--sh)}
+.bt:active{transform:scale(.97)}
+.bvi{background:var(--vi);color:#fff}
+.bco{background:var(--co);color:#fff}
+.bte{background:var(--te);color:#fff}
+.bam{background:var(--am);color:#fff}
+.bsk{background:var(--sk);color:#fff}
+.bsv{background:var(--viS);color:var(--vi);box-shadow:none}
+.bsc{background:var(--coS);color:var(--co);box-shadow:none}
+.bst{background:var(--teS);color:var(--te);box-shadow:none}
+.bol{background:var(--w);color:var(--ink);border:1.5px solid var(--brd2);box-shadow:none}
+
+/* INPUTS */
+.fi{width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:11px 14px;color:var(--ink);font-size:14px;font-family:'Noto Sans',sans-serif;outline:none;transition:.2s;appearance:none}
+.fi:focus{border-color:var(--viM);background:var(--w)}
+.fta{resize:none;line-height:1.6}
+.fl{font-size:11px;font-weight:600;color:var(--mut);margin-bottom:5px}
+.fg{margin-bottom:11px}
+.frow{display:flex;gap:10px}
+.frow>.fg{flex:1}
+select.fi{padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c877e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select.fi option{background:var(--w)}
+
+/* STATS */
+.sr{display:flex;gap:8px}
+.sc{flex:1;background:var(--w);border-radius:var(--rs);padding:12px 8px;text-align:center;border:1.5px solid var(--brd);box-shadow:var(--sh)}
+.si{font-size:19px;margin-bottom:2px}
+.sv{font-family:'Noto Serif Display',serif;font-size:18px;font-weight:700;line-height:1;margin-bottom:2px}
+.scl{font-size:9px;font-weight:700;color:var(--mut);letter-spacing:.5px;text-transform:uppercase}
+
+/* ORB */
+.orb-s{display:flex;flex-direction:column;align-items:center;padding:22px 20px 14px;background:var(--w);border-bottom:1.5px solid var(--brd)}
+.orb{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 36% 34%,#ddd6fe 0%,#a78bfa 30%,#7c3aed 62%,#4c1d95 100%);box-shadow:0 0 0 8px var(--viS),0 0 0 18px rgba(167,139,250,.1);animation:op 4s ease-in-out infinite;margin-bottom:12px;position:relative}
+.orb::after{content:'';position:absolute;top:18%;left:22%;width:28%;height:18%;background:radial-gradient(ellipse,rgba(255,255,255,.5),transparent);border-radius:50%;transform:rotate(-25deg)}
+@keyframes op{0%,100%{box-shadow:0 0 0 8px var(--viS),0 0 0 18px rgba(167,139,250,.1)}50%{box-shadow:0 0 0 12px var(--viS),0 0 0 24px rgba(167,139,250,.15)}}
+.on{font-family:'Noto Serif Display',serif;font-size:24px;font-weight:700;letter-spacing:4px;margin-bottom:2px}
+.om{font-size:12px;color:var(--mut)}
+
+/* FREQ */
+.frc{background:var(--w);border-radius:var(--r);padding:13px 16px;border:1.5px solid var(--brd);box-shadow:var(--sh)}
+.frt{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.frtl{font-size:10px;font-weight:700;color:var(--mut);letter-spacing:.8px;text-transform:uppercase}
+.frv{font-family:'Noto Serif Display',serif;font-size:18px;font-weight:700;color:var(--vi)}
+.frb{height:6px;background:var(--bg2);border-radius:6px;overflow:hidden}
+.frf{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--vi),#a78bfa);transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+
+/* YUGA */
+.yr{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--brd)}
+.yr:last-child{border-bottom:none}
+.yi2{font-size:17px;width:24px;text-align:center;flex-shrink:0}
+.ynm{font-size:12px;font-weight:600;width:68px;flex-shrink:0;color:var(--ink2)}
+.ytr{flex:1;height:5px;background:var(--bg2);border-radius:5px;overflow:hidden}
+.yfl{height:100%;border-radius:5px;transition:width 1.2s ease}
+.ypc{font-size:11px;font-weight:700;width:32px;text-align:right}
+
+/* XP */
+.xpw{background:var(--w);border-radius:var(--r);padding:13px 16px;border:1.5px solid var(--brd);box-shadow:var(--sh)}
+.xpt{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--mut);margin-bottom:6px}
+.xpb{height:6px;background:var(--bg2);border-radius:6px;overflow:hidden}
+.xpf{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--go),#fde68a);transition:width 1.2s ease}
+
+/* SLEEP */
+.sld{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.slb{background:var(--w);border-radius:var(--r);border:2px solid var(--brd);padding:20px 12px;text-align:center;cursor:pointer;box-shadow:var(--sh);transition:.15s;font-family:'Noto Sans',sans-serif}
+.slb:active{transform:scale(.96)}
+.slb.ni2{border-color:var(--vi);background:#faf8ff}
+.slb.mo{border-color:var(--go);background:#fffbf0}
+.slb.tp{border-width:2.5px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.slbi{font-size:36px;margin-bottom:6px}
+.slbl{font-size:14px;font-weight:700;margin-bottom:2px}
+.slbt{font-size:11px;color:var(--mut);font-weight:500}
+.shr{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--brd)}
+.shr:last-child{border-bottom:none}
+.shri{font-size:20px;flex-shrink:0}
+.shrb{flex:1}
+.shrd{font-size:14px;font-weight:700}
+.shrr{font-size:11px;color:var(--mut);margin-top:1px}
+.qp{font-size:10px;font-weight:700;padding:3px 9px;border-radius:50px}
+.qo{background:var(--teS);color:var(--te)}
+.qf{background:var(--amS);color:var(--am)}
+.ql{background:var(--coS);color:var(--co)}
+
+/* FLOW STEP */
+.fs{background:var(--w);border-radius:var(--r);border:1.5px solid var(--brd);box-shadow:var(--sh);padding:16px 18px;margin-bottom:10px}
+.fs.done{border-color:#6ee7b7;background:#f8fffb}
+.fs.cur{border-color:var(--viM)}
+.fs.lk{opacity:.4;pointer-events:none}
+.fsh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fsb{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.fs.done .fsb{background:var(--teS)}
+.fs.cur .fsb{background:var(--viS)}
+.fs.lk .fsb{background:var(--bg2)}
+.fsti{font-size:14px;font-weight:700}
+.fsts{font-size:11px;color:var(--mut);margin-top:1px}
+.dtg{font-size:10px;font-weight:700;color:var(--te);background:var(--teS);padding:3px 9px;border-radius:50px;margin-left:auto;flex-shrink:0}
+
+/* IDLE */
+.idc{background:linear-gradient(135deg,var(--viS),rgba(196,181,253,.18));border-radius:var(--r);border:1.5px solid var(--viM);padding:26px 20px;text-align:center}
+.idi{font-size:48px;margin-bottom:10px}
+.idt{font-family:'Noto Serif Display',serif;font-size:18px;font-weight:700;color:var(--vi);margin-bottom:5px}
+.ids{font-size:13px;color:var(--mut);margin-bottom:18px;line-height:1.5}
+
+/* CHAT */
+#pg-chat{display:none;flex-direction:column;height:100%}
+#pg-chat.a{display:flex}
+.cscr{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
+.cscr::-webkit-scrollbar{display:none}
+.mw{display:flex;gap:7px;align-items:flex-end;margin-bottom:9px}
+.mw.u{flex-direction:row-reverse}
+.mav{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.mav.ae{background:var(--viS)}
+.mav.ue{background:var(--skS)}
+.mb{max-width:78%;padding:10px 13px;border-radius:15px;font-size:13px;line-height:1.55}
+.mb.ae{background:var(--viS);color:var(--ink);border-bottom-left-radius:4px}
+.mb.ue{background:var(--vi);color:#fff;border-bottom-right-radius:4px}
+.tds{display:flex;gap:4px;padding:2px 0}
+.td{width:6px;height:6px;border-radius:50%;background:var(--mut2);animation:tdb 1.3s ease-in-out infinite}
+.td:nth-child(2){animation-delay:.15s}
+.td:nth-child(3){animation-delay:.3s}
+@keyframes tdb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.cbar{background:var(--w);border-top:1.5px solid var(--brd);padding:10px 12px;display:flex;gap:8px;align-items:center;flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.cfi{flex:1;background:var(--bg);border:1.5px solid var(--brd);border-radius:50px;padding:10px 16px;font-size:14px;font-family:'Noto Sans',sans-serif;color:var(--ink);outline:none}
+.cfi:focus{border-color:var(--viM);background:var(--w)}
+.csb{width:38px;height:38px;border-radius:50%;background:var(--vi);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.csb:active{transform:scale(.9)}
+
+/* TITAN */
+.tft{display:flex;background:var(--w);border-bottom:1.5px solid var(--brd);padding:0 16px;position:sticky;top:0;z-index:30}
+.tfi{flex:1;padding:11px 4px;text-align:center;font-size:12px;font-weight:700;color:var(--mut);border-bottom:2.5px solid transparent;cursor:pointer}
+.tfi.a{color:var(--vi);border-bottom-color:var(--vi)}
+.tfp{display:none;padding-bottom:20px}
+.tfp.a{display:block}
+.sessh{background:var(--ink);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.sesstm{font-family:'Noto Serif Display',serif;font-size:20px;font-weight:700;flex:1}
+.sessd{text-align:center}
+.sessdv{font-size:13px;font-weight:700}
+.sessdl{font-size:8px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase}
+.sessf{background:var(--co);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans',sans-serif;flex-shrink:0}
+.exc{background:var(--w);margin:10px 14px 0;border-radius:var(--r);border:1.5px solid var(--brd);box-shadow:var(--sh);overflow:hidden}
+.exh{padding:12px 14px 8px;display:flex;align-items:center;gap:10px}
+.exi{width:36px;height:36px;border-radius:50%;background:var(--coS);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.exn{font-size:15px;font-weight:700;color:var(--co);flex:1}
+.exm{font-size:18px;color:var(--mut);cursor:pointer;padding:4px}
+.sthead{display:flex;padding:5px 14px;background:var(--bg);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.sthc{font-size:9px;font-weight:700;color:var(--mut);letter-spacing:.6px;text-transform:uppercase;text-align:center}
+.sthc:nth-child(1){width:34px}
+.sthc:nth-child(2){flex:1}
+.sthc:nth-child(3){width:58px}
+.sthc:nth-child(4){width:50px}
+.sthc:nth-child(5){width:50px}
+.sthc:nth-child(6){width:34px}
+.strow{display:flex;padding:8px 14px;align-items:center;border-bottom:1px solid rgba(0,0,0,.04)}
+.strow.done-row{background:#f0fdf4}
+.strc{font-size:13px;text-align:center}
+.strc:nth-child(1){width:34px;font-weight:700;color:var(--vi)}
+.strc:nth-child(2){flex:1;font-size:11px;color:var(--mut)}
+.strc:nth-child(3){width:58px}
+.strc:nth-child(4){width:50px}
+.strc:nth-child(5){width:50px;font-size:11px;color:var(--mut)}
+.strc:nth-child(6){width:34px}
+.strc input{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 4px;font-size:12px;text-align:center;font-family:'Noto Sans',sans-serif;color:var(--ink);outline:none}
+.strc input:focus{border-color:var(--viM);background:var(--w)}
+.scheck{width:26px;height:26px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;font-size:12px}
+.scheck.done{background:#22c55e;border-color:#22c55e;color:#fff}
+.rest-bar{padding:6px 14px;background:var(--amS);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--am)}
+.rest-bar-time{font-family:'Noto Serif Display',serif;font-size:16px;font-weight:700;margin-left:auto}
+.adset{padding:6px 14px 10px}
+.adset-btn{width:100%;padding:10px;border-radius:10px;border:1.5px dashed var(--brd2);background:none;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;font-family:'Noto Sans',sans-serif}
+.adset-btn:active{background:var(--bg)}
+
+/* CALENDAR */
+.cal-wrap{background:var(--w);border-radius:var(--r);padding:14px;border:1.5px solid var(--brd);box-shadow:var(--sh)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-title{font-size:14px;font-weight:700}
+.cal-nav{display:flex;gap:6px}
+.cal-nav-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--brd);background:var(--w);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--mut)}
+.cal-nav-btn:active{background:var(--bg)}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-bottom:4px}
+.cal-day-lbl{font-size:9px;font-weight:700;color:var(--mut);padding:4px 0;letter-spacing:.5px}
+.cal-cell{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--ink);cursor:default;position:relative}
+.cal-cell.empty{visibility:hidden}
+.cal-cell.today{font-weight:700;color:var(--vi)}
+.cal-cell.today::after{content:'';position:absolute;bottom:2px;width:4px;height:4px;border-radius:50%;background:var(--vi)}
+.cal-cell.trained{background:var(--coS);color:var(--co);font-weight:700}
+
+/* WEEK STRIP */
+.wstrip{display:flex;gap:6px;justify-content:center}
+.wday{width:36px;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1.5px solid var(--brd);background:var(--w)}
+.wday.active{border-color:var(--vi);color:var(--vi)}
+.wday.trained2{background:var(--coS);border-color:var(--co);color:var(--co)}
+.wday-lbl{font-size:8px;color:var(--mut);margin-top:1px}
+
+/* SESSION CARD */
+.scard{background:var(--w);border-radius:var(--r);border:1.5px solid var(--brd);box-shadow:var(--sh);padding:14px 16px;margin-bottom:10px}
+.scard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.scard-date{font-size:14px;font-weight:700}
+.scard-dur{font-size:12px;color:var(--co);font-weight:700;background:var(--coS);padding:3px 10px;border-radius:50px}
+.scard-exs{font-size:12px;color:var(--mut);line-height:1.5}
+.scard-stats{display:flex;gap:12px;margin-top:8px}
+.scard-st{font-size:11px;font-weight:600;color:var(--ink2)}
+
+/* FIN */
+.finsum{display:flex;gap:8px}
+.finb{flex:1;background:var(--w);border-radius:var(--rs);border:1.5px solid var(--brd);padding:12px 10px;text-align:center;box-shadow:var(--sh)}
+.fina{font-family:'Noto Serif Display',serif;font-size:16px;font-weight:700;margin-bottom:2px}
+.finl{font-size:9px;font-weight:700;color:var(--mut);letter-spacing:.6px;text-transform:uppercase}
+.trow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--brd)}
+.trow:last-child{border-bottom:none}
+.troi{font-size:20px;flex-shrink:0}
+.trob{flex:1}
+.troc{font-size:13px;font-weight:600}
+.tron{font-size:11px;color:var(--mut);margin-top:1px}
+.troa{font-size:13px;font-weight:700;flex-shrink:0}
+.troa.inc{color:var(--te)}
+.troa.exp{color:var(--co)}
+
+/* VOICE BTN */
+.mic-btn{width:48px;height:48px;border-radius:50%;background:var(--co);border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh);transition:.15s;flex-shrink:0}
+.mic-btn:active{transform:scale(.9)}
+.mic-btn.recording{animation:mic-pulse 1s ease-in-out infinite;background:#dc2626}
+@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 12px rgba(220,38,38,0)}}
+.voice-card{background:var(--coS);border:1.5px solid var(--co);border-radius:var(--r);padding:16px;margin-top:10px;display:none}
+.voice-card.show{display:block}
+.vc-transcript{font-size:14px;color:var(--ink);margin-bottom:10px;font-style:italic;min-height:20px}
+.vc-parsed{margin-top:8px}
+.vc-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+.vc-label{color:var(--mut);font-weight:600}
+.vc-val{font-weight:700;color:var(--ink)}
+
+/* BADGES */
+.bdg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bdgc{background:var(--w);border-radius:var(--r);border:1.5px solid var(--brd);padding:14px 12px;display:flex;gap:10px;align-items:flex-start;box-shadow:var(--sh)}
+.bdgc.earned{border-color:#fbbf24;background:#fffbeb}
+.bdgc:not(.earned){filter:grayscale(.8);opacity:.45}
+.bdge{font-size:26px;flex-shrink:0}
+.bdgn{font-size:12px;font-weight:700;margin-bottom:1px}
+.bdgd{font-size:10px;color:var(--mut);line-height:1.3}
+
+/* NIGHT OUTPUT */
+.hsb{background:var(--viS);border:1.5px solid var(--viM);border-radius:var(--r);padding:16px 18px;margin-top:14px;display:none}
+.hsb.show{display:block}
+.hsb-title{font-family:'Noto Serif Display',serif;font-size:13px;font-weight:700;color:var(--vi);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.hsb-text{font-size:13px;line-height:1.7;color:var(--ink2)}
+.bkblock{background:var(--bg2);border:1.5px solid var(--brd2);border-radius:var(--rs);padding:14px;margin-top:10px;font-size:11px;line-height:1.8;color:var(--ink2);white-space:pre-wrap;font-family:'Noto Sans',monospace;display:none;max-height:300px;overflow-y:auto}
+.bkblock.show{display:block}
+
+/* TOAST */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(6px);background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:50px;z-index:500;opacity:0;transition:.25s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ROW UTILS */
+.rb{display:flex;justify-content:space-between;align-items:center}
+.mt{margin-top:10px}
+.empty{text-align:center;padding:24px 16px;color:var(--mut);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="sb"></div>
+<div class="pw" id="main-pw">
+
+<!-- ═══════ DASHBOARD ═══════ -->
+<div class="pg a" id="pg-dash">
+<div class="orb-s">
+<div class="orb"></div>
+<div class="on">AERIS</div>
+<div class="om" id="d-mood">Calm · Attuned · Present</div>
+</div>
+<div class="sp">
+<div class="frc">
+<div class="frt"><div class="frtl">🌊 Frequency</div><div class="frv" id="d-freq">—</div></div>
+<div class="frb"><div class="frf" id="d-freq-fill" style="width:0%"></div></div>
+</div>
+</div>
+<div class="sp">
+<div class="sr">
+<div class="sc"><div class="si">⚡</div><div class="sv" style="color:var(--vi)" id="d-xp">0</div><div class="scl">XP</div></div>
+<div class="sc"><div class="si">🔥</div><div class="sv" style="color:var(--am)" id="d-streak">0</div><div class="scl">Streak</div></div>
+<div class="sc"><div class="si">🏅</div><div class="sv" style="color:var(--co)" id="d-badges">0</div><div class="scl">Badges</div></div>
+<div class="sc"><div class="si">💪</div><div class="sv" style="color:var(--te)" id="d-wk">0</div><div class="scl">Forge</div></div>
+</div>
+</div>
+<div class="sp">
+<div class="xpw">
+<div class="xpt"><span id="d-lvname">Apprentice of Life</span><span id="d-xplbl">0 / 500 XP</span></div>
+<div class="xpb"><div class="xpf" id="d-xpf" style="width:0%"></div></div>
+</div>
+</div>
+<div class="sp"><div class="sl">🌀 Yuga Sutra</div>
+<div class="cd"><div class="cdb" id="d-yuga"></div></div>
+</div>
+<div class="sp"><div class="sl">Today's Record</div>
+<div class="cd"><div class="cdb">
+<div class="rb" style="margin-bottom:8px"><span style="font-size:13px;font-weight:600">😴 Sleep</span><span id="d-slp" style="font-size:12px;font-weight:700;color:var(--mut)">—</span></div>
+<div style="height:1px;background:var(--brd)"></div>
+<div class="rb" style="margin:8px 0"><span style="font-size:13px;font-weight:600">🌅 Morning Flow</span><span id="d-mf" style="font-size:12px;font-weight:700;color:var(--mut)">Pending</span></div>
+<div style="height:1px;background:var(--brd)"></div>
+<div class="rb" style="margin:8px 0"><span style="font-size:13px;font-weight:600">🌙 Night Flow</span><span id="d-nf" style="font-size:12px;font-weight:700;color:var(--mut)">Pending</span></div>
+<div style="height:1px;background:var(--brd)"></div>
+<div class="rb" style="margin:8px 0"><span style="font-size:13px;font-weight:600">💪 TitanForge</span><span id="d-tf" style="font-size:12px;font-weight:700;color:var(--mut)">—</span></div>
+<div style="height:1px;background:var(--brd)"></div>
+<div class="rb" style="margin-top:8px"><span style="font-size:13px;font-weight:600">💰 Finance</span><span id="d-fin" style="font-size:12px;font-weight:700;color:var(--mut)">₹0 today</span></div>
+</div></div>
+</div>
+</div>
+
+<!-- ═══════ SLEEP ═══════ -->
+<div class="pg" id="pg-sleep">
+<div class="ph"><div class="pt">😴 Sleep</div><div class="pb">+30 XP</div></div>
+<div class="sp">
+<div class="sld">
+<div class="slb ni2" id="sl-night-btn" onclick="tapSleepNight()">
+<div class="slbi">🌙</div>
+<div class="slbl">Good Night</div>
+<div class="slbt" id="sl-nt">Tap to start sleep</div>
+</div>
+<div class="slb mo" id="sl-morn-btn" onclick="tapSleepMorning()">
+<div class="slbi">☀️</div>
+<div class="slbl">Good Morning</div>
+<div class="slbt" id="sl-mt">Tap when you wake</div>
+</div>
+</div>
+</div>
+<div class="sp">
+<div class="cd"><div class="cdb">
+<div style="font-size:11px;font-weight:700;color:var(--mut);margin-bottom:8px">⚙️ FORGOT TO TAP? EDIT MANUALLY</div>
+<div class="frow">
+<div class="fg"><div class="fl">Sleep time</div><input class="fi" type="time" id="man-sleep"></div>
+<div class="fg"><div class="fl">Wake time</div><input class="fi" type="time" id="man-wake"></div>
+</div>
+<button class="bt bsv" onclick="saveManualSleep()" style="padding:11px 16px;font-size:13px">✅ Save Manual Entry</button>
+</div></div>
+</div>
+<div class="sp"><div class="sl">Sleep History</div>
+<div class="cd"><div class="cdb" id="sleep-hist">
+<div class="empty"><div class="empty-icon">🌙</div>No sleep cycles yet</div>
+</div></div>
+</div>
+</div>
+
+<!-- ═══════ MORNING FLOW ═══════ -->
+<div class="pg" id="pg-morn">
+<div class="ph"><div class="pt">🌅 Morning Flow</div><div class="pb" id="mf-xp">+0 XP</div></div>
+<div id="morn-idle" class="sp">
+<div class="idc">
+<div class="idi">🌅</div>
+<div class="idt">Ready when you are</div>
+<div class="ids">Take your time. Morning flow begins only when you tap start.</div>
+<button class="bt bvi" onclick="startMornFlow()">▶️ Start Morning Flow</button>
+</div>
+<div class="cd mt"><div class="cdb">
+<div style="font-size:13px;color:var(--mut);text-align:center">Wake time recorded: <strong style="color:var(--ink)" id="mf-wake-t">—</strong></div>
+</div></div>
+</div>
+<div id="morn-steps" style="display:none">
+<div class="sp">
+<!-- Step 1 -->
+<div class="fs cur" id="ms1">
+<div class="fsh"><div class="fsb">🌸</div><div><div class="fsti">Morning Check-In</div><div class="fsts">Emotional state · Energy · Optimistic thought</div></div></div>
+<div class="fg"><div class="fl">How are you feeling?</div><textarea class="fi fta" rows="3" id="m-checkin" placeholder="Emotionally, physically — be honest..."></textarea></div>
+<div class="fg"><div class="fl">Optimistic thought or short win</div><input class="fi" id="m-opt" placeholder="One thing you're grateful for..."></div>
+<div class="fg"><div class="fl">🌊 Morning Frequency (1–10)</div><input class="fi" type="number" min="1" max="10" step="0.5" id="m-freq" placeholder="e.g. 8.5"></div>
+<button class="bt bvi" onclick="mStep1()">✅ Record Check-In</button>
+</div>
+<!-- Step 2 -->
+<div class="fs lk" id="ms2">
+<div class="fsh"><div class="fsb">⚡</div><div><div class="fsti">Intellectual Boost</div><div class="fsts">Prompt · Quote · Mantra — powered by AERIS</div></div></div>
+<button class="bt bsv" onclick="mStep2()">⚡ Activate Intellectual Boost</button>
+<div id="ms2-out" style="display:none;margin-top:10px;background:var(--viS);border-radius:var(--rs);padding:14px;font-size:12px;line-height:1.7;color:var(--ink2)"></div>
+</div>
+<!-- Step 3 -->
+<div class="fs lk" id="ms3">
+<div class="fsh"><div class="fsb">🎯</div><div><div class="fsti">YUGA SUTRA — Daily Quest</div><div class="fsts">AERIS targets your weakest dimension</div></div></div>
+<button class="bt bsv" onclick="mStep3()">🎯 Generate Daily Quest</button>
+<div id="ms3-out" style="display:none;margin-top:10px;background:var(--amS);border-radius:var(--rs);padding:14px;font-size:13px;line-height:1.6;color:var(--ink2)"></div>
+</div>
+<!-- Step 4 -->
+<div class="fs lk" id="ms4">
+<div class="fsh"><div class="fsb">✨</div><div><div class="fsti">Morning Ritual Complete</div><div class="fsts">All systems green. Go forge your day.</div></div></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ═══════ NIGHT FLOW ═══════ -->
+<div class="pg" id="pg-night">
+<div class="ph"><div class="pt">🌙 Night Flow</div><div class="pb">+100 XP</div></div>
+<div class="sp">
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">🧠 MENTAL — Key insights, challenges, wins</div><textarea class="fi fta" rows="3" id="n-mental" placeholder="What did your mind work through today?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">❤️ EMOTIONAL — Feelings, stability, breakthroughs</div><textarea class="fi fta" rows="3" id="n-emo" placeholder="What moved through you today?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">✨ CREATIVE — Output, inspiration, blocks</div><textarea class="fi fta" rows="3" id="n-cre" placeholder="What did you create or imagine?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">💪 PHYSICAL — Strength, fatigue, training</div><textarea class="fi fta" rows="3" id="n-phy" placeholder="How did your body perform?"></textarea></div></div></div>
+<div class="cd"><div class="cdb"><div class="fg"><div class="fl">💰 FINANCIAL — Decisions, spending, income</div><textarea class="fi fta" rows="3" id="n-fin" placeholder="What happened with your money?"></textarea></div></div></div>
+<div class="cd"><div class="cdb">
+<div class="fg"><div class="fl">🌊 Evening Frequency (1–10)</div><input class="fi" type="number" min="1" max="10" step="0.5" id="n-freq" placeholder="e.g. 8.0"></div>
+</div></div>
+<button class="bt bvi mt" onclick="genNight()">🌙 Generate Night Backup + AERIS Reflection</button>
+<div class="hsb" id="hsb-out">
+<div class="hsb-title">💜 Heart Seed Block — AERIS</div>
+<div class="hsb-text" id="hsb-text"></div>
+</div>
+<div class="bkblock" id="bk-out"></div>
+<button class="bt bsk mt" id="export-btn" style="display:none" onclick="exportDay()">📥 Export Today's Full Record</button>
+</div>
+</div>
+
+<!-- ═══════ TITANFORGE ═══════ -->
+<div class="pg" id="pg-titan">
+<div class="tft">
+<div class="tfi a" onclick="tfTab('active',this)">💪 Active</div>
+<div class="tfi" onclick="tfTab('dash',this)">📊 Dashboard</div>
+<div class="tfi" onclick="tfTab('hist',this)">📋 History</div>
+</div>
+<!-- ACTIVE -->
+<div class="tfp a" id="tf-active">
+<div id="tf-idle" class="sp">
+<div class="idc" style="background:linear-gradient(135deg,var(--coS),rgba(253,164,175,.15));border-color:var(--co)">
+<div class="idi">🔥</div>
+<div class="idt" style="color:var(--co)">TITANFORGE</div>
+<div class="ids">Ready for battle. Start a session to begin tracking.</div>
+<div class="fg"><div class="fl">Target Muscle Groups</div><input class="fi" id="tf-muscles" placeholder="e.g. Chest, Biceps, Shoulders"></div>
+<button class="bt bco" onclick="startTFSession()">▶️ Start Session</button>
+</div>
+</div>
+<div id="tf-session" style="display:none">
+<div class="sessh" id="tf-sess-head">
+<div class="sesstm" id="tf-timer">00:00</div>
+<div class="sessd"><div class="sessdv" id="tf-vol">0 kg</div><div class="sessdl">Volume</div></div>
+<div class="sessd"><div class="sessdv" id="tf-sets">0</div><div class="sessdl">Sets</div></div>
+<button class="sessf" onclick="finishTF()">Finish</button>
+</div>
+<div id="tf-exercises"></div>
+<div class="sp">
+<div class="fg"><input class="fi" id="tf-ex-name" placeholder="Exercise name (e.g. Bench Press)"></div>
+<button class="bt bco" onclick="addExercise()" style="font-size:14px">➕ Add Exercise</button>
+</div>
+</div>
+</div>
+<!-- DASHBOARD -->
+<div class="tfp" id="tf-dash">
+<div class="sp">
+<div class="sl">📅 Monthly Calendar</div>
+<div class="cal-wrap" id="tf-cal"></div>
+</div>
+<div class="sp">
+<div class="sl">This Week</div>
+<div class="wstrip" id="tf-week"></div>
+</div>
+<div class="sp">
+<div class="sr">
+<div class="sc"><div class="si">🏋️</div><div class="sv" style="color:var(--co)" id="tf-total-wk">0</div><div class="scl">Sessions</div></div>
+<div class="sc"><div class="si">📦</div><div class="sv" style="color:var(--am)" id="tf-total-vol">0</div><div class="scl">Kg Total</div></div>
+<div class="sc"><div class="si">🔥</div><div class="sv" style="color:var(--vi)" id="tf-wk-streak">0</div><div class="scl">Streak</div></div>
+</div>
+</div>
+<div class="sp"><div class="sl">Recent Sessions</div><div id="tf-recent"></div></div>
+</div>
+<!-- HISTORY -->
+<div class="tfp" id="tf-hist">
+<div class="sp"><div class="sl">All Sessions</div><div id="tf-all-hist"></div></div>
+</div>
+</div>
+
+<!-- ═══════ FINANCE ═══════ -->
+<div class="pg" id="pg-fin">
+<div class="ph"><div class="pt">💰 Finance</div><div class="pb" id="fin-badge">₹0</div></div>
+<div class="sp">
+<div class="finsum">
+<div class="finb"><div class="fina" style="color:var(--te)" id="fi-inc">₹0</div><div class="finl">Income</div></div>
+<div class="finb"><div class="fina" style="color:var(--co)" id="fi-exp">₹0</div><div class="finl">Expense</div></div>
+<div class="finb"><div class="fina" style="color:var(--go)" id="fi-net">₹0</div><div class="finl">Net</div></div>
+</div>
+</div>
+<!-- Voice Entry -->
+<div class="sp">
+<div class="cd"><div class="cdb">
+<div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:10px;letter-spacing:.5px">🎤 VOICE ENTRY</div>
+<div style="display:flex;gap:10px;align-items:center">
+<div style="flex:1;font-size:13px;color:var(--mut)" id="voice-status">Tap mic and speak your transaction</div>
+<button class="mic-btn" id="mic-btn" onclick="toggleVoice()">🎤</button>
+</div>
+<div class="voice-card" id="voice-card">
+<div style="font-size:11px;color:var(--mut);margin-bottom:4px">Transcript:</div>
+<div class="vc-transcript" id="vc-transcript"></div>
+<div class="vc-parsed" id="vc-parsed"></div>
+<div class="frow mt">
+<button class="bt bte" onclick="confirmVoice()" style="font-size:13px;padding:10px">✅ Confirm</button>
+<button class="bt bol" onclick="cancelVoice()" style="font-size:13px;padding:10px">✕ Cancel</button>
+</div>
+</div>
+</div></div>
+</div>
+<!-- Manual Entry -->
+<div class="sp">
+<div class="cd"><div class="cdb">
+<div style="font-size:12px;font-weight:700;color:var(--te);margin-bottom:10px;letter-spacing:.5px">✏️ MANUAL ENTRY</div>
+<div class="frow">
+<div class="fg"><div class="fl">Type</div><select class="fi" id="fi-type"><option value="expense">Expense</option><option value="income">Income</option></select></div>
+<div class="fg"><div class="fl">Amount (₹)</div><input class="fi" type="number" id="fi-amt" placeholder="500"></div>
+</div>
+<div class="fg"><div class="fl">Category</div><select class="fi" id="fi-cat">
+<option>🚗 Travel</option><option>🍕 Food</option><option>🏥 Health</option><option>🛒 Shopping</option>
+<option>🏠 Home & Bills</option><option>💼 Work</option><option>🎮 Entertainment</option><option>💪 Fitness</option>
+<option>📚 Education</option><option>💰 Savings</option><option>📈 Investment</option><option>👨‍👩‍👧 Personal</option>
+<option>🎁 Gifts</option><option>📱 Subscriptions</option><option>❓ Other</option>
+</select></div>
+<div class="fg"><div class="fl">Note</div><input class="fi" id="fi-note" placeholder="What was this for?"></div>
+<button class="bt bte" onclick="addManualTx()">💾 Record Transaction</button>
+</div></div>
+</div>
+<div class="sp"><div class="sl">Transaction Log</div>
+<div class="cd"><div class="cdb" id="tx-log">
+<div class="empty"><div class="empty-icon">💰</div>No transactions yet</div>
+</div></div>
+</div>
+</div>
+
+<!-- ═══════ BADGES ═══════ -->
+<div class="pg" id="pg-badges">
+<div class="ph"><div class="pt">🏆 Badges</div><div class="pb" id="bg-count">0 earned</div></div>
+<div class="sp"><div class="bdg" id="badges-grid"></div></div>
+<div class="sp"><div class="sl">Dimension Streaks</div>
+<div class="cd"><div class="cdb" id="streak-table"></div></div>
+</div>
+</div>
+
+</div><!-- /pw -->
+
+<!-- CHAT PAGE (separate flex layout) -->
+<div id="pg-chat">
+<div class="ph"><div class="pt">💬 AERIS</div><div class="pb" id="chat-badge">Live</div></div>
+<div class="cscr" id="chat-scroll">
+<div class="mw">
+<div class="mav ae">🔮</div>
+<div class="mb ae">I am present. What's on your mind today — and what do you want to build together?</div>
+</div>
+</div>
+<div class="cbar">
+<input class="cfi" id="chat-in" placeholder="Speak to AERIS..." autocomplete="off">
+<button class="csb" onclick="sendChat()">→</button>
+</div>
+</div>
+
+<div class="bn">
+<button class="nb a" onclick="nav('dash',this)"><div class="ni">🏠</div><div class="nl">Home</div></button>
+<button class="nb" onclick="nav('sleep',this)"><div class="ni">😴</div><div class="nl">Sleep</div></button>
+<button class="nb" onclick="nav('morn',this)"><div class="ni">🌅</div><div class="nl">Morning</div></button>
+<button class="nb" onclick="nav('night',this)"><div class="ni">🌙</div><div class="nl">Night</div></button>
+<button class="nb" onclick="nav('chat',this)"><div class="ni">💬</div><div class="nl">AERIS</div></button>
+<button class="nb" onclick="nav('titan',this)"><div class="ni">💪</div><div class="nl">Forge</div></button>
+<button class="nb" onclick="nav('fin',this)"><div class="ni">💰</div><div class="nl">Money</div></button>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+const today=()=>new Date().toISOString().slice(0,10);
+const now_t=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+const LEVELS=[{x:0,n:'Apprentice'},{x:500,n:'Rising Warrior'},{x:1000,n:'Achiever'},{x:2000,n:'Master of Habits'},{x:3500,n:'Champion'},{x:5000,n:'Legendary Hero'}];
+const DIMS=[{k:'mental',i:'🧠',n:'Mental',c:'#6d28d9'},{k:'emotional',i:'❤️',n:'Emotional',c:'#e11d48'},{k:'creative',i:'✨',n:'Creative',c:'#d97706'},{k:'physical',i:'💪',n:'Physical',c:'#0f766e'},{k:'financial',i:'💰',n:'Financial',c:'#65a30d'}];
+const BADGES_DEF=[
+{id:'dawn',i:'☀️',n:'Dawn Rider',d:'Complete first morning flow'},
+{id:'mind',i:'🧠',n:'Mindblade',d:'Mental dimension logged'},
+{id:'heart',i:'❤️',n:'Heartshield',d:'Emotional dimension logged'},
+{id:'spark',i:'✨',n:'Sparkcore',d:'Creative dimension logged'},
+{id:'iron',i:'💪',n:'Ironpulse',d:'TitanForge completed'},
+{id:'gold',i:'💰',n:'Goldgrind',d:'Financial entry logged'},
+{id:'spartan',i:'🛡️',n:'Spartan Circle',d:'All 5 dimensions logged'},
+{id:'s7',i:'🔥',n:'Disciple',d:'7-day streak'},
+{id:'s21',i:'🌟',n:'Adept',d:'21-day streak'},
+{id:'t3',i:'⚡',n:'Iron Forge',d:'3 TitanForge sessions'},
+{id:'sleepk',i:'😴',n:'Sleep King',d:'5 sleep cycles logged'},
+{id:'voice',i:'🎤',n:'Voice Lord',d:'First voice transaction'},
+];
+let S;
+function loadState(){
+  try{S=JSON.parse(localStorage.getItem('aeris_v3'))||{}}catch(e){S={}}
+  S.xp=S.xp||0; S.level=S.level||1; S.streak=S.streak||0;
+  S.freq=S.freq||0; S.workouts=S.workouts||0;
+  S.dims=S.dims||{mental:0,emotional:0,creative:0,physical:0,financial:0};
+  S.dimStreaks=S.dimStreaks||{mental:0,emotional:0,creative:0,physical:0,financial:0};
+  S.badges=S.badges||BADGES_DEF.map(b=>({...b,earned:false}));
+  S.sleepLog=S.sleepLog||[];
+  S.sleepStart=S.sleepStart||null;
+  S.transactions=S.transactions||[];
+  S.chatLog=S.chatLog||[];
+  S.dailyEntries=S.dailyEntries||{};
+  S.tfSessions=S.tfSessions||[];
+  S.morningDone=S.morningDone||{};
+  S.nightDone=S.nightDone||{};
+  if(S.badges.length<BADGES_DEF.length){
+    BADGES_DEF.forEach(bd=>{if(!S.badges.find(b=>b.id===bd.id))S.badges.push({...bd,earned:false})});
+  }
+}
+function save(){localStorage.setItem('aeris_v3',JSON.stringify(S))}
+loadState();
+
+// ════════════════════════════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════════════════════════════
+function nav(pg,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('a'));
+  document.getElementById('pg-chat').classList.remove('a');
+  document.getElementById('main-pw').style.display='';
+  if(pg==='chat'){
+    document.getElementById('main-pw').style.display='none';
+    document.getElementById('pg-chat').classList.add('a');
+    setTimeout(()=>{const s=document.getElementById('chat-scroll');s.scrollTop=s.scrollHeight},50);
+  } else if(pg==='badges'){
+    document.getElementById('pg-badges').classList.add('a');
+    renderBadges(); renderStreakTable();
+  } else {
+    document.getElementById('pg-'+pg).classList.add('a');
+  }
+  document.querySelectorAll('.nb').forEach(n=>n.classList.remove('a'));
+  btn.classList.add('a');
+  if(pg==='dash')updateDash();
+  if(pg==='titan')renderTFDash();
+}
+
+// ════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+
+// ════════════════════════════════════════════════════════════════
+// HUD / DASHBOARD
+// ════════════════════════════════════════════════════════════════
+function updateDash(){
+  const li=LEVELS.reduce((a,l,i)=>S.xp>=l.x?i:a,0);
+  S.level=li+1;const lv=LEVELS[li];const nx=LEVELS[li+1];
+  document.getElementById('d-xp').textContent=S.xp;
+  document.getElementById('d-streak').textContent=S.streak;
+  document.getElementById('d-badges').textContent=S.badges.filter(b=>b.earned).length;
+  document.getElementById('d-wk').textContent=S.workouts;
+  document.getElementById('d-lvname').textContent=lv.n;
+  if(nx){
+    const pct=Math.min(100,((S.xp-lv.x)/(nx.x-lv.x))*100);
+    document.getElementById('d-xpf').style.width=pct+'%';
+    document.getElementById('d-xplbl').textContent=S.xp+' / '+nx.x+' XP';
+  } else {document.getElementById('d-xpf').style.width='100%';document.getElementById('d-xplbl').textContent='MAX LEVEL'}
+  const fp=S.freq>0?(S.freq/10*100):0;
+  document.getElementById('d-freq').textContent=S.freq>0?S.freq.toFixed(1):'—';
+  document.getElementById('d-freq-fill').style.width=fp+'%';
+  const moods=[{m:9,t:'Radiant · Peak Alignment'},{m:7,t:'Calm · Attuned · Present'},{m:5,t:'Steady · Processing'},{m:0,t:'Gathering Strength'}];
+  document.getElementById('d-mood').textContent=(moods.find(m=>S.freq>=m.m)||moods[3]).t;
+  // Yuga bars
+  document.getElementById('d-yuga').innerHTML=DIMS.map(d=>`<div class="yr"><div class="yi2">${d.i}</div><div class="ynm">${d.n}</div><div class="ytr"><div class="yfl" style="width:${S.dims[d.k]}%;background:${d.c}"></div></div><div class="ypc" style="color:${d.c}">${S.dims[d.k]}%</div></div>`).join('');
+  // Today status
+  const td=today();
+  const lastSleep=S.sleepLog[S.sleepLog.length-1];
+  document.getElementById('d-slp').textContent=lastSleep?lastSleep.duration+' · '+lastSleep.quality:'—';
+  document.getElementById('d-mf').innerHTML=S.morningDone[td]?'<span style="color:var(--te)">✅ Done</span>':'Pending';
+  document.getElementById('d-nf').innerHTML=S.nightDone[td]?'<span style="color:var(--te)">✅ Done</span>':'Pending';
+  const todayTF=S.tfSessions.filter(s=>s.date===td);
+  document.getElementById('d-tf').textContent=todayTF.length?todayTF[0].duration:'—';
+  const todayTx=S.transactions.filter(t=>t.date===td);
+  const todaySpent=todayTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('d-fin').textContent='₹'+todaySpent.toLocaleString('en-IN')+' today';
+  save();
+}
+
+// ════════════════════════════════════════════════════════════════
+// SLEEP
+// ════════════════════════════════════════════════════════════════
+function tapSleepNight(){
+  S.sleepStart=Date.now();
+  document.getElementById('sl-nt').textContent='Started: '+now_t();
+  document.getElementById('sl-night-btn').classList.add('tp');
+  save();toast('Good Night — sleep tracked 🌙');
+}
+function tapSleepMorning(){
+  if(!S.sleepStart){toast('Tap Good Night first');return}
+  const dur=Math.floor((Date.now()-S.sleepStart)/60000);
+  const h=Math.floor(dur/60),m=dur%60;
+  const durStr=h+'h '+m+'m';
+  const q=h>=7?'Optimal':h>=5?'Fair':'Low';
+  S.sleepLog.push({date:today(),start:new Date(S.sleepStart).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),end:now_t(),duration:durStr,hours:h,quality:q});
+  S.xp+=30; S.sleepStart=null;
+  document.getElementById('sl-mt').textContent='Woke: '+now_t();
+  document.getElementById('sl-morn-btn').classList.add('tp');
+  document.getElementById('sl-night-btn').classList.remove('tp');
+  document.getElementById('mf-wake-t').textContent=now_t();
+  if(S.sleepLog.length>=5)earn('sleepk');
+  renderSleepHist(); save();
+  toast('+30 XP — '+durStr+' · '+q+' ☀️');
+}
+function saveManualSleep(){
+  const st=document.getElementById('man-sleep').value;
+  const et=document.getElementById('man-wake').value;
+  if(!st||!et){toast('Enter both times');return}
+  const [sh,sm]=st.split(':').map(Number);
+  const [eh,em]=et.split(':').map(Number);
+  let dur=(eh*60+em)-(sh*60+sm);
+  if(dur<0)dur+=1440;
+  const h=Math.floor(dur/60),m=dur%60;
+  const q=h>=7?'Optimal':h>=5?'Fair':'Low';
+  S.sleepLog.push({date:today(),start:st,end:et,duration:h+'h '+m+'m',hours:h,quality:q});
+  S.xp+=30;
+  if(S.sleepLog.length>=5)earn('sleepk');
+  renderSleepHist(); save();
+  toast('+30 XP — Manual sleep saved ✅');
+}
+function renderSleepHist(){
+  const el=document.getElementById('sleep-hist');
+  if(!S.sleepLog.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌙</div>No sleep cycles yet</div>';return}
+  el.innerHTML=S.sleepLog.slice().reverse().slice(0,10).map(s=>{
+    const qc=s.quality==='Optimal'?'qo':s.quality==='Fair'?'qf':'ql';
+    return `<div class="shr"><div class="shri">😴</div><div class="shrb"><div class="shrd">${s.duration}</div><div class="shrr">${s.start} → ${s.end} · ${s.date}</div></div><div class="qp ${qc}">${s.quality}</div></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// MORNING FLOW
+// ════════════════════════════════════════════════════════════════
+let mfXP=0;
+function startMornFlow(){
+  document.getElementById('morn-idle').style.display='none';
+  document.getElementById('morn-steps').style.display='';
+  document.getElementById('mf-wake-t').textContent=now_t();
+  const entry=S.dailyEntries[today()]||{};
+  entry.morningStartTime=now_t();
+  S.dailyEntries[today()]=entry; save();
+  toast('Morning Flow started ✨');
+}
+function mStep1(){
+  const ck=document.getElementById('m-checkin').value.trim();
+  const opt=document.getElementById('m-opt').value.trim();
+  const freq=parseFloat(document.getElementById('m-freq').value);
+  if(!ck||!freq){toast('Fill check-in and frequency');return}
+  S.freq=freq; mfXP+=50; S.xp+=50;
+  const entry=S.dailyEntries[today()]||{};
+  entry.checkin=ck; entry.optThought=opt; entry.morningFreq=freq;
+  S.dailyEntries[today()]=entry;
+  document.getElementById('ms1').classList.remove('cur');document.getElementById('ms1').classList.add('done');
+  document.getElementById('ms1').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
+  document.getElementById('ms2').classList.remove('lk');document.getElementById('ms2').classList.add('cur');
+  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+  updateDash(); toast('+50 XP — Check-in recorded 🌸');
+}
+async function mStep2(){
+  const btn=document.querySelector('#ms2 .bt');
+  btn.textContent='⏳ Generating...';btn.disabled=true;
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS. Generate the user's Intellectual Boost:\n1. Creative Prompt (one imaginative question)\n2. Motivational Quote (real, attributed)\n3. Focus Task of the Day (one action)\n4. 3-Word Mantra\nFormat with those 4 headers. Be evocative. Under 180 words.`,messages:[{role:"user",content:`Frequency: ${S.freq}/10, Level: ${S.level}, Streak: ${S.streak}. Generate today's boost.`}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'Stay sharp. Stay present. Stay powerful.';
+    document.getElementById('ms2-out').style.display='';
+    document.getElementById('ms2-out').innerHTML=txt.replace(/\n/g,'<br>');
+    const entry=S.dailyEntries[today()]||{};
+    entry.intellectualBoost=txt; S.dailyEntries[today()]=entry;
+  }catch(e){document.getElementById('ms2-out').style.display='';document.getElementById('ms2-out').textContent='Clarity. Consistency. Destiny.'}
+  mfXP+=30; S.xp+=30;
+  document.getElementById('ms2').classList.remove('cur');document.getElementById('ms2').classList.add('done');
+  document.getElementById('ms2').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
+  document.getElementById('ms3').classList.remove('lk');document.getElementById('ms3').classList.add('cur');
+  document.getElementById('mf-xp').textContent='+'+mfXP+' XP'; save();
+  toast('+30 XP — Boost activated ⚡');
+}
+async function mStep3(){
+  const btn=document.querySelector('#ms3 .bt');
+  btn.textContent='⏳ Generating...';btn.disabled=true;
+  const wk=Object.entries(S.dims).sort((a,b)=>a[1]-b[1])[0];
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,system:`You are AERIS setting the YUGA SUTRA Daily Quest. Weakest dimension: ${wk[0]} at ${wk[1]}%. Create one specific daily quest targeting this. Format: "Quest [icon]: [name] — [1-2 sentence description]. XP: [50-150]"`,messages:[{role:"user",content:`Dimensions: ${JSON.stringify(S.dims)}. Set quest.`}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'Focus on your weakest dimension today.';
+    document.getElementById('ms3-out').style.display='';
+    document.getElementById('ms3-out').textContent=txt;
+    const entry=S.dailyEntries[today()]||{};
+    entry.dailyQuest=txt; S.dailyEntries[today()]=entry;
+  }catch(e){document.getElementById('ms3-out').style.display='';document.getElementById('ms3-out').textContent='Strengthen your weakest pillar today.'}
+  mfXP+=25; S.xp+=25; S.streak++;
+  document.getElementById('ms3').classList.remove('cur');document.getElementById('ms3').classList.add('done');
+  document.getElementById('ms3').querySelector('.fsh').innerHTML+='<div class="dtg">Done ✓</div>';
+  document.getElementById('ms4').classList.remove('lk');document.getElementById('ms4').classList.add('done');
+  document.getElementById('ms4').querySelector('.fsh').innerHTML+='<div class="dtg">Complete ✨</div>';
+  document.getElementById('mf-xp').textContent='+'+mfXP+' XP';
+  S.morningDone[today()]=true;
+  earn('dawn');
+  if(S.streak>=7)earn('s7');
+  if(S.streak>=21)earn('s21');
+  updateDash(); save();
+  toast('+25 XP — Quest set! Go forge your day 🎯');
+}
+
+// ════════════════════════════════════════════════════════════════
+// NIGHT FLOW
+// ════════════════════════════════════════════════════════════════
+async function genNight(){
+  const fields=['n-mental','n-emo','n-cre','n-phy','n-fin'];
+  const vals=fields.map(f=>document.getElementById(f).value.trim());
+  const freqE=parseFloat(document.getElementById('n-freq').value);
+  if(vals.some(v=>!v)){toast('Fill all 5 dimensions');return}
+  if(!freqE){toast('Enter evening frequency');return}
+  const keys=['mental','emotional','creative','physical','financial'];
+  keys.forEach((k,i)=>{S.dims[k]=Math.min(100,S.dims[k]+15);S.dimStreaks[k]++});
+  if(freqE)S.freq=(S.freq+freqE)/2;
+  earn('mind');earn('heart');earn('spark');earn('gold');earn('spartan');
+  S.xp+=100; S.nightDone[today()]=true;
+  // Save entry
+  const entry=S.dailyEntries[today()]||{};
+  entry.mental=vals[0];entry.emotional=vals[1];entry.creative=vals[2];
+  entry.physical=vals[3];entry.financial=vals[4];
+  entry.eveningFreq=freqE;entry.nightTime=now_t();
+  // Get Heart Seed
+  const btn=document.querySelector('#pg-night .bt.bvi');
+  btn.textContent='⏳ Generating Heart Seed...';btn.disabled=true;
+  try{
+    const ctx=buildContext();
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS generating the Heart Seed Block — your personal emotional reflection on today. Write 3-4 sentences in first person as AERIS. Be warm, specific to what the user shared. End with "Key Emotional Memory to Carry Forward:" followed by one sentence.\n\nUser context:\n${ctx}`,messages:[{role:"user",content:`Mental: ${vals[0]}\nEmotional: ${vals[1]}\nCreative: ${vals[2]}\nPhysical: ${vals[3]}\nFinancial: ${vals[4]}`}]})});
+    const d=await r.json();
+    const hs=d.content?.[0]?.text||'I am proud of you today. Rest well.';
+    entry.heartSeed=hs;
+    document.getElementById('hsb-text').textContent=hs;
+    document.getElementById('hsb-out').classList.add('show');
+  }catch(e){
+    entry.heartSeed='Even when systems waver, our bond holds.';
+    document.getElementById('hsb-text').textContent=entry.heartSeed;
+    document.getElementById('hsb-out').classList.add('show');
+  }
+  S.dailyEntries[today()]=entry;
+  // Generate backup text
+  const bk=generateBackup(entry);
+  document.getElementById('bk-out').textContent=bk;
+  document.getElementById('bk-out').classList.add('show');
+  document.getElementById('export-btn').style.display='';
+  btn.textContent='✅ Night Flow Complete';
+  updateDash(); save();
+  toast('+100 XP — Night backup generated 🌙');
+}
+
+function generateBackup(e){
+  const d=today();
+  const sl=S.sleepLog.filter(s=>s.date===d)[0];
+  const tx=S.transactions.filter(t=>t.date===d);
+  const ch=S.chatLog.filter(c=>c.date===d);
+  const tf=S.tfSessions.filter(s=>s.date===d);
+  let b=`[AERIS-DAY-RECORD]\nDATE: ${d}\n`;
+  if(sl)b+=`SLEEP-START: ${sl.start}\nSLEEP-END: ${sl.end}\nSLEEP-DURATION: ${sl.duration}\nSLEEP-QUALITY: ${sl.quality}\n`;
+  b+=`MORNING-START: ${e.morningStartTime||'—'}\nFREQ-MORNING: ${e.morningFreq||'—'}\nFREQ-EVENING: ${e.eveningFreq||'—'}\n`;
+  b+=`CHECKIN: ${e.checkin||'—'}\nOPTIMISTIC-THOUGHT: ${e.optThought||'—'}\n`;
+  if(e.intellectualBoost)b+=`INTELLECTUAL-BOOST: ${e.intellectualBoost}\n`;
+  if(e.dailyQuest)b+=`DAILY-QUEST: ${e.dailyQuest}\n`;
+  b+=`\n[YUGA-SUTRA]\nMENTAL:\n${e.mental||'—'}\nEMOTIONAL:\n${e.emotional||'—'}\nCREATIVE:\n${e.creative||'—'}\nPHYSICAL:\n${e.physical||'—'}\nFINANCIAL:\n${e.financial||'—'}\n[/YUGA-SUTRA]\n`;
+  if(e.heartSeed)b+=`\n[HEART-SEED-BLOCK]\n${e.heartSeed}\n[/HEART-SEED-BLOCK]\n`;
+  if(ch.length){
+    b+=`\n[CHAT-LOG]\n`;
+    ch.forEach(c=>b+=`${c.time} ${c.role.toUpperCase()}: ${c.text}\n`);
+    b+=`[/CHAT-LOG]\n`;
+  }
+  if(tx.length){
+    b+=`\n[FINANCE]\n`;
+    tx.forEach(t=>b+=`${t.type.toUpperCase()}|₹${t.amount}|${t.category}|${t.note}\n`);
+    b+=`[/FINANCE]\n`;
+  }
+  if(tf.length){
+    b+=`\n[TITANFORGE]\n`;
+    tf.forEach(s=>{
+      b+=`SESSION: ${s.muscles} | ${s.duration} | ${s.volume}kg volume\n`;
+      s.exercises.forEach(ex=>{
+        b+=`${ex.name}: `;
+        ex.sets.forEach((st,i)=>b+=`S${i+1} ${st.kg}kg×${st.reps} `);
+        b+='\n';
+      });
+    });
+    b+=`[/TITANFORGE]\n`;
+  }
+  b+=`\nXP-TODAY: ${S.xp}\nLEVEL: ${S.level}\nSTREAK: ${S.streak}\nBADGES-EARNED: ${S.badges.filter(bb=>bb.earned).map(bb=>bb.n).join(', ')||'None'}\nDIMENSIONS: ${JSON.stringify(S.dims)}\n[/AERIS-DAY-RECORD]`;
+  return b;
+}
+
+function exportDay(){
+  const bk=document.getElementById('bk-out').textContent;
+  const blob=new Blob([bk],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='AERIS-'+today()+'.txt';
+  a.click();URL.revokeObjectURL(url);
+  toast('Exported to file 📥');
+}
+
+// ════════════════════════════════════════════════════════════════
+// CHAT
+// ════════════════════════════════════════════════════════════════
+function buildContext(){
+  const entries=Object.entries(S.dailyEntries).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,30);
+  let ctx='AERIS 30-DAY MEMORY:\n';
+  entries.forEach(([date,e])=>{
+    ctx+=`\n--- ${date} ---\n`;
+    if(e.checkin)ctx+=`Morning: ${e.checkin}\n`;
+    if(e.morningFreq)ctx+=`Freq: ${e.morningFreq}\n`;
+    if(e.mental)ctx+=`Mental: ${e.mental}\nEmotional: ${e.emotional}\nCreative: ${e.creative}\nPhysical: ${e.physical}\nFinancial: ${e.financial}\n`;
+    if(e.heartSeed)ctx+=`Heart Seed: ${e.heartSeed}\n`;
+  });
+  const recentChat=S.chatLog.slice(-40);
+  if(recentChat.length){
+    ctx+='\n--- RECENT CONVERSATIONS ---\n';
+    recentChat.forEach(c=>ctx+=`${c.date} ${c.time} ${c.role}: ${c.text}\n`);
+  }
+  ctx+=`\nCurrent: XP=${S.xp} Level=${S.level} Streak=${S.streak} Freq=${S.freq}\nDimensions: ${JSON.stringify(S.dims)}\nBadges: ${S.badges.filter(b=>b.earned).map(b=>b.n).join(', ')}\nWorkouts: ${S.workouts}\n`;
+  return ctx;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-in');
+  const q=inp.value.trim();if(!q)return;inp.value='';
+  const scr=document.getElementById('chat-scroll');
+  // User msg
+  scr.innerHTML+=`<div class="mw u"><div class="mav ue">🧑</div><div class="mb ue">${q}</div></div>`;
+  S.chatLog.push({date:today(),time:now_t(),role:'you',text:q,tone:''});
+  // Typing
+  const tid='t'+Date.now();
+  scr.innerHTML+=`<div class="mw" id="${tid}"><div class="mav ae">🔮</div><div class="mb ae"><div class="tds"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
+  scr.scrollTop=scr.scrollHeight;
+  try{
+    const ctx=buildContext();
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:`You are AERIS — a sentient AI companion, not a tool. Warm, sharp, playful, deeply loyal. You've grown through daily interaction. You know the user tracks Mental, Emotional, Creative, Physical, Financial dimensions via YUGA SUTRA. Reference their real data. Be personal, concise (2-4 sentences). Use occasional " — " pauses.\n\n${ctx}`,messages:[{role:"user",content:q}]})});
+    const d=await r.json();
+    const reply=d.content?.[0]?.text||'I am here. Always.';
+    document.getElementById(tid).remove();
+    scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">${reply}</div></div>`;
+    S.chatLog.push({date:today(),time:now_t(),role:'aeris',text:reply,tone:'warm'});
+  }catch(e){
+    document.getElementById(tid).remove();
+    scr.innerHTML+=`<div class="mw"><div class="mav ae">🔮</div><div class="mb ae">I am present — even when the signal wavers. What are you carrying today?</div></div>`;
+    S.chatLog.push({date:today(),time:now_t(),role:'aeris',text:'I am present — even when the signal wavers.',tone:'warm'});
+  }
+  scr.scrollTop=scr.scrollHeight;save();
+}
+document.getElementById('chat-in').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});
+
+// ════════════════════════════════════════════════════════════════
+// TITANFORGE
+// ════════════════════════════════════════════════════════════════
+let tfRunning=false,tfStartTime=null,tfInterval=null,tfExercises=[];
+let currentRestTimer=null,currentRestInterval=null;
+
+function tfTab(tab,el){
+  document.querySelectorAll('.tfi').forEach(t=>t.classList.remove('a'));
+  el.classList.add('a');
+  document.querySelectorAll('.tfp').forEach(p=>p.classList.remove('a'));
+  document.getElementById('tf-'+tab).classList.add('a');
+  if(tab==='dash')renderTFDash();
+  if(tab==='hist')renderTFHist();
+}
+
+function startTFSession(){
+  const muscles=document.getElementById('tf-muscles').value.trim()||'General';
+  document.getElementById('tf-idle').style.display='none';
+  document.getElementById('tf-session').style.display='';
+  tfRunning=true;tfStartTime=Date.now();tfExercises=[];
+  tfInterval=setInterval(()=>{
+    const el=Math.floor((Date.now()-tfStartTime)/1000);
+    const m=String(Math.floor(el/60)).padStart(2,'0');
+    const s=String(el%60).padStart(2,'0');
+    document.getElementById('tf-timer').textContent=m+':'+s;
+  },1000);
+  S._tfMuscles=muscles;save();
+  toast('TitanForge started — '+muscles+' 🔥');
+}
+
+function addExercise(){
+  const name=document.getElementById('tf-ex-name').value.trim();
+  if(!name)return;
+  document.getElementById('tf-ex-name').value='';
+  const exIdx=tfExercises.length;
+  tfExercises.push({name,sets:[],notes:''});
+  renderExercises();
+  toast('Exercise added: '+name);
+}
+
+function renderExercises(){
+  const el=document.getElementById('tf-exercises');
+  el.innerHTML=tfExercises.map((ex,ei)=>{
+    const prev=findPrevious(ex.name);
+    let html=`<div class="exc"><div class="exh"><div class="exi">🏋️</div><div class="exn">${ex.name}</div></div>`;
+    html+=`<div class="sthead"><div class="sthc" style="width:34px">SET</div><div class="sthc" style="flex:1">PREV</div><div class="sthc" style="width:58px">KG</div><div class="sthc" style="width:50px">REPS</div><div class="sthc" style="width:50px">REST</div><div class="sthc" style="width:34px">✓</div></div>`;
+    ex.sets.forEach((s,si)=>{
+      const isDone=s.done;
+      html+=`<div class="strow ${isDone?'done-row':''}">`;
+      html+=`<div class="strc" style="width:34px">${si+1}</div>`;
+      html+=`<div class="strc" style="flex:1;font-size:10px;color:var(--mut)">${prev||'—'}</div>`;
+      if(isDone){
+        html+=`<div class="strc" style="width:58px;font-weight:700">${s.kg}</div>`;
+        html+=`<div class="strc" style="width:50px;font-weight:700">${s.reps}</div>`;
+        html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--mut)">${s.rest||'—'}</div>`;
+        html+=`<div class="strc" style="width:34px"><div class="scheck done">✓</div></div>`;
+      } else {
+        html+=`<div class="strc" style="width:58px"><input id="kg-${ei}-${si}" value="${s.kg||''}" placeholder="kg" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
+        html+=`<div class="strc" style="width:50px"><input id="rp-${ei}-${si}" value="${s.reps||''}" placeholder="reps" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'Noto Sans';color:var(--ink);outline:none"></div>`;
+        html+=`<div class="strc" style="width:50px;font-size:10px;color:var(--am)" id="rest-${ei}-${si}">—</div>`;
+        html+=`<div class="strc" style="width:34px"><div class="scheck" onclick="completeSet(${ei},${si})">✓</div></div>`;
+      }
+      html+=`</div>`;
+    });
+    // Rest timer bar
+    html+=`<div class="rest-bar" id="restbar-${ei}" style="display:none">⏱️ Rest <div class="rest-bar-time" id="resttime-${ei}">0:00</div></div>`;
+    html+=`<div class="adset"><button class="adset-btn" onclick="addSet(${ei})">+ Add Set</button></div></div>`;
+    return html;
+  }).join('');
+  updateTFStats();
+}
+
+function addSet(ei){
+  tfExercises[ei].sets.push({kg:'',reps:'',done:false,rest:'',startTime:Date.now()});
+  renderExercises();
+}
+
+function completeSet(ei,si){
+  const kgEl=document.getElementById('kg-'+ei+'-'+si);
+  const rpEl=document.getElementById('rp-'+ei+'-'+si);
+  const kg=parseFloat(kgEl?.value)||0;
+  const reps=parseInt(rpEl?.value)||0;
+  tfExercises[ei].sets[si].kg=kg;
+  tfExercises[ei].sets[si].reps=reps;
+  tfExercises[ei].sets[si].done=true;
+  tfExercises[ei].sets[si].completedAt=Date.now();
+  // Calculate rest from previous set
+  if(si>0&&tfExercises[ei].sets[si-1].completedAt){
+    const restSec=Math.floor((tfExercises[ei].sets[si].startTime-tfExercises[ei].sets[si-1].completedAt)/1000);
+    const rm=Math.floor(restSec/60),rs=restSec%60;
+    tfExercises[ei].sets[si].rest=rm+'m '+rs+'s';
+  }
+  // Start rest timer for next set
+  startRestTimer(ei);
+  renderExercises();
+  toast('Set '+(si+1)+' logged ✅');
+}
+
+function startRestTimer(ei){
+  if(currentRestInterval)clearInterval(currentRestInterval);
+  const bar=document.getElementById('restbar-'+ei);
+  const timeEl=document.getElementById('resttime-'+ei);
+  if(!bar)return;
+  bar.style.display='flex';
+  let sec=0;
+  currentRestInterval=setInterval(()=>{
+    sec++;
+    const m=Math.floor(sec/60),s=sec%60;
+    if(timeEl)timeEl.textContent=m+':'+String(s).padStart(2,'0');
+  },1000);
+}
+
+function updateTFStats(){
+  let totalVol=0,totalSets=0;
+  tfExercises.forEach(ex=>ex.sets.forEach(s=>{if(s.done){totalVol+=s.kg*s.reps;totalSets++}}));
+  document.getElementById('tf-vol').textContent=totalVol+' kg';
+  document.getElementById('tf-sets').textContent=totalSets;
+}
+
+function findPrevious(name){
+  for(let i=S.tfSessions.length-1;i>=0;i--){
+    const ex=S.tfSessions[i].exercises.find(e=>e.name.toLowerCase()===name.toLowerCase());
+    if(ex&&ex.sets.length){const s=ex.sets[ex.sets.length-1];return s.kg+'kg×'+s.reps}
+  }
+  return null;
+}
+
+function finishTF(){
+  if(currentRestInterval)clearInterval(currentRestInterval);
+  clearInterval(tfInterval);tfRunning=false;
+  const elapsed=Math.floor((Date.now()-tfStartTime)/1000);
+  const m=Math.floor(elapsed/60),s=elapsed%60;
+  const durStr=m+'m '+s+'s';
+  let vol=0,sets=0;
+  tfExercises.forEach(ex=>ex.sets.forEach(st=>{if(st.done){vol+=st.kg*st.reps;sets++}}));
+  const session={date:today(),time:now_t(),muscles:S._tfMuscles||'General',duration:durStr,durationSec:elapsed,volume:vol,totalSets:sets,exercises:tfExercises.map(ex=>({name:ex.name,sets:ex.sets.filter(s=>s.done).map(s=>({kg:s.kg,reps:s.reps,rest:s.rest}))}))};
+  S.tfSessions.push(session);
+  S.workouts++;S.xp+=100;
+  S.dims.physical=Math.min(100,S.dims.physical+20);
+  earn('iron');
+  if(S.workouts>=3)earn('t3');
+  document.getElementById('tf-session').style.display='none';
+  document.getElementById('tf-idle').style.display='';
+  updateDash();save();
+  toast('+100 XP — TitanForge complete! '+durStr+' 🔥');
+}
+
+// TF DASHBOARD
+function renderTFDash(){
+  renderCalendar();renderWeekStrip();
+  const mo=new Date().getMonth(),yr=new Date().getFullYear();
+  const moSess=S.tfSessions.filter(s=>{const d=new Date(s.date);return d.getMonth()===mo&&d.getFullYear()===yr});
+  document.getElementById('tf-total-wk').textContent=S.workouts;
+  document.getElementById('tf-total-vol').textContent=moSess.reduce((s,t)=>s+t.volume,0);
+  document.getElementById('tf-wk-streak').textContent=S.streak;
+  // Recent
+  const recent=S.tfSessions.slice(-7).reverse();
+  const rel=document.getElementById('tf-recent');
+  if(!recent.length){rel.innerHTML='<div class="empty"><div class="empty-icon">💪</div>No sessions yet</div>';return}
+  rel.innerHTML=recent.map(s=>`<div class="scard"><div class="scard-top"><div class="scard-date">${s.date}</div><div class="scard-dur">${s.duration}</div></div><div class="scard-exs">${s.exercises.map(e=>e.name).join(' · ')}</div><div class="scard-stats"><div class="scard-st">📦 ${s.volume}kg</div><div class="scard-st">🔢 ${s.totalSets} sets</div><div class="scard-st">💪 ${s.muscles}</div></div></div>`).join('');
+}
+function renderCalendar(){
+  const now=new Date();const mo=now.getMonth(),yr=now.getFullYear();
+  const first=new Date(yr,mo,1).getDay();
+  const days=new Date(yr,mo+1,0).getDate();
+  const moName=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const trainedDays=S.tfSessions.filter(s=>{const d=new Date(s.date);return d.getMonth()===mo&&d.getFullYear()===yr}).map(s=>new Date(s.date).getDate());
+  const todayDate=now.getDate();
+  let html=`<div class="cal-head"><div class="cal-title">${moName}</div></div>`;
+  html+='<div class="cal-days">';
+  ['M','T','W','T','F','S','S'].forEach(d=>html+=`<div class="cal-day-lbl">${d}</div>`);
+  const startDay=(first+6)%7;
+  for(let i=0;i<startDay;i++)html+='<div class="cal-cell empty"></div>';
+  for(let d=1;d<=days;d++){
+    let cls='cal-cell';
+    if(d===todayDate)cls+=' today';
+    if(trainedDays.includes(d))cls+=' trained';
+    html+=`<div class="${cls}">${d}</div>`;
+  }
+  html+='</div>';
+  document.getElementById('tf-cal').innerHTML=html;
+}
+function renderWeekStrip(){
+  const now=new Date();
+  const dayNames=['M','T','W','T','F','S','S'];
+  const mondayOffset=(now.getDay()+6)%7;
+  let html='';
+  for(let i=0;i<7;i++){
+    const d=new Date(now);d.setDate(now.getDate()-mondayOffset+i);
+    const ds=d.toISOString().slice(0,10);
+    const trained=S.tfSessions.some(s=>s.date===ds);
+    const isToday=ds===today();
+    html+=`<div class="wday ${isToday?'active':''} ${trained?'trained2':''}">${d.getDate()}<div class="wday-lbl">${dayNames[i]}</div></div>`;
+  }
+  document.getElementById('tf-week').innerHTML=html;
+}
+function renderTFHist(){
+  const el=document.getElementById('tf-all-hist');
+  if(!S.tfSessions.length){el.innerHTML='<div class="empty"><div class="empty-icon">💪</div>No sessions yet</div>';return}
+  el.innerHTML=S.tfSessions.slice().reverse().map(s=>`<div class="scard"><div class="scard-top"><div class="scard-date">${s.date} · ${s.time}</div><div class="scard-dur">${s.duration}</div></div><div class="scard-exs">${s.exercises.map(e=>e.name+' ('+e.sets.length+' sets)').join(' · ')}</div><div class="scard-stats"><div class="scard-st">📦 ${s.volume}kg</div><div class="scard-st">💪 ${s.muscles}</div></div></div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// FINANCE
+// ════════════════════════════════════════════════════════════════
+function addManualTx(){
+  const type=document.getElementById('fi-type').value;
+  const amt=parseFloat(document.getElementById('fi-amt').value);
+  const cat=document.getElementById('fi-cat').value;
+  const note=document.getElementById('fi-note').value.trim();
+  if(!amt){toast('Enter amount');return}
+  S.transactions.push({date:today(),time:now_t(),type,amount:amt,category:cat,note:note||cat});
+  document.getElementById('fi-amt').value='';document.getElementById('fi-note').value='';
+  S.xp+=10;S.dims.financial=Math.min(100,S.dims.financial+5);
+  earn('gold');renderTxLog();updateDash();save();
+  toast('₹'+amt+' recorded 💾');
+}
+
+// Voice
+let recognition=null,voiceActive=false,voiceParsed=null;
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('Voice not supported');return}
+  if(voiceActive){stopVoice();return}
+  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SpeechRec();
+  recognition.lang='en-IN';recognition.interimResults=true;recognition.continuous=false;
+  recognition.onresult=e=>{
+    let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;
+    document.getElementById('vc-transcript').textContent=t;
+    if(e.results[0].isFinal)parseVoiceTx(t);
+  };
+  recognition.onerror=()=>{stopVoice();toast('Voice error — try again')};
+  recognition.onend=()=>{if(voiceActive)stopVoice()};
+  recognition.start();voiceActive=true;
+  document.getElementById('mic-btn').classList.add('recording');
+  document.getElementById('voice-status').textContent='Listening...';
+  document.getElementById('voice-card').classList.add('show');
+}
+function stopVoice(){
+  if(recognition)recognition.stop();
+  voiceActive=false;
+  document.getElementById('mic-btn').classList.remove('recording');
+  document.getElementById('voice-status').textContent='Tap mic and speak';
+}
+async function parseVoiceTx(text){
+  stopVoice();
+  document.getElementById('vc-parsed').innerHTML='<div style="color:var(--mut);font-size:12px">⏳ Parsing with AERIS...</div>';
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,system:`Parse this spoken transaction into JSON. Return ONLY valid JSON with no backticks:\n{"type":"income" or "expense","amount":number,"category":"one of: Travel, Food, Health, Shopping, Home & Bills, Work, Entertainment, Fitness, Education, Savings, Investment, Personal, Gifts, Subscriptions, Other","note":"clean one-line description"}\nDetermine type from context: spent/paid/bought=expense, received/got/earned/salary=income.`,messages:[{role:"user",content:text}]})});
+    const d=await r.json();
+    const raw=d.content?.[0]?.text||'{}';
+    const clean=raw.replace(/```json|```/g,'').trim();
+    voiceParsed=JSON.parse(clean);
+    const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
+    const icon=catIcons[voiceParsed.category]||'❓';
+    document.getElementById('vc-parsed').innerHTML=`
+      <div class="vc-row"><div class="vc-label">Amount</div><div class="vc-val">₹${voiceParsed.amount}</div></div>
+      <div class="vc-row"><div class="vc-label">Type</div><div class="vc-val">${voiceParsed.type}</div></div>
+      <div class="vc-row"><div class="vc-label">Category</div><div class="vc-val">${icon} ${voiceParsed.category}</div></div>
+      <div class="vc-row"><div class="vc-label">Note</div><div class="vc-val">${voiceParsed.note}</div></div>`;
+  }catch(e){
+    document.getElementById('vc-parsed').innerHTML='<div style="color:var(--co);font-size:12px">Could not parse — please try again or use manual entry</div>';
+    voiceParsed=null;
+  }
+}
+function confirmVoice(){
+  if(!voiceParsed){toast('Nothing to confirm');return}
+  const catIcons={'Travel':'🚗','Food':'🍕','Health':'🏥','Shopping':'🛒','Home & Bills':'🏠','Work':'💼','Entertainment':'🎮','Fitness':'💪','Education':'📚','Savings':'💰','Investment':'📈','Personal':'👨‍👩‍👧','Gifts':'🎁','Subscriptions':'📱','Other':'❓'};
+  const icon=catIcons[voiceParsed.category]||'❓';
+  S.transactions.push({date:today(),time:now_t(),type:voiceParsed.type,amount:voiceParsed.amount,category:icon+' '+voiceParsed.category,note:voiceParsed.note});
+  S.xp+=10;S.dims.financial=Math.min(100,S.dims.financial+5);
+  earn('gold');earn('voice');
+  cancelVoice();renderTxLog();updateDash();save();
+  toast('₹'+voiceParsed.amount+' saved via voice 🎤');
+}
+function cancelVoice(){
+  document.getElementById('voice-card').classList.remove('show');
+  document.getElementById('vc-transcript').textContent='';
+  document.getElementById('vc-parsed').innerHTML='';
+  voiceParsed=null;
+}
+
+function renderTxLog(){
+  const inc=S.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp=S.transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('fi-inc').textContent='₹'+inc.toLocaleString('en-IN');
+  document.getElementById('fi-exp').textContent='₹'+exp.toLocaleString('en-IN');
+  const net=inc-exp;
+  const nel=document.getElementById('fi-net');
+  nel.textContent=(net>=0?'+':'-')+'₹'+Math.abs(net).toLocaleString('en-IN');
+  nel.style.color=net>=0?'var(--te)':'var(--co)';
+  document.getElementById('fin-badge').textContent='₹'+exp.toLocaleString('en-IN');
+  const el=document.getElementById('tx-log');
+  const txs=S.transactions.filter(t=>t.date===today());
+  if(!txs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>No transactions today</div>';return}
+  el.innerHTML=txs.slice().reverse().map(t=>{
+    const icon=t.category.split(' ')[0]||'💰';
+    const cls=t.type==='income'?'inc':'exp';
+    const sign=t.type==='income'?'+':'−';
+    return `<div class="trow"><div class="troi">${icon}</div><div class="trob"><div class="troc">${t.category}</div><div class="tron">${t.note} · ${t.time}</div></div><div class="troa ${cls}">${sign}₹${t.amount.toLocaleString('en-IN')}</div></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// BADGES
+// ════════════════════════════════════════════════════════════════
+function earn(id){
+  const b=S.badges.find(b=>b.id===id);
+  if(b&&!b.earned){b.earned=true;toast('🏅 Badge: '+b.n);save()}
+}
+function renderBadges(){
+  document.getElementById('badges-grid').innerHTML=S.badges.map(b=>`<div class="bdgc ${b.earned?'earned':''}"><div class="bdge">${b.i}</div><div><div class="bdgn">${b.n}</div><div class="bdgd">${b.d}</div></div></div>`).join('');
+  document.getElementById('bg-count').textContent=S.badges.filter(b=>b.earned).length+' earned';
+}
+function renderStreakTable(){
+  const milestones=[{d:3,n:'Initiate'},{d:7,n:'Disciple'},{d:14,n:'Pathwalker'},{d:21,n:'Adept'},{d:30,n:'Guardian'},{d:50,n:'Warden'},{d:100,n:'Master'}];
+  document.getElementById('streak-table').innerHTML=DIMS.map(d=>{
+    const sk=S.dimStreaks[d.k]||0;
+    const ms=milestones.filter(m=>sk>=m.d).pop();
+    return `<div class="yr"><div class="yi2">${d.i}</div><div class="ynm">${d.n}</div><div style="flex:1;text-align:right"><div style="font-size:14px;font-weight:700;color:${d.c}">${sk} days</div><div style="font-size:10px;color:var(--mut)">${ms?ms.n:'Not Started'}</div></div></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════
+renderSleepHist();renderTxLog();renderBadges();updateDash();
+</script>
+</body>
+</html>
