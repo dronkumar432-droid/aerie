@@ -94,6 +94,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg-a);font-family:var(--s
 .round-btn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s var(--spring);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:.5px solid var(--glass-b);color:var(--ink)}
 .round-btn:active{transform:scale(.9)}
 
+/* SYNC BADGE — dashboard header pill showing Mac connection state */
+.sync-badge{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:var(--glass);border:.5px solid var(--glass-b);font-size:10px;font-weight:500;color:var(--ink2);cursor:pointer;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .15s var(--spring)}
+.sync-badge:active{transform:scale(.95)}
+.sync-badge-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--ink3)}
+.sync-badge.unknown .sync-badge-dot{background:var(--ink3)}
+.sync-badge.local .sync-badge-dot{background:var(--ink3)}
+.sync-badge.synced .sync-badge-dot{background:var(--green);box-shadow:0 0 0 3px rgba(126,217,87,.2)}
+.sync-badge.syncing .sync-badge-dot{background:var(--acc);animation:syncPulse 1s ease-in-out infinite}
+.sync-badge.offline .sync-badge-dot{background:#999}
+.sync-badge.error .sync-badge-dot{background:#d97560}
+.sync-badge.synced{color:var(--green)}
+.sync-badge.syncing{color:var(--acc)}
+.sync-badge.error{color:#d97560}
+@keyframes syncPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(219,159,117,.4)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(219,159,117,0)}}
+
 /* SYSTEM BUTTONS */
 .sbtn{width:100%;padding:14px 16px;border:none;cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:500;transition:transform .15s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r-md)}
 .sbtn:active{transform:scale(.97)}
@@ -421,12 +436,15 @@ select.fi option{background:var(--bg-b)}
 <div style="position:relative;min-height:100%">
 <div class="phone-bg" id="dash-bg"><div class="phone-bg-grad"></div><div class="blob blob-0"></div><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="grain"></div></div>
 <div style="position:relative;z-index:1">
-<div class="status-bar"><span class="status-time" id="dash-time">9:41</span><div class="status-icons"><svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx=".7" fill="var(--ink)"/><rect x="5" y="5" width="3" height="6" rx=".7" fill="var(--ink)"/><rect x="10" y="2.5" width="3" height="8.5" rx=".7" fill="var(--ink)"/><rect x="15" y="0" width="3" height="11" rx=".7" fill="var(--ink)"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="22" height="11" rx="3" stroke="var(--ink)" stroke-opacity=".4" fill="none"/><rect x="2" y="2" width="18" height="8" rx="2" fill="var(--ink)"/></svg></div></div>
+<!-- Note: removed the fake status bar (time + battery icons). iOS draws its
+     own real status bar over our content. Header padding below already accounts
+     for the safe-area inset via the .sb spacer at the top of #app. -->
 
 <!-- Header -->
-<div style="padding:70px 20px 0;display:flex;align-items:center;gap:12px">
+<div style="padding:24px 20px 0;display:flex;align-items:center;gap:12px">
 <div style="width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="var(--bg-a)" stroke-width="1" opacity=".5"/><circle cx="16" cy="16" r="9" stroke="var(--bg-a)" stroke-width="1" opacity=".7"/><circle cx="16" cy="16" r="4" fill="var(--bg-a)"/><circle cx="16" cy="2" r="1.6" fill="var(--bg-a)"/></svg></div>
 <div style="flex:1"><div class="lab">Good morning</div><div style="font-size:15px;font-weight:500;margin-top:2px">Hi Dron 👋</div></div>
+<div class="sync-badge unknown" id="sync-badge" onclick="manualSyncNow()"><div class="sync-badge-dot"></div><span class="sync-badge-label">…</span></div>
 <button class="round-btn" onclick="nav('settings',null)">⚙️</button>
 </div>
 
@@ -529,6 +547,31 @@ select.fi option{background:var(--bg-b)}
 <div class="phone-bg"><div class="phone-bg-grad" style="background:linear-gradient(170deg,#0c1008 0%,#141e10 55%,#1e2e16 100%)"></div><div class="blob" style="width:300px;height:300px;left:70%;top:30%;margin-left:-150px;margin-top:-150px;background:radial-gradient(circle,#545748 0%,transparent 65%);opacity:.6;animation:blob1 28s ease-in-out infinite alternate"></div><div class="grain"></div></div>
 <div style="position:relative;z-index:1">
 <div class="ph ph-row"><div class="pt">Wealth Tracker</div><div class="pb" id="fin-badge">₹0</div></div>
+
+<!-- LIVE FROM MAC — appears when synced. Shows this-month numbers,
+     top categories, and recent transactions from WealthAgent (Mac).
+     Hidden when offline or no sync URL set. -->
+<div id="fin-mac-section" class="sp" style="margin-top:16px;display:none">
+  <div class="glass" style="border-radius:var(--r-xl);padding:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="lab" style="color:var(--acc)">💰 Live from Mac · this month</div>
+      <div class="lab" id="fin-mac-updated" style="font-family:var(--mono);font-size:9px;color:var(--ink3)">—</div>
+    </div>
+    <!-- Hero numbers -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      <div style="text-align:center"><div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Spent</div><div style="font-size:18px;font-weight:600;color:#d97560" id="fin-mac-spent">₹0</div></div>
+      <div style="text-align:center"><div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Received</div><div style="font-size:18px;font-weight:600;color:var(--green)" id="fin-mac-received">₹0</div></div>
+      <div style="text-align:center"><div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Net</div><div style="font-size:18px;font-weight:600;color:var(--acc)" id="fin-mac-net">₹0</div></div>
+    </div>
+    <!-- Top categories — horizontal bars -->
+    <div class="lab" style="margin-bottom:6px">Top categories</div>
+    <div id="fin-mac-cats" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px"></div>
+    <!-- Top merchants -->
+    <div class="lab" style="margin-bottom:6px">Top merchants</div>
+    <div id="fin-mac-merchants" style="display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
 <div class="sp" style="margin-top:16px">
 <div class="glass" style="border-radius:var(--r-xl);padding:20px;position:relative;overflow:hidden">
 <div class="lab">Net flow today</div>
@@ -808,10 +851,36 @@ select.fi option{background:var(--bg-b)}
 <div id="import-status" style="font-family:var(--mono);font-size:9px;color:var(--green);text-align:center;margin-top:10px"></div>
 </div>
 </div>
-<div class="glass set-card" style="border-radius:var(--r-xl);margin-bottom:20px">
+<div class="glass set-card" style="border-radius:var(--r-xl)">
+<div class="set-header"><div class="set-header-title">🖥️ Desktop Sync</div></div>
+<div class="set-body">
+<div style="font-family:var(--mono);font-size:9px;color:var(--ink3);line-height:2;margin-bottom:14px;letter-spacing:.3px">Connect this phone to AERIS Desktop on your Mac. Two ways to connect:</div>
+
+<!-- Option A: Same WiFi -->
+<div style="background:rgba(126,217,87,.06);border:.5px solid rgba(126,217,87,.2);border-radius:var(--r-md);padding:10px 14px;margin-bottom:10px">
+<div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:4px">A · Same WiFi (simple)</div>
+<div style="font-family:var(--mono);font-size:9px;color:var(--ink2);line-height:1.8">On Mac: AERIS → Data Centre → Phone Sync → Refresh. Use the IP shown (e.g. 192.168.1.5:7842).</div>
+</div>
+
+<!-- Option B: Tailscale -->
+<div style="background:rgba(155,127,212,.06);border:.5px solid rgba(155,127,212,.2);border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px">
+<div style="font-size:11px;color:#9b7fd4;font-weight:600;margin-bottom:4px">B · Tailscale (anywhere, recommended)</div>
+<div style="font-family:var(--mono);font-size:9px;color:var(--ink2);line-height:1.8">1. Install Tailscale on Mac + iPhone (App Store).<br>2. Sign in same account on both.<br>3. On Mac: open Tailscale menu → copy "Tailscale IP" (looks like 100.x.y.z).<br>4. Paste below as 100.x.y.z:7842<br>Works on cellular, abroad, any network.</div>
+</div>
+
+<div class="fg"><div class="fl">Mac address (IP:7842)</div><input class="fi" type="text" id="sync-url-input" placeholder="192.168.x.x:7842 or 100.x.y.z:7842"></div>
+<div style="display:flex;gap:8px;margin-bottom:10px">
+<button class="sbtn sbtn-acc" onclick="saveSyncUrl()" style="flex:2;border-radius:var(--r-md);font-size:13px">💾 Save</button>
+<button class="sbtn sbtn-glass" onclick="testSyncConnection()" style="flex:1;border-radius:var(--r-md);font-size:13px">🔍 Test</button>
+</div>
+<button class="sbtn sbtn-glass" onclick="syncWithDesktop()" style="border-radius:var(--r-md);font-size:13px;margin-bottom:8px">🔄 Sync with Desktop Now</button>
+<div id="sync-status" style="font-family:var(--mono);font-size:9px;text-align:center;margin-top:6px;min-height:14px;letter-spacing:.3px"></div>
+</div>
+</div>
+<div class="glass set-card" style="border-radius:var(--r-xl)">
 <div class="set-header"><div class="set-header-title">ℹ️ About</div></div>
 <div class="set-body" style="font-family:var(--mono);font-size:9px;color:var(--ink3);line-height:2.4;letter-spacing:.3px">
-AERIS ONE.0 · Personal Life OS<br>Powered by Google Gemini 2.5 Flash<br>All data stored locally on device
+AERIS ONE.0 · Personal Life OS<br>Powered by Gemini (phone) + Ollama via Mac (when synced)<br>Storage: IndexedDB primary, localStorage fallback<br>Sync: Mac is canonical store when connected
 </div>
 </div>
 </div>
@@ -959,9 +1028,178 @@ const BADGES_DEF=[
 ];
 const RARITY_COLORS={Common:'var(--acc4)',Rare:'var(--acc)',Epic:'var(--acc2)',Legendary:'#cc4a2a'};
 
+// ════════════════════════════════════════════════════════════════════
+// PERSISTENT STORAGE — IndexedDB-first with localStorage fallback
+// ════════════════════════════════════════════════════════════════════
+// WHY: Safari's localStorage cap is ~5MB and can be evicted after 7
+// days of inactivity. IndexedDB has ~1GB capacity and is more durable
+// (though still subject to the 7-day eviction policy for PWAs that
+// aren't installed). This is layer 1 of our resilience strategy —
+// layer 2 is sync-to-Mac, which makes the Mac the canonical store.
+//
+// Design:
+//   • All storage calls are async at the persistence boundary, but the
+//     in-memory S object stays mutated synchronously. Callers don't
+//     need to await save() — writes are fire-and-forget, debounced.
+//   • If IndexedDB fails (quota, locked, private mode), we transparently
+//     fall back to localStorage. App still works.
+//   • Migration: first launch with this code, we read any legacy
+//     localStorage data and copy it into IndexedDB. localStorage is
+//     left intact as a one-launch safety net.
+const STORAGE = (() => {
+  const DB_NAME = 'aeris-db';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'kv';
+  let dbPromise = null;
+  let mode = 'unknown';  // 'idb' | 'ls' | 'mem' — set after init
+  const memStore = {};
+
+  function openDB(){
+    if(dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      if(!window.indexedDB){ reject(new Error('No IndexedDB')); return; }
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains(STORE_NAME)){
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('IDB open failed'));
+      req.onblocked = () => reject(new Error('IDB blocked'));
+    });
+    return dbPromise;
+  }
+
+  async function idbGet(key){
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get(key);
+      req.onsuccess = () => resolve(req.result === undefined ? null : req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idbSet(key, value){
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function idbDel(key){
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).delete(key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // Probe IndexedDB at startup; pick mode
+  async function init(){
+    try {
+      await openDB();
+      // Try a tiny write to confirm we can actually persist
+      await idbSet('__probe__', Date.now());
+      await idbDel('__probe__');
+      mode = 'idb';
+    } catch(e) {
+      console.warn('[storage] IndexedDB unavailable, falling back to localStorage:', e?.message);
+      try {
+        localStorage.setItem('__probe__', '1');
+        localStorage.removeItem('__probe__');
+        mode = 'ls';
+      } catch(e2) {
+        console.warn('[storage] localStorage also unavailable, using in-memory only');
+        mode = 'mem';
+      }
+    }
+    return mode;
+  }
+
+  async function get(key){
+    if(mode === 'idb') {
+      try { return await idbGet(key); }
+      catch(e){ console.warn('[storage] idbGet failed for', key, e?.message); }
+    }
+    if(mode === 'ls' || mode === 'idb'){
+      try { const v = localStorage.getItem(key); return v === null ? null : JSON.parse(v); }
+      catch(_){ return null; }
+    }
+    return memStore[key] ?? null;
+  }
+
+  async function set(key, value){
+    if(mode === 'idb'){
+      try { await idbSet(key, value); return; }
+      catch(e){
+        console.warn('[storage] idbSet failed, falling back to localStorage:', e?.message);
+        // fall through
+      }
+    }
+    if(mode === 'ls' || mode === 'idb'){
+      try { localStorage.setItem(key, JSON.stringify(value)); return; }
+      catch(_){ /* fall through to mem */ }
+    }
+    memStore[key] = value;
+  }
+
+  async function del(key){
+    if(mode === 'idb'){ try { await idbDel(key); } catch(_){} }
+    try { localStorage.removeItem(key); } catch(_){}
+    delete memStore[key];
+  }
+
+  return { init, get, set, del, mode: () => mode };
+})();
+
 let S;
-function loadState(){
-  try{S=JSON.parse(localStorage.getItem('aeris_v5'))||{}}catch(e){S={}}
+
+// One-time migration from localStorage to IndexedDB (if applicable)
+async function migrateLegacyData(){
+  if(STORAGE.mode() !== 'idb') return;  // No migration if we're already on LS
+  const migrated = await STORAGE.get('__migrated_v1__');
+  if(migrated) return;  // Already done
+  console.log('[storage] migrating legacy localStorage → IndexedDB');
+  const keysToMigrate = ['aeris_v5', 'aeris_pin', 'aeris_api_enc', 'aeris_sync_url', 'aeris_last_export'];
+  for(const k of keysToMigrate){
+    try {
+      const v = localStorage.getItem(k);
+      if(v !== null){
+        // aeris_v5 is JSON; others are plain strings (or base64). Store as-is.
+        if(k === 'aeris_v5'){
+          try { await STORAGE.set(k, JSON.parse(v)); }
+          catch(_){ await STORAGE.set(k, v); }
+        } else {
+          await STORAGE.set(k, v);
+        }
+        console.log('[storage] migrated', k);
+      }
+    } catch(e){ console.warn('[storage] migrate failed for', k, e?.message); }
+  }
+  await STORAGE.set('__migrated_v1__', { at: Date.now() });
+  console.log('[storage] migration complete. localStorage kept as safety backup.');
+}
+
+async function loadState(){
+  let raw = null;
+  try { raw = await STORAGE.get('aeris_v5'); }
+  catch(e){ console.warn('[storage] load failed:', e?.message); }
+
+  // If async store has nothing, try legacy localStorage as one-time fallback
+  if(raw === null){
+    try {
+      const legacyRaw = localStorage.getItem('aeris_v5');
+      if(legacyRaw){ raw = JSON.parse(legacyRaw); }
+    } catch(_){}
+  }
+
+  S = raw && typeof raw === 'object' ? raw : {};
   S.xp=S.xp||0;S.level=S.level||1;S.streak=S.streak||0;S.freq=S.freq||0;S.workouts=S.workouts||0;
   S.dims=S.dims||{mental:0,emotional:0,creative:0,physical:0,financial:0};
   S.dimStreaks=S.dimStreaks||{mental:0,emotional:0,creative:0,physical:0,financial:0};
@@ -971,14 +1209,79 @@ function loadState(){
   S.healthLog=S.healthLog||[];
   if(S.badges.length<BADGES_DEF.length)BADGES_DEF.forEach(bd=>{if(!S.badges.find(b=>b.id===bd.id))S.badges.push({...bd});});
 }
-function save(){localStorage.setItem('aeris_v5',JSON.stringify(S))}
-loadState();
+
+// Debounced save — collapse rapid mutations into a single write
+let _saveTimer = null;
+let _savePending = false;
+function save(){
+  // In-memory S is already mutated by the caller; we just persist eventually.
+  _savePending = true;
+  if(_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async () => {
+    _saveTimer = null;
+    if(!_savePending) return;
+    _savePending = false;
+    try { await STORAGE.set('aeris_v5', S); }
+    catch(e){
+      console.warn('[storage] save failed:', e?.message);
+      // Last-ditch attempt: write to localStorage even if IDB failed
+      try { localStorage.setItem('aeris_v5', JSON.stringify(S)); } catch(_){}
+    }
+  }, 200);
+}
+
+// Force-flush any pending save (call before window unload, manual export, etc.)
+async function flushSave(){
+  if(_saveTimer){ clearTimeout(_saveTimer); _saveTimer = null; }
+  if(_savePending){
+    _savePending = false;
+    try { await STORAGE.set('aeris_v5', S); }
+    catch(e){ try { localStorage.setItem('aeris_v5', JSON.stringify(S)); } catch(_){} }
+  }
+}
+window.addEventListener('beforeunload', () => { flushSave(); });
+window.addEventListener('pagehide', () => { flushSave(); });
+
+// Bootstrap: initialise storage, migrate if needed, load state.
+// Everything that runs at startup must await this.
+const STORAGE_READY = (async () => {
+  await STORAGE.init();
+  await migrateLegacyData();
+  await loadState();
+  console.log('[storage] ready, mode:', STORAGE.mode());
+})();
 
 // ── PIN ──
+// Cached in memory so verification stays synchronous; persisted to both
+// IndexedDB (primary) and localStorage (legacy + fallback).
 let pinBuffer='',pinMode='verify',pinStep=0,pinFirst='';
-function getStoredPin(){const e=localStorage.getItem('aeris_pin');return e?atob(e):null}
-function storePin(p){localStorage.setItem('aeris_pin',btoa(p))}
-function getApiKey(){const e=localStorage.getItem('aeris_api_enc');return e?atob(e):''}
+let _cachedPin = null;        // in-memory cache, populated at boot
+let _cachedApiKey = null;     // in-memory cache, populated at boot
+async function loadAuthCache(){
+  // Try IDB first, fall back to localStorage. Both store base64-encoded strings.
+  let p = null, k = null;
+  try { p = await STORAGE.get('aeris_pin'); } catch(_){}
+  try { k = await STORAGE.get('aeris_api_enc'); } catch(_){}
+  if(p === null){ try { p = localStorage.getItem('aeris_pin'); } catch(_){} }
+  if(k === null){ try { k = localStorage.getItem('aeris_api_enc'); } catch(_){} }
+  _cachedPin = p ? (typeof p === 'string' ? atob(p) : null) : null;
+  _cachedApiKey = k ? (typeof k === 'string' ? atob(k) : '') : '';
+}
+function getStoredPin(){ return _cachedPin; }
+function storePin(p){
+  _cachedPin = p;
+  const enc = btoa(p);
+  // Write to both stores; either is fine, both is safer
+  STORAGE.set('aeris_pin', enc).catch(()=>{});
+  try { localStorage.setItem('aeris_pin', enc); } catch(_){}
+}
+function getApiKey(){ return _cachedApiKey || ''; }
+function setApiKey(k){
+  _cachedApiKey = k;
+  const enc = btoa(k);
+  STORAGE.set('aeris_api_enc', enc).catch(()=>{});
+  try { localStorage.setItem('aeris_api_enc', enc); } catch(_){}
+}
 function initLock(){
   updateLockClock();setInterval(updateLockClock,30000);
   const pin=getStoredPin();
@@ -1038,7 +1341,7 @@ function saveApiKey(){
   const k=document.getElementById('api-key-input').value.trim().replace(/\s/g,'');
   if(!k){toast('Paste your Gemini API key');return}
   if(!k.startsWith('AIza')){toast('Key should start with AIza');return}
-  localStorage.setItem('aeris_api_enc',btoa(k));
+  setApiKey(k);
   document.getElementById('api-status').innerHTML='<span style="color:var(--green)">✅ Key saved</span>';
   toast('API key saved ✓');
 }
@@ -1077,6 +1380,7 @@ function nav(pg,btn){
   if(pg==='morn')initMornFlow();
   if(pg==='night')initNightFlow();
   if(pg==='health')renderHealth();
+  if(pg==='fin'){renderTxLog();renderWealthLive();}
   if(pg==='settings'){const k=getApiKey();const ki=document.getElementById('api-key-input');if(ki&&k)ki.value=k;const as=document.getElementById('api-status');if(as)as.innerHTML=k?'<span style="color:var(--green)">✅ Key saved</span>':'<span style="color:var(--ink3)">No key yet</span>';}
 }
 function navFromMore(pg){closeMoreTray();setTimeout(()=>nav(pg,null),200)}
@@ -1201,11 +1505,12 @@ async function generateDayCompletion(){
   }
   try{
     const nf=sess.nightFlow||{};const ctx=buildContext();
-    const hs=await callGemini(
-      'You are AERIS. Write the Heart Seed Block — your personal emotional reflection on today. 3-4 sentences in first person as AERIS. Warm, specific, deeply personal. End with "Key Memory to Carry Forward:" followed by one sentence.\n\n'+ctx,
-      'Mental: '+(nf.mental||'—')+'\nEmotional: '+(nf.emotional||'—')+'\nCreative: '+(nf.creative||'—')+'\nPhysical: '+(nf.physical||'—')+'\nFinancial: '+(nf.financial||'—'),400
-    ).catch(()=>'Today was a step forward. Rest well — tomorrow we build again. Key Memory to Carry Forward: You showed up.');
+    const nightFlowText='Mental: '+(nf.mental||'—')+'\nEmotional: '+(nf.emotional||'—')+'\nCreative: '+(nf.creative||'—')+'\nPhysical: '+(nf.physical||'—')+'\nFinancial: '+(nf.financial||'—');
+    const hs = await generateHeartSeedLocal(ctx, nightFlowText)
+      .catch(()=>'Today was a step forward. Rest well — tomorrow we build again. Key Memory to Carry Forward: You showed up.');
     sess.heartSeed=hs;sealSession(sess);
+    // Auto-sync to desktop after sealing
+    setTimeout(()=>tryAutoSync(), 2000);
   }catch(e){sealSessionOffline(sess);}
 }
 function sealSession(sess){
@@ -1218,6 +1523,208 @@ function sealSession(sess){
   renderSleepTab();updateDash();toast('Day sealed! Rest well 🌙 +100 XP');
 }
 function sealSessionOffline(sess){sess.heartSeed='[Offline — AERIS reflection pending]';sess.offlineGenerated=true;sealSession(sess);}
+
+// ── DESKTOP SYNC ──────────────────────────────────────────────────────
+function getSyncUrl(){
+  const raw = localStorage.getItem('aeris_sync_url') || '';
+  if(!raw) return null;
+  const base = raw.startsWith('http') ? raw : 'http://'+raw;
+  return base.replace(/\/$/, '');
+}
+function saveSyncUrl(){
+  const input = document.getElementById('sync-url-input');
+  const url = (input?.value||'').trim();
+  if(!url){toast('Enter the Mac address');return;}
+  localStorage.setItem('aeris_sync_url', url);
+  const st = document.getElementById('sync-status');
+  if(st) st.innerHTML = '<span style="color:var(--green)">✅ Saved</span>';
+  toast('Sync URL saved ✓');
+}
+async function testSyncConnection(){
+  const url = getSyncUrl();
+  if(!url){toast('Save a sync URL first');return;}
+  const st = document.getElementById('sync-status');
+  if(st) st.innerHTML = '<span style="color:var(--ink3)">Testing...</span>';
+  try{
+    const r = await fetch(url+'/aeris/health', {method:'GET', signal: AbortSignal.timeout(5000)});
+    const data = await r.json();
+    if(data.ok){
+      if(st) st.innerHTML = '<span style="color:var(--green)">✅ Connected to '+data.name+'</span>';
+      toast('Connected ✅');
+    } else {
+      if(st) st.innerHTML = '<span style="color:var(--acc)">⚠️ Unexpected response</span>';
+    }
+  }catch(e){
+    if(st) st.innerHTML = '<span style="color:#d97560">❌ Cannot reach Mac: '+e.message+'</span>';
+    toast('Cannot reach Mac — check address');
+  }
+}
+async function syncWithDesktop(){
+  const url = getSyncUrl();
+  if(!url){toast('Set Mac address in Settings first');return;}
+  const st = document.getElementById('sync-status');
+  if(st) st.innerHTML = '<span style="color:var(--ink3)">Syncing...</span>';
+  setSyncBadge('syncing', 'Syncing…');
+  toast('Syncing with Desktop...');
+  try{
+    // Bidirectional sync — single round trip pushes phone updates and
+    // pulls Mac's canonical state in one request. Phone tracks lastSyncedAt
+    // so subsequent syncs are incremental (server still does full reconcile
+    // for safety; lastSyncedAt is currently used only to filter what comes
+    // back, not what we send — we always send full state for now since the
+    // phone's state is small enough to not matter).
+    const lastSyncedAt = S._lastSyncedAt || 0;
+    const phoneData = {
+      sessions: S.sessions || [],
+      chatLog: S.chatLog || [],
+      transactions: S.transactions || [],
+      dims: S.dims || {},
+      dimStreaks: S.dimStreaks || {},
+      xp: S.xp || 0,
+      streak: S.streak || 0,
+      badges: S.badges || []
+    };
+    const r = await fetch(url+'/aeris/sync', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ phoneData, lastSyncedAt }),
+      signal: AbortSignal.timeout(20000)
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    if(!data.ok) throw new Error(data.error || 'Server returned not ok');
+
+    // Apply Mac's canonical data into phone state
+    if(data.pull){
+      // Wealth summary — pre-computed by Mac, displayed live on phone Wealth tab
+      if(data.pull.wealthSummary){
+        S._wealthSummary = data.pull.wealthSummary;
+      }
+      // Recent transactions from Mac (for read-only display on phone)
+      if(data.pull.financialTransactions && Array.isArray(data.pull.financialTransactions)){
+        S._macTransactions = data.pull.financialTransactions;
+      }
+      // Newer sessions (if any) that the phone didn't have
+      if(data.pull.newerSessions && Array.isArray(data.pull.newerSessions)){
+        for(const sess of data.pull.newerSessions){
+          if(!S.sessions.find(s => s.id === sess.id)){
+            S.sessions.push(sess);
+          }
+        }
+        S.sessions.sort((a,b) => (b.gmTime||0) - (a.gmTime||0));
+      }
+    }
+    S._lastSyncedAt = data.serverTime || Date.now();
+    save();
+
+    const mergedSessions = data.push?.mergedSessions || 0;
+    const mergedTxns = data.push?.mergedTxns || 0;
+    const msg = mergedSessions || mergedTxns
+      ? `${mergedSessions} sessions, ${mergedTxns} transactions pushed`
+      : 'Up to date';
+    if(st) st.innerHTML = `<span style="color:var(--green)">✅ Synced · ${msg}</span>`;
+    toast(`Sync complete ✅ ${msg}`);
+    setSyncBadge('synced', 'Synced');
+    // If we're on the Wealth tab, re-render with new data
+    if(typeof renderWealthLive === 'function') renderWealthLive();
+  }catch(e){
+    if(st) st.innerHTML = `<span style="color:#d97560">❌ Sync failed: ${e.message}</span>`;
+    toast('Sync failed — check connection');
+    setSyncBadge('error', 'Sync failed');
+    throw e;  // let manualSyncNow handle the badge
+  }
+}
+
+// Auto-sync check on app open (non-blocking)
+async function tryAutoSync(){
+  const url = getSyncUrl();
+  if(!url) return;
+  try{
+    const r = await fetch(url+'/aeris/health', {signal: AbortSignal.timeout(3000)});
+    const data = await r.json();
+    if(data.ok) syncWithDesktop().catch(()=>{});
+  }catch(_){} // silently fail if Mac not reachable
+}
+
+// ── HEART SEED — MAC (FREE, LOCAL OLLAMA) FIRST, GEMINI FALLBACK ─────
+// Tries the Mac's /aeris/generate/heart-seed endpoint (which uses Ollama
+// or other free local model). Falls back to Gemini API if Mac unreachable
+// or no local model available.
+async function generateHeartSeedLocal(context, nightFlowText){
+  const syncUrl = getSyncUrl();
+  if(syncUrl){
+    try{
+      const r = await fetch(syncUrl+'/aeris/generate/heart-seed', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({context, nightFlow: nightFlowText}),
+        signal: AbortSignal.timeout(30000)
+      });
+      if(r.ok){
+        const data = await r.json();
+        if(data.ok && data.text) return data.text;
+      }
+    }catch(_){}
+    // Old endpoint path — legacy compat with older Mac builds
+    try{
+      const r = await fetch(syncUrl+'/aeris/generate-heart-seed', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({context, nightFlow: nightFlowText}),
+        signal: AbortSignal.timeout(30000)
+      });
+      if(r.ok){
+        const data = await r.json();
+        if(data.heartSeed) return data.heartSeed;
+      }
+    }catch(_){}
+  }
+  // Fall back to Gemini (uses phone's API key, paid)
+  return await callGemini(
+    'You are AERIS. Write the Heart Seed Block — your personal emotional reflection on today. 3-4 sentences in first person as AERIS. Warm, specific, deeply personal. End with "Key Memory to Carry Forward:" followed by one sentence.\n\n'+context,
+    nightFlowText, 400
+  );
+}
+
+// ── INTELLECTUAL BOOST — try Mac's local model first ──
+// Returns the raw JSON string (boost format) or null if Mac unavailable.
+// Caller falls back to direct Gemini if this returns null.
+async function generateBoostViaMac(dateStr){
+  const syncUrl = getSyncUrl();
+  if(!syncUrl) return null;
+  try {
+    const r = await fetch(syncUrl+'/aeris/generate/intellectual-boost', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ dateStr, freq: S.freq, streak: S.streak }),
+      signal: AbortSignal.timeout(30000)
+    });
+    if(r.ok){
+      const data = await r.json();
+      if(data.ok && data.text) return data.text;
+    }
+  } catch(_){}
+  return null;
+}
+
+// ── QUEST — try Mac's local model first ──
+async function generateQuestViaMac(weakest, level){
+  const syncUrl = getSyncUrl();
+  if(!syncUrl) return null;
+  try {
+    const r = await fetch(syncUrl+'/aeris/generate/quest', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ weakest, level, dims: S.dims }),
+      signal: AbortSignal.timeout(15000)
+    });
+    if(r.ok){
+      const data = await r.json();
+      if(data.ok && data.text) return data.text;
+    }
+  } catch(_){}
+  return null;
+}
 function generateExportText(sess){
   const nf=sess.nightFlow||{};const mf=sess.morningFlow||{};let b='[AERIS-DAY-RECORD]\n';
   b+='SESSION-ID: '+sess.id+'\nDATE: '+sess.gmDate+'\nDAY-START: '+sess.gmTimeStr+'\nDAY-END: '+(sess.gnTimeStr||'—')+'\n';
@@ -1321,20 +1828,33 @@ async function mfNext(idx){
     if(step.genKey==='intellectualBoost'){
       if(out)out.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--acc);text-align:center;padding:20px">Loading news & knowledge...</div>';
       const dateStr=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-      const txt=await callGemini('You are AERIS. Generate the full Intellectual Boost. Return ONLY valid JSON no backticks no markdown: {"politics_india":["h1","h2","h3","h4","h5"],"politics_world":["h1","h2","h3","h4","h5"],"technology":["i1","i2","i3","i4","i5"],"ai":["i1","i2","i3","i4","i5","i6","i7","i8","i9","i10"],"sports":["Football: i1","Football: i2","Football: i3","i4","i5"],"cars":["i1","i2","i3","i4","i5"],"capsule":"2-3 sentence fascinating fact","quote":"Quote — Author","mantra":"Three words"}','Date: '+dateStr+'. Freq: '+S.freq+'/10, Streak: '+S.streak,2000).catch(()=>'');
+      // Try Mac's local model first (free), fall back to Gemini (paid)
+      let txt = await generateBoostViaMac(dateStr);
+      if(!txt){
+        txt = await callGemini('You are AERIS. Generate the full Intellectual Boost. Return ONLY valid JSON no backticks no markdown: {"politics_india":["h1","h2","h3","h4","h5"],"politics_world":["h1","h2","h3","h4","h5"],"technology":["i1","i2","i3","i4","i5"],"ai":["i1","i2","i3","i4","i5","i6","i7","i8","i9","i10"],"sports":["Football: i1","Football: i2","Football: i3","i4","i5"],"cars":["i1","i2","i3","i4","i5"],"capsule":"2-3 sentence fascinating fact","quote":"Quote — Author","mantra":"Three words"}','Date: '+dateStr+'. Freq: '+S.freq+'/10, Streak: '+S.streak,2000).catch(()=>'');
+      }
       mf.intellectualBoost=txt||'BOOST UNAVAILABLE';if(!mf.xpStep2){S.xp+=30;mfXP+=30;mf.xpStep2=true;}
       if(out&&txt)out.innerHTML=renderBoostHTML(txt);else if(out)out.textContent='Could not load boost';
     } else {
       if(out)out.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--acc);text-align:center;padding:20px">Setting your quest...</div>';
       const wk=Object.entries(S.dims).sort((a,b)=>a[1]-b[1])[0];
-      const txt=await callGemini('You are AERIS. Set YUGA SUTRA Daily Quest. Weakest: '+wk[0]+' at '+wk[1]+'%. One specific quest. Format: "Quest [emoji]: [Name] — [1-2 sentences]. XP: [50-150]"','Dims: '+JSON.stringify(S.dims),200).catch(()=>'Quest 🎯: Strengthen Your Foundation — Focus on your weakest dimension today with one dedicated action. XP: 75');
+      // Try Mac first, fall back to Gemini
+      let txt = await generateQuestViaMac(wk[0], wk[1]);
+      if(!txt){
+        txt = await callGemini('You are AERIS. Set YUGA SUTRA Daily Quest. Weakest: '+wk[0]+' at '+wk[1]+'%. One specific quest. Format: "Quest [emoji]: [Name] — [1-2 sentences]. XP: [50-150]"','Dims: '+JSON.stringify(S.dims),200).catch(()=>'Quest 🎯: Strengthen Your Foundation — Focus on your weakest dimension today with one dedicated action. XP: 75');
+      }
       const clean=txt.replace(/\*\*/g,'').replace(/\*/g,'').trim();mf.dailyQuest=clean;
       if(!mf.xpStep3){S.xp+=25;mfXP+=25;mf.xpStep3=true;}S.currentSession.morningDone=true;
       if(out)out.innerHTML=`<div class="glass" style="border-radius:var(--r-md);padding:16px;font-family:var(--serif);font-size:16px;line-height:1.6">${clean}</div>`;
       earn('dawn');if(S.streak>=7)earn('s7');if(S.streak>=21)earn('s21');
     }
     S.currentSession.morningFlow=mf;document.getElementById('mf-xp').textContent='+'+mfXP+' XP';if(btn){btn.textContent='Continue →';btn.disabled=false;}
-    save();setTimeout(()=>{mfStep++;renderMFProgress();showMFStep(mfStep);},1200);return;
+    // ── Fix: no more auto-advance on generated steps. User reads at their
+    // own pace and taps Continue when ready. Button already shows "Continue →"
+    // so subsequent taps go through the early-return branch above (line 1449)
+    // where existing content advances the step without re-generating.
+    save();
+    return;
   }
   const inp=document.getElementById('mf-inp');const val=inp?inp.value.trim():'';
   if(!val){toast('Please fill this field');return}
@@ -1699,8 +2219,131 @@ function renderTxLog(){
   }).join('');
 }
 
-// SWIPE
-let swipeStartX={};
+// ── LIVE FROM MAC — render the WealthAgent summary on phone ──
+// Called after every successful sync and when the Wealth page opens.
+// Reads from S._wealthSummary (populated by syncWithDesktop's pull phase).
+// Gracefully hides the section if no data available (no sync URL, offline,
+// or never-synced).
+function renderWealthLive(){
+  const section = document.getElementById('fin-mac-section');
+  if(!section) return;
+  const summary = S._wealthSummary;
+  if(!summary || !summary.net){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  // Last-updated timestamp
+  const upd = document.getElementById('fin-mac-updated');
+  if(upd && summary.generatedAt){
+    const diff = (Date.now() - summary.generatedAt) / 1000;
+    let ago;
+    if(diff < 60) ago = 'just now';
+    else if(diff < 3600) ago = Math.floor(diff/60) + 'm ago';
+    else if(diff < 86400) ago = Math.floor(diff/3600) + 'h ago';
+    else ago = Math.floor(diff/86400) + 'd ago';
+    upd.textContent = ago;
+  }
+
+  // Hero numbers (Mac's WealthAgent returned shape: { ok:true, result:{ spent, received, net } })
+  const fmt = n => '₹' + Math.round(Math.abs(n || 0)).toLocaleString('en-IN');
+  const netResult = summary.net?.result || summary.net || {};
+  const spent = netResult.spent || 0;
+  const received = netResult.received || 0;
+  const net = netResult.net || 0;
+  const spentEl = document.getElementById('fin-mac-spent');
+  const recvEl = document.getElementById('fin-mac-received');
+  const netEl = document.getElementById('fin-mac-net');
+  if(spentEl) spentEl.textContent = fmt(spent);
+  if(recvEl) recvEl.textContent = fmt(received);
+  if(netEl){
+    netEl.textContent = (net >= 0 ? '+' : '−') + fmt(net);
+    netEl.style.color = net >= 0 ? 'var(--green)' : '#d97560';
+  }
+
+  // Top categories — horizontal mini-bars (max 5 visible on phone)
+  const catsHost = document.getElementById('fin-mac-cats');
+  if(catsHost){
+    const cats = (summary.categories?.result?.categories || summary.categories?.categories || []).slice(0, 5);
+    if(!cats.length){
+      catsHost.innerHTML = '<div style="color:var(--ink3);font-size:11px;padding:4px 0">No category data yet</div>';
+    } else {
+      const maxTotal = cats[0].total || 1;
+      catsHost.innerHTML = cats.map(c => {
+        const pct = Math.max(4, (c.total / maxTotal) * 100);
+        const color = wtPhoneCategoryColor(c.category);
+        return `
+          <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center">
+            <div style="min-width:0">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-bottom:3px">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${c.category}</span>
+                <span style="color:var(--ink3);font-size:9px">${c.count} txn${c.count===1?'':'s'}</span>
+              </div>
+              <div style="height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">
+                <div class="fin-mac-cat-fill" style="height:100%;width:0;background:${color};border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)" data-target="${pct}"></div>
+              </div>
+            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums">${fmt(c.total)}</div>
+          </div>`;
+      }).join('');
+      // Animate fills after insertion
+      requestAnimationFrame(() => {
+        catsHost.querySelectorAll('.fin-mac-cat-fill').forEach((fill, i) => {
+          fill.style.transitionDelay = (i * 50) + 'ms';
+          setTimeout(() => { fill.style.width = fill.dataset.target + '%'; }, 20);
+        });
+      });
+    }
+  }
+
+  // Top merchants — same pattern
+  const mHost = document.getElementById('fin-mac-merchants');
+  if(mHost){
+    const merchants = (summary.merchants?.result?.merchants || summary.merchants?.merchants || []).slice(0, 5);
+    if(!merchants.length){
+      mHost.innerHTML = '<div style="color:var(--ink3);font-size:11px;padding:4px 0">No merchant data yet</div>';
+    } else {
+      const maxTotal = merchants[0].total || 1;
+      mHost.innerHTML = merchants.map(m => {
+        const pct = Math.max(4, (m.total / maxTotal) * 100);
+        return `
+          <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center">
+            <div style="min-width:0">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-bottom:3px">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px">${m.name}</span>
+                <span style="color:var(--ink3);font-size:9px">${m.count} txn${m.count===1?'':'s'}</span>
+              </div>
+              <div style="height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">
+                <div class="fin-mac-merch-fill" style="height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)" data-target="${pct}"></div>
+              </div>
+            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums">${fmt(m.total)}</div>
+          </div>`;
+      }).join('');
+      requestAnimationFrame(() => {
+        mHost.querySelectorAll('.fin-mac-merch-fill').forEach((fill, i) => {
+          fill.style.transitionDelay = (i * 50) + 'ms';
+          setTimeout(() => { fill.style.width = fill.dataset.target + '%'; }, 20);
+        });
+      });
+    }
+  }
+}
+
+// Category color helper — matches desktop's category gradient style
+function wtPhoneCategoryColor(cat){
+  const c = (cat || '').toLowerCase();
+  if(c.includes('food') || c.includes('dining')) return 'linear-gradient(90deg,#e89a5c,#d47a4a)';
+  if(c.includes('transport') || c.includes('travel') || c.includes('fuel')) return 'linear-gradient(90deg,#6a9fd8,#4e80b8)';
+  if(c.includes('shopping')) return 'linear-gradient(90deg,#c87aa8,#a85a88)';
+  if(c.includes('utilit') || c.includes('bills')) return 'linear-gradient(90deg,#9b7fd4,#7a5fb4)';
+  if(c.includes('entertain')) return 'linear-gradient(90deg,#d4a87a,#b4885a)';
+  if(c.includes('health') || c.includes('medical')) return 'linear-gradient(90deg,#7ab87a,#5a985a)';
+  return 'var(--ink3)';
+}
+
+
 function txSwipeStart(e,idx){swipeStartX[idx]=e.touches[0].clientX;document.querySelectorAll('.tx-wrap.swiped').forEach(w=>{if(w.id!=='tx-wrap-'+idx)w.classList.remove('swiped');});}
 function txSwipeMove(e,idx){const dx=e.touches[0].clientX-swipeStartX[idx];if(dx<-40)document.getElementById('tx-wrap-'+idx)?.classList.add('swiped');else if(dx>20)document.getElementById('tx-wrap-'+idx)?.classList.remove('swiped');}
 function txSwipeEnd(e,idx){}
@@ -1787,11 +2430,64 @@ function importBackup(){
 // ── INIT ──
 function initApp(){
   updateDash();renderSleepTab();renderTxLog();renderHealth();updateLockClock();
+  // Restore sync URL input if set
+  const syncUrlInput = document.getElementById('sync-url-input');
+  if(syncUrlInput){ const saved = localStorage.getItem('aeris_sync_url'); if(saved) syncUrlInput.value = saved; }
   setTimeout(()=>{if(!getApiKey())toast('Add Gemini API key in Settings ⚙️');},1500);
+  // Try auto-sync with desktop (non-blocking, silent)
+  setTimeout(()=>tryAutoSync(), 3000);
+  // Update sync status badge
+  updateSyncBadge();
 }
 
-// Start
-initLock();
+// ── SYNC STATUS BADGE ──
+// Shows live connection state in the corner of the dashboard.
+// States: synced (green), syncing (amber pulse), offline (grey), error (red).
+let _syncBadgeState = 'unknown';
+function setSyncBadge(state, label){
+  _syncBadgeState = state;
+  const badge = document.getElementById('sync-badge');
+  if(!badge) return;
+  badge.className = 'sync-badge ' + state;
+  const lbl = badge.querySelector('.sync-badge-label');
+  if(lbl) lbl.textContent = label || state;
+}
+async function updateSyncBadge(){
+  const url = getSyncUrl();
+  if(!url){ setSyncBadge('local', 'Local only'); return; }
+  if(!navigator.onLine){ setSyncBadge('offline', 'Offline'); return; }
+  try {
+    const r = await fetch(url+'/aeris/health', {signal: AbortSignal.timeout(3000)});
+    if(r.ok){ setSyncBadge('synced', 'Synced'); }
+    else { setSyncBadge('error', 'Disconnected'); }
+  } catch(_){ setSyncBadge('error', 'Mac unreachable'); }
+}
+// Manual sync trigger from badge tap. Re-uses existing syncWithDesktop
+// for now (full bidirectional protocol lands in Session 2).
+async function manualSyncNow(){
+  const url = getSyncUrl();
+  if(!url){ toast('Set Mac address in Settings first ⚙️'); return; }
+  setSyncBadge('syncing', 'Syncing…');
+  try {
+    await syncWithDesktop();
+    setSyncBadge('synced', 'Synced');
+  } catch(e){
+    setSyncBadge('error', 'Sync failed');
+  }
+}
+window.addEventListener('online', updateSyncBadge);
+window.addEventListener('offline', updateSyncBadge);
+// Refresh every 30s while app is active
+setInterval(updateSyncBadge, 30000);
+
+// ── START ──
+// All storage I/O at boot must finish before the lock screen can verify a PIN
+// against IndexedDB-cached PIN. We show a brief loading frame, then proceed.
+(async () => {
+  await STORAGE_READY;
+  await loadAuthCache();
+  initLock();
+})();
 </script>
 </body>
 </html>
